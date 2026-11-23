@@ -5,13 +5,15 @@ import { Curve } from '../../physics/curve';
 import { powerPs } from '../../physics/units';
 
 describe('vehicle registry', () => {
-  it('contains exactly the two initial vehicles', () => {
-    expect(VEHICLES.map((v) => v.id)).toEqual(['lexus-is200t-2016-tw', 'skoda-superb-combi-lk-280']);
+  it('keeps the owner cars first with their original ids and colour slots', () => {
+    expect(VEHICLES.slice(0, 2).map((v) => v.id)).toEqual(['lexus-is200t-2016-tw', 'skoda-superb-combi-lk-280']);
+    expect(VEHICLES[0].colorSlot).toBe(0);
+    expect(VEHICLES[1].colorSlot).toBe(1);
   });
 
-  it('has unique ids and colour slots', () => {
+  it('has unique ids, and only the owner cars hold a home colour slot', () => {
     expect(new Set(VEHICLES.map((v) => v.id)).size).toBe(VEHICLES.length);
-    expect(new Set(VEHICLES.map((v) => v.colorSlot)).size).toBe(VEHICLES.length);
+    expect(VEHICLES.filter((v) => v.colorSlot !== undefined)).toHaveLength(2);
   });
 
   it('looks vehicles up by id', () => {
@@ -49,26 +51,30 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     for (const rpm of [pLo, pHi]) {
       expect(Math.abs(powerPs(c.at(rpm), rpm) - e.rated.powerPs) / e.rated.powerPs).toBeLessThan(0.015);
     }
-    for (const [, nm] of e.torqueCurveNm) expect(nm).toBeLessThanOrEqual(e.rated.torqueNm + 1e-9);
+    for (const [rpm, nm] of e.torqueCurveNm) {
+      expect(nm).toBeLessThanOrEqual(e.rated.torqueNm + 0.05);
+      // Never exceed the published peak power either.
+      expect(powerPs(nm, rpm)).toBeLessThanOrEqual(e.rated.powerPs * 1.002 + 0.1);
+    }
   });
 
   it('has valid boost and spool data', () => {
     const boost = new Curve(v.engine.boostCurveBar);
-    expect(boost.at(3000)).toBeGreaterThan(0.8);
-    expect(boost.at(3000)).toBeLessThan(2);
+    expect(boost.at(3000)).toBeGreaterThanOrEqual(0);
+    expect(boost.at(3000)).toBeLessThan(2.5);
     for (const [, tau] of v.engine.spoolTimeConstantS) expect(tau).toBeGreaterThan(0);
   });
 
   it('has plausible chassis and aero values', () => {
     const c = v.chassis;
-    expect(c.curbMassKg).toBeGreaterThan(1300);
-    expect(c.curbMassKg).toBeLessThan(2000);
+    expect(c.curbMassKg).toBeGreaterThan(900);
+    expect(c.curbMassKg).toBeLessThan(3200);
     expect(c.frontWeightFraction).toBeGreaterThan(0.4);
     expect(c.frontWeightFraction).toBeLessThan(0.7);
     expect(v.aero.dragCoefficient).toBeGreaterThan(0.2);
-    expect(v.aero.dragCoefficient).toBeLessThan(0.4);
-    expect(v.aero.frontalAreaM2).toBeGreaterThan(1.8);
-    expect(v.aero.frontalAreaM2).toBeLessThan(2.8);
+    expect(v.aero.dragCoefficient).toBeLessThan(0.6);
+    expect(v.aero.frontalAreaM2).toBeGreaterThan(1.6);
+    expect(v.aero.frontalAreaM2).toBeLessThan(3.8);
     expect(v.drivetrain.efficiency).toBeGreaterThan(0.75);
     expect(v.drivetrain.efficiency).toBeLessThan(0.95);
   });
@@ -94,8 +100,8 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     }
   });
 
-  it('has factory benchmarks and a Stage 1 tune that adds power', () => {
-    expect(v.benchmarks.some((b) => b.kind === 'factory')).toBe(true);
+  it('only offers a Stage 1 tune that adds power', () => {
+    if (!v.stage1) return;
     expect(v.stage1.claimedPowerPs).toBeGreaterThan(v.engine.rated.powerPs);
     for (const [, k] of v.stage1.torqueMultiplier) expect(k).toBeGreaterThanOrEqual(1);
   });

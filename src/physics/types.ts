@@ -8,6 +8,7 @@ import type { Curve } from './curve';
 export interface SimVehicle {
   id: string;
   name: string;
+  /** Home chart-colour slot of the owner's cars; -1 for every other car. */
   colorSlot: number;
   engine: SimEngine;
   transmission: SimTransmission;

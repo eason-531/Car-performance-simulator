@@ -30,7 +30,7 @@ export function resolveTireSize(spec: VehicleSpec, tuning: TuningConfig): TireSi
 export function tunedEngineCurves(spec: VehicleSpec, tuning: TuningConfig): { torque: Curve; boost: Curve } {
   let torque = new Curve(spec.engine.torqueCurveNm);
   let boost = new Curve(spec.engine.boostCurveBar);
-  if (tuning.ecuStage === 'stage1') {
+  if (tuning.ecuStage === 'stage1' && spec.stage1) {
     torque = torque.multiply(new Curve(spec.stage1.torqueMultiplier));
     boost = boost.add(new Curve(spec.stage1.boostAddBar));
   }
@@ -51,7 +51,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
   const { torque, boost } = tunedEngineCurves(spec, tuning);
   const t = spec.transmission;
   const overallRatios = t.gearRatios.map((g, i) => g * t.finalDrive[i]);
-  const shiftScale = tuning.ecuStage === 'stage1' ? (spec.stage1.shiftTimeScale ?? 1) : 1;
+  const shiftScale = tuning.ecuStage === 'stage1' ? (spec.stage1?.shiftTimeScale ?? 1) : 1;
 
   const transmission: SimTransmission = {
     type: t.type,
@@ -104,7 +104,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
   return {
     id: spec.id,
     name: spec.shortName,
-    colorSlot: spec.colorSlot,
+    colorSlot: spec.colorSlot ?? -1,
     engine: {
       idleRpm: spec.engine.idleRpm,
       redlineRpm: spec.engine.redlineRpm,

@@ -21,6 +21,8 @@ export interface Provenance {
   status: DataStatus;
   /** Where the number comes from, or the reasoning behind an estimate. */
   source: string;
+  /** Link to the source document when there is one. */
+  url?: string;
 }
 
 /** A curve as `[x, y]` control points, sorted by x (e.g. `[rpm, Nm]`). */
@@ -173,13 +175,6 @@ export interface StageTune {
   shiftTimeScale?: number;
 }
 
-export interface Benchmark {
-  label: string;
-  value: string;
-  source: string;
-  kind: 'factory' | 'measured';
-}
-
 export interface VehicleSpec {
   id: string;
   make: string;
@@ -189,8 +184,11 @@ export interface VehicleSpec {
   market: string;
   /** Short label for tight UI. */
   shortName: string;
-  /** Categorical series slot (0-based) — fixed per vehicle so colour follows the car. */
-  colorSlot: number;
+  /**
+   * Home chart-colour slot. Only the owner's original two cars have one (0 and
+   * 1, kept for saved results); every other car gets a colour locally per chart.
+   */
+  colorSlot?: number;
   engine: EngineSpec;
   transmission: TransmissionSpec;
   drivetrain: DrivetrainSpec;
@@ -203,9 +201,10 @@ export interface VehicleSpec {
   };
   /** Electronic top-speed limiter, km/h (null = none). */
   speedLimiterKmh: number | null;
-  factory: { zeroTo100S: number; topSpeedKmh: number };
-  benchmarks: readonly Benchmark[];
-  stage1: StageTune;
+  /** Manufacturer performance claims; null where the maker does not publish one. */
+  factory: { zeroTo100S: number | null; topSpeedKmh: number | null; zeroTo60MphS?: number | null };
+  /** Optional, only where a credible Stage 1 calibration exists for this configuration. */
+  stage1?: StageTune;
   provenance: readonly Provenance[];
   notes: readonly string[];
 }

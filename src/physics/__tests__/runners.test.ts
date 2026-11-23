@@ -3,12 +3,12 @@ import { runAccelerationRun, runDragRace } from '../runners';
 import { lexus, sim, skoda, VEHICLES } from '../../test-helpers';
 
 describe('acceleration runs', () => {
-  it.each(VEHICLES.map((v) => [v.shortName, v] as const))(
+  it.each(VEHICLES.filter((v) => v.factory.zeroTo100S !== null).map((v) => [v.shortName, v] as const))(
     '%s stock 0–100 km/h is within 0.6 s of the factory claim',
     (_n, spec) => {
       const r = runAccelerationRun(sim(spec), { launch: 'brake-boost' });
-      expect(r.completed).toBe(true);
-      expect(Math.abs(r.metrics.zeroTo100KmhS! - spec.factory.zeroTo100S)).toBeLessThan(0.6);
+      expect(r.metrics.zeroTo100KmhS).not.toBeNull();
+      expect(Math.abs(r.metrics.zeroTo100KmhS! - spec.factory.zeroTo100S!)).toBeLessThan(0.6);
     },
   );
 

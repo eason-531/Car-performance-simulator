@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
-import { DASH_PATTERNS, LineChart } from '../components/LineChart';
+import { LineChart } from '../components/LineChart';
 import { Badge, Button, EmptyState, Panel, Swatch } from '../components/ui';
-import { seriesColor } from '../lib/colors';
+import { DASH_PATTERNS, assignSeries } from '../lib/colors';
 import { fmt, fmtDate, fmtSeconds } from '../lib/format';
 import type { PerformanceMetrics } from '../physics/metrics';
 import type { SavedResult } from '../storage/results';
@@ -109,8 +109,10 @@ export function ResultsView() {
     );
   }
 
-  const colorOf = (r: SavedResult) => seriesColor(r.colorSlot);
-  const dashOf = (r: SavedResult) => DASH_PATTERNS[selection[r.id]?.dash ?? 0];
+  // Colours are allocated locally for the runs being compared (owner cars keep their home colour when free).
+  const styles = assignSeries(selected.map((r) => ({ key: r.id, vehicleId: r.vehicleId, homeSlot: r.colorSlot >= 0 ? r.colorSlot : undefined })));
+  const colorOf = (r: SavedResult) => styles.get(r.id)?.color ?? '#898781';
+  const dashOf = (r: SavedResult) => styles.get(r.id)?.dash;
   const labelOf = (r: SavedResult) => `${r.vehicleName} · ${r.tuningLabel}`;
 
   return (
@@ -242,7 +244,7 @@ export function ResultsView() {
                     </span>
                   )}
                   <div className="result__title">
-                    <span className="vehicle-dot" style={{ background: seriesColor(r.colorSlot) }} />
+                    {r.colorSlot >= 0 && <span className="vehicle-dot" style={{ background: colorOf(r) }} />}
                     {r.vehicleName}
                     <span className="result__tune">{r.tuningLabel}</span>
                   </div>

@@ -14,7 +14,8 @@ describe('dyno', () => {
     expect(d.peakWheelPowerPs).toBeLessThan(d.peakPowerPs);
   });
 
-  it.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s Stage 1 lands near its advertised figures', (_n, spec) => {
+  it.each(VEHICLES.filter((v) => v.stage1).map((v) => [v.shortName, v] as const))('%s Stage 1 lands near its advertised figures', (_n, spec) => {
+    if (!spec.stage1) return;
     const d = computeDyno(sim(spec, { ecuStage: 'stage1' }));
     expect(Math.abs(d.peakPowerPs - spec.stage1.claimedPowerPs) / spec.stage1.claimedPowerPs).toBeLessThan(0.03);
     expect(Math.abs(d.peakTorqueNm - spec.stage1.claimedTorqueNm) / spec.stage1.claimedTorqueNm).toBeLessThan(0.03);

@@ -16,7 +16,7 @@ export const skodaSuperbCombiLk280: VehicleSpec = {
   make: 'Škoda',
   model: 'Superb Combi',
   variant: 'L&K 2.0 TSI 280 4x4 DSG',
-  modelYear: 2017,
+  modelYear: 2016,
   market: 'Taiwan / EU',
   shortName: 'Škoda Superb 280',
   colorSlot: 1,
@@ -147,18 +147,6 @@ export const skodaSuperbCombiLk280: VehicleSpec = {
   speedLimiterKmh: 250,
   factory: { zeroTo100S: 5.8, topSpeedKmh: 250 },
 
-  benchmarks: [
-    { label: '0–100 km/h', value: '5.8 s', source: 'Škoda factory claim (Combi 280 4x4 DSG)', kind: 'factory' },
-    { label: 'Top speed', value: '250 km/h (limited)', source: 'Škoda factory claim', kind: 'factory' },
-    {
-      label: '0–100 / 0–160 / 0–180 km/h',
-      value: '6.0 s / 14.1 s / 18.6 s',
-      source: 'Automobil Revue (CZ) road test, Superb 2.0 TSI 280 4x4',
-      kind: 'measured',
-    },
-    { label: '0–100 km/h', value: '5.1 s', source: 'se.pl / Auto Świat (PL) road test, Superb 280 4x4', kind: 'measured' },
-  ],
-
   stage1: {
     label: 'Stage 1 ECU remap',
     description:
@@ -187,9 +175,9 @@ export const skodaSuperbCombiLk280: VehicleSpec = {
   },
 
   provenance: [
-    { parameter: 'Engine', value: 'EA888 Gen 3, 1,984 cc turbo I4', status: 'verified', source: 'Škoda technical data' },
-    { parameter: 'Peak power', value: '280 PS (206 kW) @ 5,600–6,500 rpm', status: 'verified', source: 'Škoda technical data; auto-data.net' },
-    { parameter: 'Peak torque', value: '350 Nm @ 1,700–5,600 rpm', status: 'verified', source: 'Škoda technical data; auto-data.net' },
+    { parameter: 'Engine', value: 'EA888 Gen 3, 1,984 cc turbo I4', status: 'verified', source: 'Škoda technical data', url: 'https://cdn.skoda-storyboard.com/2016/12/TD_SUPERB_COMBI_en.pdf' },
+    { parameter: 'Peak power', value: '280 PS (206 kW) @ 5,600–6,500 rpm', status: 'verified', source: 'Škoda technical data; auto-data.net', url: 'https://www.auto-data.net/en/skoda-superb-iii-combi-2.0-tsi-280hp-4x4-dsg-21961' },
+    { parameter: 'Peak torque', value: '350 Nm @ 1,700–5,600 rpm', status: 'verified', source: 'Škoda technical data; auto-data.net', url: 'https://www.auto-data.net/en/skoda-superb-iii-combi-2.0-tsi-280hp-4x4-dsg-21961' },
     {
       parameter: 'Torque curve shape',
       value: 'Plateau 1,700–5,600, constant power to 6,500',
@@ -209,9 +197,10 @@ export const skodaSuperbCombiLk280: VehicleSpec = {
       value: '1,560 kg (+75 kg driver = 1,635 kg EU)',
       status: 'reported',
       source: 'EU kerb weight 1,635 kg incl. driver; L&K options add weight — adjust in Tuning',
+      url: 'https://www.auto-data.net/en/skoda-superb-iii-combi-2.0-tsi-280hp-4x4-dsg-21961',
     },
     { parameter: 'Dimensions', value: '4,856 × 1,864 × 1,477 mm, WB 2,841 mm', status: 'reported', source: 'Škoda Superb III Combi technical data' },
-    { parameter: 'Drag coefficient', value: 'Cd 0.30', status: 'reported', source: 'Škoda technical data lists 0.289–0.310 for Combi versions' },
+    { parameter: 'Drag coefficient', value: 'Cd 0.30', status: 'reported', source: 'Škoda technical data lists 0.289–0.310 for Combi versions', url: 'https://cdn.skoda-storyboard.com/2016/12/TD_SUPERB_COMBI_en.pdf' },
     { parameter: 'Frontal area', value: '2.32 m²', status: 'estimated', source: '≈ 0.84 × width × height' },
     { parameter: 'Weight distribution', value: '59 % front', status: 'estimated', source: 'Typical for transverse-engine AWD estate' },
     { parameter: 'CG height', value: '0.56 m', status: 'estimated', source: 'Typical estate value' },
@@ -231,6 +220,7 @@ export const skodaSuperbCombiLk280: VehicleSpec = {
   ],
 
   notes: [
+    'Owner’s car: early six-speed DSG (DQ250) configuration, no adaptive cruise control (ACC).',
     'The 280 PS / 6-speed DSG combination identifies the pre-facelift Superb III (2015–2019).',
     'Speed limited to 250 km/h; unrestricted cars have been recorded at ≈ 260 km/h.',
   ],

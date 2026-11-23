@@ -1,6 +1,7 @@
 import { useId, useMemo, useState, type PointerEvent, type ReactNode } from 'react';
 import { useElementSize } from '../hooks/useElementSize';
 import { niceDomain, ticks } from '../lib/ticks';
+import { DASH_PATTERNS } from '../lib/colors';
 import { Swatch } from './ui';
 
 export interface ChartPoint {
@@ -54,8 +55,7 @@ export interface LineChartProps {
 
 const M = { top: 28, bottom: 34, left: 52 };
 
-/** Dash patterns used to tell apart series that share a colour (same vehicle). */
-export const DASH_PATTERNS = [undefined, '7 5', '2 4', '10 4 2 4'] as const;
+export { DASH_PATTERNS };
 
 function dashOf(s: ChartSeries): string | undefined {
   return s.dashArray ?? (s.dashed ? DASH_PATTERNS[1] : undefined);

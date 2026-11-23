@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 import { LineChart, type ChartSeries } from '../components/LineChart';
 import { Button, Panel, Segmented, Swatch, Toggle } from '../components/ui';
 import { usePlayback } from '../hooks/usePlayback';
-import { seriesColor } from '../lib/colors';
+import { assignSeries } from '../lib/colors';
+import { getVehicle } from '../data/vehicles';
+import { CarPickerDialog } from '../components/catalog/CarPicker';
+import { Icon } from '../components/Icon';
 import { fmt } from '../lib/format';
 import { computeDyno, type DynoSheet } from '../physics/dyno';
 import { useApp } from '../state/AppState';
@@ -24,7 +27,8 @@ const PULL_SECONDS = 3.2;
 
 export function DynoView() {
   const app = useApp();
-  const [selected, setSelected] = useState<string[]>(() => app.vehicles.map((v) => v.id));
+  const [selected, setSelected] = useState<string[]>(() => [...app.ownerIds]);
+  const [picking, setPicking] = useState(false);
   const [showStock, setShowStock] = useState(true);
   const [measure, setMeasure] = useState<Measure>('crank');
   const [showTable, setShowTable] = useState(false);
@@ -33,8 +37,10 @@ export function DynoView() {
 
   const entries = useMemo<DynoEntry[]>(() => {
     const out: DynoEntry[] = [];
-    for (const spec of app.vehicles) {
-      if (!selected.includes(spec.id)) continue;
+    const styles = assignSeries(selected.map((id) => ({ key: id, vehicleId: id, homeSlot: getVehicle(id).colorSlot })));
+    for (const id of selected) {
+      const spec = getVehicle(id);
+      const color = styles.get(id)!.color;
       const tuning = app.tuningFor(spec.id);
       const stock = isStock(spec, tuning);
       const current = app.simVehicle(spec.id);
@@ -49,7 +55,7 @@ export function DynoView() {
         key: `${spec.id}:current`,
         label: tag ? `${spec.shortName} · ${tag}` : spec.shortName,
         short: tag ? `${spec.make} · ${tag}` : spec.make,
-        color: seriesColor(spec.colorSlot),
+        color,
         dashed: false,
         sheet: computeDyno(current),
         massKg: current.massKg,
@@ -60,7 +66,7 @@ export function DynoView() {
           key: `${spec.id}:stock`,
           label: `${spec.shortName} · Stock`,
           short: `${spec.make} · Stock`,
-          color: seriesColor(spec.colorSlot),
+          color,
           dashed: true,
           sheet: computeDyno(sv),
           massKg: sv.massKg,
@@ -87,8 +93,8 @@ export function DynoView() {
   const torqueSeries = mk((p) => (measure === 'crank' ? p.torqueNm : p.wheelTorqueNm));
   const boostSeries = mk((p) => p.boostBar);
 
-  const toggleVehicle = (id: string, on: boolean) =>
-    setSelected((s) => (on ? app.vehicles.filter((v) => v.id === id || s.includes(v.id)).map((v) => v.id) : s.filter((x) => x !== id)));
+  const MAX_CARS = 4;
+  const removeCar = (id: string) => setSelected((s) => s.filter((x) => x !== id));
 
   const rpmFmt = (v: number) => fmt(v);
   const tableRpms: number[] = [];
@@ -97,19 +103,25 @@ export function DynoView() {
   return (
     <div className="view dyno">
       <div className="view__bar">
-        <div className="dyno__vehicles">
-          {app.vehicles.map((v) => (
-            <Toggle
-              key={v.id}
-              checked={selected.includes(v.id)}
-              onChange={(on) => toggleVehicle(v.id, on)}
-              label={
-                <span className="seg-vehicle">
-                  <span className="vehicle-dot" style={{ background: seriesColor(v.colorSlot) }} /> {v.shortName}
-                </span>
-              }
-            />
-          ))}
+        <div className="dyno__vehicles" aria-label="Cars on the dyno">
+          {selected.map((id) => {
+            const v = getVehicle(id);
+            const color = entries.find((e) => e.key === `${id}:current`)?.color;
+            return (
+              <span key={id} className="dyno-chip">
+                <span className="vehicle-dot" style={{ background: color }} />
+                {v.shortName}
+                <button type="button" className="dyno-chip__x" onClick={() => removeCar(id)} aria-label={`Remove ${v.shortName} from the dyno`}>
+                  <Icon name="close" size={16} />
+                </button>
+              </span>
+            );
+          })}
+          {selected.length < MAX_CARS && (
+            <Button icon="plus" onClick={() => setPicking(true)}>
+              Add car
+            </Button>
+          )}
         </div>
         <div className="view__bar-actions">
           <Segmented<Measure>
@@ -152,9 +164,17 @@ export function DynoView() {
         </div>
       </div>
 
+      {picking && (
+        <CarPickerDialog
+          title="Add a car to the dyno"
+          onSelect={(id) => setSelected((s) => (s.includes(id) ? s : [...s, id]))}
+          onClose={() => setPicking(false)}
+        />
+      )}
+
       {entries.length === 0 ? (
         <Panel>
-          <p className="footnote">Select at least one vehicle to plot.</p>
+          <p className="footnote">Add at least one car to plot.</p>
         </Panel>
       ) : (
         <>
