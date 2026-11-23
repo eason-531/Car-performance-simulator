@@ -1,60 +1,77 @@
 import { useMemo, useState } from 'react';
+import { CarPickerDialog, CarSwitcher } from '../components/catalog/CarPicker';
+import { Icon } from '../components/Icon';
 import { LineChart, type ChartSeries } from '../components/LineChart';
-import { Badge, Button, Panel, Segmented, StatTile, Toggle, VehiclePicker } from '../components/ui';
+import { Badge, Button, Panel, Segmented, StatTile } from '../components/ui';
+import { findEntry } from '../data/catalog';
+import { BASIS_LABEL, TIMING_LABEL } from '../data/catalog/compare';
+import type { PublishedResults } from '../data/catalog/types';
 import { usePlayback } from '../hooks/usePlayback';
-import { seriesColor } from '../lib/colors';
+import { assignSeries } from '../lib/colors';
 import { fmt, fmtSeconds, fmtSigned } from '../lib/format';
 import { computeDyno } from '../physics/dyno';
+import type { TimingBasis } from '../physics/metrics';
 import { runAccelerationRun, sampleAt, type LaunchTechnique, type TraceSample } from '../physics/runners';
 import { useApp } from '../state/AppState';
-import { describeTuning } from '../tuning/tuning';
+import type { CarChoice } from '../storage/settings';
+import { describeTuning, isStock } from '../tuning/tuning';
 
 const PLAYBACK_SPEED = 4;
 
-const toPoints = (trace: readonly TraceSample[], key: keyof TraceSample, scale = 1) =>
-  trace.map((p) => ({ x: p.t, y: (p[key] as number) * scale }));
+const toPoints = (trace: readonly TraceSample[], key: keyof TraceSample, offset = 0) =>
+  trace.filter((p) => p.t >= offset).map((p) => ({ x: p.t - offset, y: p[key] as number }));
+
+/** Time at which the car has rolled one foot (start of a rollout-timed run). */
+function rolloutOffset(trace: readonly TraceSample[]): number {
+  const i = trace.findIndex((p) => p.distanceM >= 0.3048);
+  if (i <= 0) return 0;
+  const a = trace[i - 1];
+  const b = trace[i];
+  return a.t + ((0.3048 - a.distanceM) / (b.distanceM - a.distanceM)) * (b.t - a.t);
+}
 
 export function TestsView() {
   const app = useApp();
   const spec = app.activeVehicle;
   const vehicle = app.simVehicle(spec.id);
   const launch = app.settings.launch;
+  const basis = app.settings.timingBasis;
   const tuning = app.tuningFor(spec.id);
-  const other = app.vehicles.find((v) => v.id !== spec.id);
-  const [overlay, setOverlay] = useState(false);
+  const compare = app.settings.testCompare;
+  const [picking, setPicking] = useState(false);
   const [hoverX, setHoverX] = useState<number | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
 
   const result = useMemo(() => runAccelerationRun(vehicle, { launch }), [vehicle, launch]);
-  const otherVehicle = other ? app.simVehicle(other.id) : null;
-  const otherResult = useMemo(
-    () => (overlay && otherVehicle ? runAccelerationRun(otherVehicle, { launch }) : null),
-    [overlay, otherVehicle, launch],
-  );
+  const compareVehicle = compare ? app.simVehicle(compare.vehicleId, compare.variant) : null;
+  const compareResult = useMemo(() => (compareVehicle ? runAccelerationRun(compareVehicle, { launch }) : null), [compareVehicle, launch]);
   const dyno = useMemo(() => computeDyno(vehicle), [vehicle]);
   const playback = usePlayback(result.durationS, PLAYBACK_SPEED);
   const t = playback.time;
   const configKey = `${spec.id}|${launch}|${JSON.stringify(tuning)}`;
   const saved = savedKey === configKey;
 
-  const m = result.metrics;
-  const shown = (x: number | null): number | null => (x === null ? null : t === null || x <= t ? x : null);
+  const m = basis === 'rollout-1ft' ? result.metricsRollout : result.metrics;
+  const off = basis === 'rollout-1ft' ? rolloutOffset(result.trace) : 0;
+  // Playback runs on the brake-release clock; shown times are on the chosen basis.
+  const shown = (x: number | null): number | null => (x === null ? null : t === null || x + off <= t ? x : null);
   const live = t !== null ? sampleAt(result.trace, t) : null;
-  const color = seriesColor(spec.colorSlot);
 
-  const speedSeries: ChartSeries[] = [
-    { id: spec.id, label: spec.shortName, color, points: toPoints(result.trace, 'speedKmh') },
-  ];
-  if (otherResult && other) {
-    speedSeries.push({
-      id: other.id,
-      label: other.shortName,
-      color: seriesColor(other.colorSlot),
-      dashed: true,
-      points: toPoints(otherResult.trace, 'speedKmh'),
-    });
+  const mainLabel = `${spec.shortName}${isStock(spec, tuning) ? '' : ' (tuned)'}`;
+  const compareSpec = compare ? findEntry(compare.vehicleId)?.sim : undefined;
+  const compareLabel = compareSpec && compare ? `${compareSpec.shortName}${compare.variant === 'stock' ? ' (stock)' : isStock(compareSpec, app.tuningFor(compareSpec.id)) ? '' : ' (tuned)'}` : '';
+  const styles = assignSeries([
+    { key: 'main', vehicleId: spec.id, homeSlot: spec.colorSlot },
+    ...(compare ? [{ key: 'cmp', vehicleId: compare.vehicleId, homeSlot: compareSpec?.colorSlot }] : []),
+  ]);
+  const main = styles.get('main')!;
+  const speedSeries: ChartSeries[] = [{ id: 'main', label: mainLabel, color: main.color, dashArray: main.dash, points: toPoints(result.trace, 'speedKmh', off) }];
+  if (compareResult && compare) {
+    const st = styles.get('cmp')!;
+    const coff = basis === 'rollout-1ft' ? rolloutOffset(compareResult.trace) : 0;
+    speedSeries.push({ id: 'cmp', label: compareLabel, color: st.color, dashArray: st.dash, points: toPoints(compareResult.trace, 'speedKmh', coff) });
   }
-  const xMax = Math.max(result.durationS, otherResult?.durationS ?? 0);
+  const xMax = Math.max(result.durationS, compareResult?.durationS ?? 0);
   const xDomain = [0, Math.ceil(xMax)] as const;
 
   const save = () => {
@@ -62,33 +79,36 @@ export function TestsView() {
       source: 'test',
       vehicleId: spec.id,
       vehicleName: spec.shortName,
-      colorSlot: spec.colorSlot,
+      colorSlot: spec.colorSlot ?? -1,
       tuningLabel: describeTuning(spec, tuning),
       tuning,
       launch,
       powerPs: dyno.peakPowerPs,
       torqueNm: dyno.peakTorqueNm,
       massKg: vehicle.massKg,
-      metrics: m,
+      metrics: result.metrics,
       trace: result.trace,
     });
     setSavedKey(configKey);
-    app.notify('Test result saved', 'good');
+    app.notify('Test result saved (brake-release timing)', 'good');
   };
 
-  const delta100 = m.zeroTo100KmhS !== null ? m.zeroTo100KmhS - spec.factory.zeroTo100S : null;
+  const factory100 = spec.factory.zeroTo100S;
+  const delta100 = m.zeroTo100KmhS !== null && factory100 !== null ? m.zeroTo100KmhS - factory100 : null;
+  const entry = findEntry(spec.id);
+  const chooseCompare = (choice: CarChoice | null) => app.setTestCompare(choice);
 
   return (
     <div className="view tests">
       <div className="view__bar">
-        <VehiclePicker vehicles={app.vehicles} value={spec.id} onChange={app.setActiveVehicle} />
+        <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Car to test" />
         <div className="view__bar-actions">
           <Segmented<LaunchTechnique>
             ariaLabel="Launch technique"
             value={launch}
             onChange={app.setLaunch}
             options={[
-              { value: 'brake-boost', label: 'Brake-boost launch' },
+              { value: 'brake-boost', label: 'Best launch' },
               { value: 'standard', label: 'Standard launch' },
             ]}
           />
@@ -104,6 +124,24 @@ export function TestsView() {
         </div>
       </div>
 
+      <div className="tests__basis">
+        <Segmented<TimingBasis>
+          ariaLabel="Timing basis"
+          value={basis}
+          onChange={app.setTimingBasis}
+          options={[
+            { value: 'brake-release', label: 'Brake release' },
+            { value: 'rollout-1ft', label: '1-ft rollout (US magazines)' },
+          ]}
+        />
+        <span className="footnote">
+          Times shown: <strong>{BASIS_LABEL[basis]}</strong>.{' '}
+          {basis === 'rollout-1ft'
+            ? 'The clock starts after the car has moved one foot, as at a drag strip and in Car and Driver / MotorTrend tests.'
+            : 'The clock starts when the brake is released (simulator baseline, saved results use this).'}
+        </span>
+      </div>
+
       <div className="tests__hero">
         <StatTile
           emphasis
@@ -111,9 +149,11 @@ export function TestsView() {
           value={fmt(shown(m.zeroTo100KmhS), 2)}
           unit="s"
           sub={
-            delta100 !== null && shown(m.zeroTo100KmhS) !== null
-              ? `Factory ${spec.factory.zeroTo100S.toFixed(1)} s (${fmtSigned(delta100, 2, ' s')})`
-              : `Factory ${spec.factory.zeroTo100S.toFixed(1)} s`
+            factory100 === null
+              ? 'No factory 0–100 claim'
+              : delta100 !== null && shown(m.zeroTo100KmhS) !== null
+                ? `Factory ${factory100.toFixed(1)} s (${fmtSigned(delta100, 2, ' s')})`
+                : `Factory ${factory100.toFixed(1)} s`
           }
         />
         <StatTile emphasis label="0–200 km/h" value={fmt(shown(m.zeroTo200KmhS), 2)} unit="s" sub={`100–200: ${fmtSeconds(shown(m.hundredTo200KmhS))}`} />
@@ -135,7 +175,7 @@ export function TestsView() {
                 {fmt(live.t, 1)} s · Gear {live.gear} · {fmt(Math.round(live.rpm / 10) * 10)} rpm
               </div>
               <div className="progress">
-                <div className="progress__fill" style={{ transform: `scaleX(${live.t / result.durationS})`, background: color }} />
+                <div className="progress__fill" style={{ transform: `scaleX(${live.t / result.durationS})`, background: main.color }} />
               </div>
             </>
           ) : (
@@ -158,15 +198,35 @@ export function TestsView() {
         <MetricChip label="⅛ mile" value={shown(m.eighthMileS) !== null ? `${fmtSeconds(m.eighthMileS)} @ ${fmt(m.eighthMileTrapKmh)} km/h` : '—'} />
         <MetricChip label="1 km" value={shown(m.kilometerS) !== null ? `${fmtSeconds(m.kilometerS)} @ ${fmt(m.kilometerTrapKmh)} km/h` : '—'} />
         <MetricChip label="Peak accel" value={`${fmt(m.peakAccelG, 2)} g`} />
-        <MetricChip label="Max speed in run" value={`${fmt(t === null ? m.topSpeedKmh : live?.speedKmh ?? 0)} km/h`} />
+        <MetricChip label="Max speed in run" value={`${fmt(t === null ? m.topSpeedKmh : (live?.speedKmh ?? 0))} km/h`} />
       </div>
 
       <Panel
         title="Speed"
-        subtitle="Full throttle, automatic shifts, clock starts at brake release"
+        subtitle={`Full throttle, automatic shifts · ${BASIS_LABEL[basis]}`}
         actions={
           <div className="panel__actions-row">
-            {other && <Toggle checked={overlay} onChange={setOverlay} label={`Overlay ${other.shortName}`} />}
+            {compare ? (
+              <>
+                <Button icon="search" onClick={() => setPicking(true)}>
+                  {compareLabel}
+                </Button>
+                <Segmented<'current' | 'stock'>
+                  ariaLabel="Comparison configuration"
+                  value={compare.variant}
+                  onChange={(variant) => chooseCompare({ ...compare, variant })}
+                  options={[
+                    { value: 'current', label: 'Its tune' },
+                    { value: 'stock', label: 'Stock' },
+                  ]}
+                />
+                <Button icon="close" variant="ghost" onClick={() => chooseCompare(null)} ariaLabel="Remove comparison" />
+              </>
+            ) : (
+              <Button icon="plus" onClick={() => setPicking(true)}>
+                Compare with…
+              </Button>
+            )}
             <Button icon={saved ? 'check' : 'save'} variant={saved ? 'ghost' : 'secondary'} onClick={save} disabled={saved || playback.playing}>
               {saved ? 'Saved' : 'Save result'}
             </Button>
@@ -189,16 +249,24 @@ export function TestsView() {
           ]}
           hoverX={hoverX}
           onHoverX={setHoverX}
-          revealX={t ?? undefined}
+          revealX={t === null ? undefined : t - off}
           showLegend={speedSeries.length > 1}
         />
       </Panel>
+      {picking && (
+        <CarPickerDialog
+          title="Compare with…"
+          selectedId={compare?.vehicleId}
+          onSelect={(id) => chooseCompare({ vehicleId: id, variant: id === spec.id ? 'stock' : 'current' })}
+          onClose={() => setPicking(false)}
+        />
+      )}
 
       <div className="grid-2">
         <Panel title="Engine speed" subtitle="Shift pattern">
           <LineChart
             ariaLabel="Engine speed versus time"
-            series={[{ id: 'rpm', label: 'rpm', color, points: toPoints(result.trace, 'rpm') }]}
+            series={[{ id: 'rpm', label: 'rpm', color: main.color, points: toPoints(result.trace, 'rpm', off) }]}
             xLabel="s"
             yLabel="rpm"
             xDomain={xDomain}
@@ -209,14 +277,14 @@ export function TestsView() {
             valueFormat={(v) => `${fmt(v)} rpm`}
             hoverX={hoverX}
             onHoverX={setHoverX}
-            revealX={t ?? undefined}
+            revealX={t === null ? undefined : t - off}
             directLabels={false}
           />
         </Panel>
         <Panel title="Boost" subtitle="Turbo spool and shifts">
           <LineChart
             ariaLabel="Boost pressure versus time"
-            series={[{ id: 'boost', label: 'boost', color, points: toPoints(result.trace, 'boostBar') }]}
+            series={[{ id: 'boost', label: 'boost', color: main.color, points: toPoints(result.trace, 'boostBar', off) }]}
             xLabel="s"
             yLabel="bar"
             xDomain={xDomain}
@@ -227,30 +295,57 @@ export function TestsView() {
             valueFormat={(v) => `${fmt(v, 2)} bar`}
             hoverX={hoverX}
             onHoverX={setHoverX}
-            revealX={t ?? undefined}
+            revealX={t === null ? undefined : t - off}
             directLabels={false}
           />
         </Panel>
       </div>
 
-      <Panel title="Reference figures" subtitle="Published data for comparison with the simulation">
-        <ul className="benchmarks">
-          {spec.benchmarks.map((b, i) => (
-            <li key={i} className="benchmarks__item">
-              <Badge tone={b.kind === 'factory' ? 'neutral' : 'verified'}>{b.kind === 'factory' ? 'Factory' : 'Measured'}</Badge>
-              <span className="benchmarks__label">{b.label}</span>
-              <span className="benchmarks__value">{b.value}</span>
-              <span className="benchmarks__source">{b.source}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="footnote">
-          Simulated times start at brake release with no 1-ft roll-out; magazine figures often subtract roll-out
-          (≈0.3 s). Trap speed is the instantaneous speed at the line.
-        </p>
-      </Panel>
+      {entry && (
+        <Panel
+          title="Published reference figures"
+          subtitle="Measured tests for this configuration — open the car in Garage for the side-by-side residuals"
+          actions={
+            <Button icon="garage" onClick={() => (window.location.hash = `/garage/${encodeURIComponent(spec.id)}`)}>
+              Garage details
+            </Button>
+          }
+        >
+          {entry.benchmarks.length === 0 ? (
+            <p className="help">No measured test transcribed for this car yet.</p>
+          ) : (
+            <ul className="benchmarks">
+              {entry.benchmarks.map((b) => (
+                <li key={b.id} className="benchmarks__item">
+                  <Badge tone={b.match === 'exact' ? 'verified' : 'warning'}>{b.match === 'exact' ? 'Exact' : 'Equivalent'}</Badge>
+                  <span className="benchmarks__label">{b.publication}</span>
+                  <span className="benchmarks__value">{summarize(b.results)}</span>
+                  <span className="benchmarks__source">
+                    {TIMING_LABEL[b.timing]}
+                    {b.deviation ? ` · ${b.deviation}` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {factory100 !== null && (
+            <p className="footnote">
+              <Icon name="info" size={14} /> Factory 0–100 km/h claim: {factory100.toFixed(1)} s.
+            </p>
+          )}
+        </Panel>
+      )}
     </div>
   );
+}
+
+function summarize(r: PublishedResults): string {
+  const parts: string[] = [];
+  if (r.zeroTo60MphS) parts.push(`0–60 mph ${r.zeroTo60MphS} s`);
+  if (r.zeroTo100KmhS) parts.push(`0–100 km/h ${r.zeroTo100KmhS} s`);
+  if (r.zeroTo100MphS) parts.push(`0–100 mph ${r.zeroTo100MphS} s`);
+  if (r.quarterMileS) parts.push(`¼ mi ${r.quarterMileS} s${r.quarterMileTrapMph ? ` @ ${r.quarterMileTrapMph} mph` : r.quarterMileTrapKmh ? ` @ ${r.quarterMileTrapKmh} km/h` : ''}`);
+  return parts.join(' · ') || '—';
 }
 
 function MetricChip({ label, value }: { label: string; value: string }) {
@@ -261,4 +356,3 @@ function MetricChip({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-

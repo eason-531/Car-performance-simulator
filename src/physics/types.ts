@@ -8,10 +8,12 @@ import type { Curve } from './curve';
 export interface SimVehicle {
   id: string;
   name: string;
+  /** Home chart-colour slot of the owner's cars; -1 for every other car. */
   colorSlot: number;
   engine: SimEngine;
   transmission: SimTransmission;
-  drivetrain: { layout: DriveLayout; efficiency: number; maxRearShare: number };
+  /** `frontShare`: feasible share of drive force on the front axle, [min, max]. */
+  drivetrain: { layout: DriveLayout; efficiency: number; frontShare: readonly [number, number] };
   /** Test mass: curb + driver + tuning delta, kg. */
   massKg: number;
   frontWeightFraction: number;
@@ -56,6 +58,9 @@ export interface SimLaunchClutch {
   launchRpm: number;
   brakeHoldRpmLimit: number;
   maxClutchTorqueNm: number;
+  creep: boolean;
+  /** Seconds for the driver to fully engage the clutch at launch; 0 = instant (TCU). */
+  driverEngageS: number;
 }
 
 export interface SimTransmission {
@@ -67,6 +72,7 @@ export interface SimTransmission {
   upshiftTimeS: number;
   downshiftTimeS: number;
   shiftTorqueDip: number;
+  shiftProfile: 'blend' | 'interrupt';
   maxAutoUpshiftRpm: number;
   /** Best full-throttle upshift rpm per gear (last gear: rev limit). */
   wotUpshiftRpm: number[];
@@ -118,4 +124,8 @@ export interface SimState {
   throttle: number;
   brake: number;
   timeSinceShift: number;
+  /** Manual: fraction of full clamp the driver has applied during a launch, 0..1. */
+  clutchEngage: number;
+  /** Continuous time spent on the rev limiter, s. */
+  fuelCutTime: number;
 }

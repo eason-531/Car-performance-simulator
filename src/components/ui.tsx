@@ -1,5 +1,4 @@
 import { useId, type ReactNode } from 'react';
-import type { VehicleSpec } from '../data/types';
 import { seriesColor } from '../lib/colors';
 import { Icon, type IconName } from './Icon';
 
@@ -232,42 +231,6 @@ export function Swatch({ color, dashed = false, dashArray }: { color: string; da
 
 export function VehicleDot({ slot }: { slot: number }) {
   return <span className="vehicle-dot" style={{ background: seriesColor(slot) }} aria-hidden="true" />;
-}
-
-export function VehiclePicker({
-  vehicles,
-  value,
-  onChange,
-  ariaLabel = 'Vehicle',
-}: {
-  vehicles: readonly VehicleSpec[];
-  value: string;
-  onChange: (id: string) => void;
-  ariaLabel?: string;
-}) {
-  return (
-    <div className="vehicle-picker" role="radiogroup" aria-label={ariaLabel}>
-      {vehicles.map((v) => (
-        <button
-          key={v.id}
-          type="button"
-          role="radio"
-          aria-checked={v.id === value}
-          className={`vehicle-picker__item ${v.id === value ? 'is-active' : ''}`}
-          style={{ '--vehicle-color': seriesColor(v.colorSlot) } as React.CSSProperties}
-          onClick={() => onChange(v.id)}
-        >
-          <VehicleDot slot={v.colorSlot} />
-          <span className="vehicle-picker__text">
-            <span className="vehicle-picker__name">{v.shortName}</span>
-            <span className="vehicle-picker__meta">
-              {v.drivetrain.layout} · {v.transmission.gearRatios.length}-spd {v.transmission.type === 'dual-clutch' ? 'DSG' : 'AT'}
-            </span>
-          </span>
-        </button>
-      ))}
-    </div>
-  );
 }
 
 export type BadgeTone = 'verified' | 'reported' | 'estimated' | 'neutral' | 'good' | 'warning' | 'critical';

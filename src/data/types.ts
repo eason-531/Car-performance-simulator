@@ -21,6 +21,8 @@ export interface Provenance {
   status: DataStatus;
   /** Where the number comes from, or the reasoning behind an estimate. */
   source: string;
+  /** Link to the source document when there is one. */
+  url?: string;
 }
 
 /** A curve as `[x, y]` control points, sorted by x (e.g. `[rpm, Nm]`). */
@@ -52,7 +54,7 @@ export interface EngineSpec {
   };
 }
 
-export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch';
+export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'manual';
 
 export interface TorqueConverterSpec {
   /** Stall speed at full throttle, rpm. */
@@ -66,12 +68,22 @@ export interface TorqueConverterSpec {
 }
 
 export interface LaunchClutchSpec {
-  /** Engine speed the TCU targets while slipping the clutch at full throttle. */
+  /** Engine speed the TCU (or driver) targets while slipping the clutch at full throttle. */
   launchRpm: number;
-  /** Engine speed limit while the brake is held at standstill (brake boosting). */
+  /**
+   * Engine speed held while the brake is applied at standstill: launch-control
+   * preload for a dual-clutch box, or the driver's pre-rev for a manual.
+   */
   brakeHoldRpmLimit: number;
-  /** Maximum torque the clutch pack can transmit, Nm. */
+  /** Maximum torque the clutch can transmit, Nm. */
   maxClutchTorqueNm: number;
+  /** Dual-clutch boxes creep at idle; a manual's clutch pedal stays down. Default true. */
+  creep?: boolean;
+  /**
+   * Manual only: time for the driver to bring the clutch from open to full
+   * clamp at launch, s. Omit for instant TCU control (dual-clutch).
+   */
+  driverEngageS?: number;
 }
 
 export interface TransmissionSpec {
@@ -86,23 +98,35 @@ export interface TransmissionSpec {
   downshiftTimeS: number;
   /** Peak depth of the torque reduction during a shift, 0..1. */
   shiftTorqueDip: number;
-  /** Highest rpm at which the TCU upshifts at full throttle in automatic mode. */
+  /** Highest rpm at which the TCU (or the test driver) upshifts at full throttle in automatic mode. */
   maxAutoUpshiftRpm: number;
+  /**
+   * `blend`: clutch-to-clutch / planetary shift with a torque dip.
+   * `interrupt`: clutch-open shift with no drive torque (manual, single-clutch).
+   * Default: `interrupt` for manuals, otherwise `blend`.
+   */
+  shiftProfile?: 'blend' | 'interrupt';
   /** Rated input torque of the gearbox (used for tuning warnings). */
   ratedInputTorqueNm: number;
   torqueConverter?: TorqueConverterSpec;
   launchClutch?: LaunchClutchSpec;
 }
 
-export type DriveLayout = 'RWD' | 'FWD' | 'AWD';
+export type DriveLayout = 'RWD' | 'FWD' | 'AWD' | '4WD';
 
 export interface DrivetrainSpec {
   layout: DriveLayout;
   description: string;
   /** Crank-to-wheel mechanical efficiency with the converter locked / clutch closed. */
   efficiency: number;
-  /** AWD only: maximum share of drive force that can be sent to the rear axle. */
+  /** AWD only (legacy): maximum share of drive force that can be sent to the rear axle. */
   maxRearShare?: number;
+  /**
+   * AWD/4WD: range of the share of drive force the system can put on the front
+   * axle, [min, max]. On-demand front-biased couplings ≈ [0.5, 1]; rear-biased
+   * systems ≈ [0, 0.5]; a locked centre / fixed split ≈ [s, s].
+   */
+  frontShareRange?: readonly [number, number];
 }
 
 export interface ChassisSpec {
@@ -151,13 +175,6 @@ export interface StageTune {
   shiftTimeScale?: number;
 }
 
-export interface Benchmark {
-  label: string;
-  value: string;
-  source: string;
-  kind: 'factory' | 'measured';
-}
-
 export interface VehicleSpec {
   id: string;
   make: string;
@@ -167,8 +184,11 @@ export interface VehicleSpec {
   market: string;
   /** Short label for tight UI. */
   shortName: string;
-  /** Categorical series slot (0-based) — fixed per vehicle so colour follows the car. */
-  colorSlot: number;
+  /**
+   * Home chart-colour slot. Only the owner's original two cars have one (0 and
+   * 1, kept for saved results); every other car gets a colour locally per chart.
+   */
+  colorSlot?: number;
   engine: EngineSpec;
   transmission: TransmissionSpec;
   drivetrain: DrivetrainSpec;
@@ -178,12 +198,18 @@ export interface VehicleSpec {
     sizes: readonly TireSizeOption[];
     defaultSizeId: string;
     defaultCompoundId: string;
+    /**
+     * Declared calibration of tire grip relative to the compound class
+     * (default 1). Fitted to a published launch metric only; see provenance.
+     */
+    gripScale?: number;
   };
   /** Electronic top-speed limiter, km/h (null = none). */
   speedLimiterKmh: number | null;
-  factory: { zeroTo100S: number; topSpeedKmh: number };
-  benchmarks: readonly Benchmark[];
-  stage1: StageTune;
+  /** Manufacturer performance claims; null where the maker does not publish one. */
+  factory: { zeroTo100S: number | null; topSpeedKmh: number | null; zeroTo60MphS?: number | null };
+  /** Optional, only where a credible Stage 1 calibration exists for this configuration. */
+  stage1?: StageTune;
   provenance: readonly Provenance[];
   notes: readonly string[];
 }

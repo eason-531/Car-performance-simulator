@@ -88,10 +88,24 @@ describe('App (smoke)', () => {
     expect((JSON.parse(store.get(RESULTS_KEY) ?? '[]') as unknown[]).length).toBe(2);
   });
 
-  it('shows data provenance in the Garage', () => {
+  it('shows My Garage, the catalog and data provenance in the Garage', () => {
     renderApp();
     openView('Garage');
+    expect(screen.getByRole('heading', { name: /Lexus IS 200t/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /Škoda Superb Combi/ })).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Details' })[0]);
     expect(screen.getAllByText('Estimated').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Verified').length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Back to garage' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'All Cars' }));
+    fireEvent.change(screen.getByLabelText('Search cars'), { target: { value: 'skoda' } });
+    expect(screen.getByText(/2 of \d+/)).toBeTruthy();
+  });
+
+  it('starts a fresh install with the owner cars as the default drag matchup', () => {
+    renderApp();
+    openView('Drag');
+    expect(screen.getByRole('button', { name: /Lane A car: Lexus IS200t/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Lane B car: Škoda Superb 280/ })).toBeTruthy();
   });
 });

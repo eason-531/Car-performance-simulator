@@ -78,10 +78,32 @@ describe('settings storage', () => {
     const s = defaultSettings();
     s.shiftMode = 'manual';
     s.launch = 'standard';
-    s.tunings[lexus.id] = { ...s.tunings[lexus.id], ecuStage: 'stage1' };
+    s.tunings[lexus.id] = { ...defaultTuning(lexus), ecuStage: 'stage1' };
+    s.favorites = ['2018-mclaren-720s-coupe-us-coupe-rwd-7dct'];
+    s.timingBasis = 'rollout-1ft';
     persistSettings(store, s);
     expect(loadSettings(store)).toEqual(s);
-    store.set(SETTINGS_KEY, JSON.stringify({ ...s, activeVehicleId: 'ghost' }));
-    expect(loadSettings(store).activeVehicleId).toBe(defaultSettings().activeVehicleId);
+    store.set(SETTINGS_KEY, JSON.stringify({ ...s, activeVehicleId: 'ghost', favorites: ['ghost', 5], dragLanes: [{ vehicleId: 'ghost' }] }));
+    const loaded = loadSettings(store);
+    expect(loaded.activeVehicleId).toBe(defaultSettings().activeVehicleId);
+    expect(loaded.favorites).toEqual([]);
+    expect(loaded.dragLanes).toEqual(defaultSettings().dragLanes);
+  });
+
+  it('loads settings saved by the original two-car version unchanged', () => {
+    const store = createMemoryStore();
+    const legacy = {
+      activeVehicleId: 'skoda-superb-combi-lk-280',
+      tunings: { 'lexus-is200t-2016-tw': { ...defaultTuning(lexus), ecuStage: 'stage1', weightDeltaKg: 80 } },
+      shiftMode: 'manual',
+      launch: 'standard',
+    };
+    store.set(SETTINGS_KEY, JSON.stringify(legacy));
+    const s = loadSettings(store);
+    expect(s.activeVehicleId).toBe('skoda-superb-combi-lk-280');
+    expect(s.tunings['lexus-is200t-2016-tw'].ecuStage).toBe('stage1');
+    expect(s.tunings['lexus-is200t-2016-tw'].weightDeltaKg).toBe(80);
+    expect(s.shiftMode).toBe('manual');
+    expect(s.dragLanes.map((l) => l.vehicleId)).toEqual(['lexus-is200t-2016-tw', 'skoda-superb-combi-lk-280']);
   });
 });

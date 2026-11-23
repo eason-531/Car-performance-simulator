@@ -60,63 +60,109 @@ export interface MotionSample {
   a: number;
 }
 
+/** How a published (or simulated) time is started. */
+export type TimingBasis = 'brake-release' | 'rollout-1ft';
+
+export const ROLLOUT_M = 0.3048;
+
+/** Speeds (m/s) at which split times are recorded, keyed for lookup. */
+export const SPLIT_SPEEDS: Readonly<Record<string, number>> = (() => {
+  const out: Record<string, number> = {};
+  for (const mph of [30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180]) out[`${mph}mph`] = mphToMs(mph);
+  for (const kmh of [50, 80, 100, 120, 130, 140, 160, 180, 200, 250]) out[`${kmh}kmh`] = kmhToMs(kmh);
+  return out;
+})();
+
+interface RawCrossings {
+  speed: Record<string, number>;
+  distance: Record<string, { t: number; v: number }>;
+}
+
+const DIST_KEYS = { sixtyFoot: DISTANCES_M.sixtyFoot, eighthMile: DISTANCES_M.eighthMile, quarterMile: DISTANCES_M.quarterMile, kilometer: DISTANCES_M.kilometer, rollout: ROLLOUT_M };
+
 /**
  * Detects threshold crossings between consecutive samples and interpolates the
  * exact crossing time, so results do not depend on the sampling interval.
+ * Times are recorded from brake release; `metricsFor('rollout-1ft')` restarts
+ * the clock when the car has moved one foot, as US magazines and drag strips
+ * do. Distances are always measured from the original standing position.
  * Trap speeds are the instantaneous speed at the line.
  */
 export class MetricsTracker {
-  private m: PerformanceMetrics = emptyMetrics();
+  private raw: RawCrossings = { speed: {}, distance: {} };
+  private top = 0;
+  private peakG = 0;
   private prev: MotionSample | null = null;
 
   update(cur: MotionSample): void {
     const prev = this.prev;
     this.prev = cur;
-    this.m.topSpeedKmh = Math.max(this.m.topSpeedKmh, msToKmh(cur.v));
-    this.m.peakAccelG = Math.max(this.m.peakAccelG, cur.a / GRAVITY);
+    this.top = Math.max(this.top, msToKmh(cur.v));
+    this.peakG = Math.max(this.peakG, cur.a / GRAVITY);
     if (!prev) return;
-
-    const speedCross = (target: number): number | null =>
-      prev.v < target && cur.v >= target ? prev.t + ((target - prev.v) / (cur.v - prev.v)) * (cur.t - prev.t) : null;
-    const distCross = (target: number): { t: number; v: number } | null => {
-      if (!(prev.x < target && cur.x >= target)) return null;
-      const f = (target - prev.x) / (cur.x - prev.x);
-      return { t: prev.t + f * (cur.t - prev.t), v: prev.v + f * (cur.v - prev.v) };
-    };
-
-    const m = this.m;
-    m.zeroTo60MphS ??= speedCross(SPEEDS_MS.mph60);
-    m.zeroTo100KmhS ??= speedCross(SPEEDS_MS.kmh100);
-    if (m.zeroTo200KmhS === null) {
-      m.zeroTo200KmhS = speedCross(SPEEDS_MS.kmh200);
-      if (m.zeroTo200KmhS !== null && m.zeroTo100KmhS !== null) m.hundredTo200KmhS = m.zeroTo200KmhS - m.zeroTo100KmhS;
-    }
-    if (m.sixtyFootS === null) m.sixtyFootS = distCross(DISTANCES_M.sixtyFoot)?.t ?? null;
-    if (m.eighthMileS === null) {
-      const c = distCross(DISTANCES_M.eighthMile);
-      if (c) {
-        m.eighthMileS = c.t;
-        m.eighthMileTrapKmh = msToKmh(c.v);
+    for (const [key, target] of Object.entries(SPLIT_SPEEDS)) {
+      if (this.raw.speed[key] === undefined && prev.v < target && cur.v >= target) {
+        this.raw.speed[key] = prev.t + ((target - prev.v) / (cur.v - prev.v)) * (cur.t - prev.t);
       }
     }
-    if (m.quarterMileS === null) {
-      const c = distCross(DISTANCES_M.quarterMile);
-      if (c) {
-        m.quarterMileS = c.t;
-        m.quarterMileTrapKmh = msToKmh(c.v);
-      }
-    }
-    if (m.kilometerS === null) {
-      const c = distCross(DISTANCES_M.kilometer);
-      if (c) {
-        m.kilometerS = c.t;
-        m.kilometerTrapKmh = msToKmh(c.v);
+    for (const [key, target] of Object.entries(DIST_KEYS)) {
+      if (this.raw.distance[key] === undefined && prev.x < target && cur.x >= target) {
+        const f = (target - prev.x) / (cur.x - prev.x);
+        this.raw.distance[key] = { t: prev.t + f * (cur.t - prev.t), v: prev.v + f * (cur.v - prev.v) };
       }
     }
   }
 
+  /** Time offset subtracted for a timing basis (null if the car has not rolled out yet). */
+  private offset(basis: TimingBasis): number | null {
+    if (basis === 'brake-release') return 0;
+    return this.raw.distance.rollout?.t ?? null;
+  }
+
+  /** Split times by key (e.g. `60mph`, `100kmh`) for a timing basis. */
+  splitsFor(basis: TimingBasis = 'brake-release'): Record<string, number> {
+    const off = this.offset(basis);
+    const out: Record<string, number> = {};
+    if (off === null) return out;
+    for (const [k, t] of Object.entries(this.raw.speed)) out[k] = t - off;
+    return out;
+  }
+
+  metricsFor(basis: TimingBasis = 'brake-release'): PerformanceMetrics {
+    const m = emptyMetrics();
+    m.topSpeedKmh = this.top;
+    m.peakAccelG = this.peakG;
+    const off = this.offset(basis);
+    if (off === null) return m;
+    const sp = (k: string) => (this.raw.speed[k] === undefined ? null : this.raw.speed[k] - off);
+    const ds = (k: keyof typeof DIST_KEYS) => this.raw.distance[k];
+    m.zeroTo60MphS = sp('60mph');
+    m.zeroTo100KmhS = sp('100kmh');
+    m.zeroTo200KmhS = sp('200kmh');
+    if (m.zeroTo200KmhS !== null && m.zeroTo100KmhS !== null) m.hundredTo200KmhS = m.zeroTo200KmhS - m.zeroTo100KmhS;
+    const sixty = ds('sixtyFoot');
+    m.sixtyFootS = sixty ? sixty.t - off : null;
+    const e = ds('eighthMile');
+    if (e) {
+      m.eighthMileS = e.t - off;
+      m.eighthMileTrapKmh = msToKmh(e.v);
+    }
+    const q = ds('quarterMile');
+    if (q) {
+      m.quarterMileS = q.t - off;
+      m.quarterMileTrapKmh = msToKmh(q.v);
+    }
+    const k = ds('kilometer');
+    if (k) {
+      m.kilometerS = k.t - off;
+      m.kilometerTrapKmh = msToKmh(k.v);
+    }
+    return m;
+  }
+
+  /** Brake-release metrics (the simulator baseline). */
   get metrics(): PerformanceMetrics {
-    return { ...this.m };
+    return this.metricsFor('brake-release');
   }
 
   /** Time at which a distance was crossed, for arbitrary distances (drag races). */

@@ -2,7 +2,7 @@
   "name": "car-performance-simulator",
   "private": true,
   "version": "1.0.0",
-  "description": "Interactive car performance simulator: live driving, acceleration tests, drag racing, dyno and tuning for a Lexus IS200t and a Škoda Superb Combi 280.",
+  "description": "Interactive car performance simulator: live driving, acceleration tests, drag racing, dyno and tuning for a Lexus IS200t and a \u0160koda Superb Combi 280.",
   "type": "module",
   "engines": {
     "node": ">=20.19.0"
@@ -15,7 +15,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run test && vite build"
+    "check": "npm run typecheck && npm run lint && npm run test && vite build",
+    "generate:stats": "UPDATE_GENERATED=1 vitest run src/data/catalog/__tests__/stockStats.test.ts",
+    "generate:gaps": "UPDATE_GENERATED=1 vitest run src/data/catalog/__tests__/gapsReport.test.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

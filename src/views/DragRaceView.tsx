@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
-import { Badge, Button, Panel, Segmented, VehicleDot } from '../components/ui';
+import { CarPickerDialog } from '../components/catalog/CarPicker';
+import { ClassBadge } from '../components/catalog/CatalogBrowser';
+import { Badge, Button, Panel, Segmented } from '../components/ui';
 import { useElementSize } from '../hooks/useElementSize';
 import { usePlayback } from '../hooks/usePlayback';
-import { seriesColor } from '../lib/colors';
+import { assignSeries } from '../lib/colors';
+import { findEntry } from '../data/catalog';
+import { getVehicle } from '../data/vehicles';
+import type { CarChoice } from '../storage/settings';
 import { fmt, fmtSeconds } from '../lib/format';
 import { computeDyno } from '../physics/dyno';
 import { DISTANCES_M } from '../physics/metrics';
@@ -21,32 +26,28 @@ const DISTANCES: Record<DistanceKey, { label: string; m: number }> = {
 };
 
 type Variant = 'current' | 'stock';
-interface LaneConfig {
-  vehicleId: string;
-  variant: Variant;
-}
 type Phase = 'setup' | 'staging' | 'racing' | 'finished';
 
 const PX_PER_M = 15;
 
 export function DragRaceView() {
   const app = useApp();
-  const [lanes, setLanes] = useState<[LaneConfig, LaneConfig]>(() => [
-    { vehicleId: app.vehicles[0].id, variant: 'current' },
-    { vehicleId: app.vehicles[1 % app.vehicles.length].id, variant: 'current' },
-  ]);
+  const lanes = app.settings.dragLanes;
+  const [picking, setPicking] = useState<0 | 1 | null>(null);
   const [distanceKey, setDistanceKey] = useState<DistanceKey>('quarter');
   const launch = app.settings.launch;
   const distance = DISTANCES[distanceKey].m;
 
-  const specs = lanes.map((l) => app.vehicles.find((v) => v.id === l.vehicleId)!) as [VehicleSpec, VehicleSpec];
+  const specs = lanes.map((l) => getVehicle(l.vehicleId)) as [VehicleSpec, VehicleSpec];
   const simA = app.simVehicle(lanes[0].vehicleId, lanes[0].variant);
   const simB = app.simVehicle(lanes[1].vehicleId, lanes[1].variant);
   const race = useMemo(() => runDragRace(simA, simB, distance, launch), [simA, simB, distance, launch]);
-  const colors = [
-    seriesColor(specs[0].colorSlot),
-    specs[1].id === specs[0].id ? seriesColor(2) : seriesColor(specs[1].colorSlot),
-  ];
+  // Lane colours are local to this race: always distinct, owner cars keep their home colour when free.
+  const laneStyles = assignSeries([
+    { key: 'A', vehicleId: `${specs[0].id}#A`, homeSlot: specs[0].colorSlot },
+    { key: 'B', vehicleId: `${specs[1].id}#B`, homeSlot: specs[1].id === specs[0].id ? undefined : specs[1].colorSlot },
+  ]);
+  const colors = [laneStyles.get('A')!.color, laneStyles.get('B')!.color];
   const labels = lanes.map((l, i) => `${specs[i].shortName}${l.variant === 'stock' ? ' (stock)' : ''}`);
 
   const duration = Math.max(...race.lanes.map((l) => l.elapsedS ?? l.trace[l.trace.length - 1].t)) + 1.2;
@@ -94,12 +95,7 @@ export function DragRaceView() {
   const pos = race.lanes.map((l) => sampleAt(l.trace, raceTime));
   const hud = race.lanes.map((l) => sampleAt(l.trace, l.elapsedS !== null ? Math.min(raceTime, l.elapsedS) : raceTime));
 
-  const setLane = (i: 0 | 1, patch: Partial<LaneConfig>) =>
-    setLanes((prev) => {
-      const next = [...prev] as [LaneConfig, LaneConfig];
-      next[i] = { ...next[i], ...patch };
-      return next;
-    });
+  const setLane = (i: 0 | 1, patch: Partial<CarChoice>) => app.setDragLane(i, { ...lanes[i], ...patch });
 
   const saveBoth = useCallback(() => {
     race.lanes.forEach((lane, i) => {
@@ -111,7 +107,7 @@ export function DragRaceView() {
         source: 'drag',
         vehicleId: spec.id,
         vehicleName: spec.shortName,
-        colorSlot: spec.colorSlot,
+        colorSlot: spec.colorSlot ?? -1,
         tuningLabel: describeTuning(spec, tuning),
         tuning,
         launch,
@@ -133,20 +129,16 @@ export function DragRaceView() {
       <div className="drag__setup">
         {([0, 1] as const).map((i) => (
           <Panel key={i} className="drag__lane-config" title={<span className="lane-title"><span className="lane-tag" style={{ background: colors[i] }}>Lane {i === 0 ? 'A' : 'B'}</span></span>}>
-            <div className="lane-vehicles" role="radiogroup" aria-label={`Lane ${i === 0 ? 'A' : 'B'} vehicle`}>
-              {app.vehicles.map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={lanes[i].vehicleId === v.id}
-                  className={`lane-vehicles__item ${lanes[i].vehicleId === v.id ? 'is-active' : ''}`}
-                  onClick={() => setLane(i, { vehicleId: v.id })}
-                >
-                  <VehicleDot slot={v.colorSlot} /> {v.shortName}
-                </button>
-              ))}
-            </div>
+            <button type="button" className="lane-car" onClick={() => setPicking(i)} aria-label={`Lane ${i === 0 ? 'A' : 'B'} car: ${specs[i].shortName}. Change`}>
+              <span className="lane-car__text">
+                <span className="lane-car__name">{specs[i].shortName}</span>
+                <span className="lane-car__meta">
+                  {specs[i].modelYear} · {findEntry(specs[i].id)?.drive} · {findEntry(specs[i].id)?.transmissionLabel}
+                </span>
+              </span>
+              <ClassBadge id={specs[i].id} />
+              <Icon name="search" size={18} />
+            </button>
             <Segmented<Variant>
               block
               ariaLabel={`Lane ${i === 0 ? 'A' : 'B'} configuration`}
@@ -216,6 +208,15 @@ export function DragRaceView() {
           />
         ))}
       </div>
+
+      {picking !== null && (
+        <CarPickerDialog
+          title={`Lane ${picking === 0 ? 'A' : 'B'} car`}
+          selectedId={lanes[picking].vehicleId}
+          onSelect={(id) => setLane(picking, { vehicleId: id })}
+          onClose={() => setPicking(null)}
+        />
+      )}
 
       {phase === 'finished' && (
         <Panel

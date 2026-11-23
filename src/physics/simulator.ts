@@ -13,6 +13,13 @@ export interface ShiftRequestResult {
 
 const MIN_ENGINE_RPM = 300;
 
+/** Manual / single-clutch shift: drive torque drops out while the clutch is open. */
+function interruptFactor(p: number): number {
+  if (p < 0.12) return 1 - p / 0.12;
+  if (p > 0.8) return (p - 0.8) / 0.2;
+  return 0;
+}
+
 export function initialState(vehicle: SimVehicle): SimState {
   return {
     time: 0,
@@ -33,6 +40,8 @@ export function initialState(vehicle: SimVehicle): SimState {
     throttle: 0,
     brake: 0,
     timeSinceShift: 10,
+    clutchEngage: 0,
+    fuelCutTime: 0,
   };
 }
 
@@ -131,7 +140,10 @@ export class VehicleSimulator {
           timeSinceShift: s.timeSinceShift,
           idleRpm: e.idleRpm,
         };
-        const target = this.shiftMode === 'auto' ? autoShiftTarget(tr, ctx) : manualStallProtection(ctx);
+        let target = this.shiftMode === 'auto' ? autoShiftTarget(tr, ctx) : manualStallProtection(ctx);
+        // TCU protection: if the engine has been held on the limiter (e.g. converter
+        // slip in 1st), upshift rather than bounce indefinitely.
+        if (this.shiftMode === 'auto' && target === null && s.fuelCutTime > 0.4 && s.gear < this.gearCount) target = s.gear + 1;
         if (target !== null && target !== s.gear) this.startShift(target);
       }
     }
@@ -144,7 +156,7 @@ export class VehicleSimulator {
       sh.elapsed += dt;
       const p = Math.min(1, sh.elapsed / sh.duration);
       ratio = lerp(tr.overallRatios[sh.from - 1], tr.overallRatios[sh.to - 1], smoothstep(p));
-      torqueFactor = 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
+      torqueFactor = tr.shiftProfile === 'interrupt' ? interruptFactor(p) : 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
       if (p >= 1) s.shift = null;
     }
     const inputOmega = wheelOmega * ratio;
@@ -160,18 +172,25 @@ export class VehicleSimulator {
         s.speedLimited = true;
       }
     }
+    const stationaryHold = s.speed < 0.3 && brake > 0.2;
+    const manual = tr.type === 'manual';
+    if (manual && stationaryHold && s.coupling === 'slipping') {
+      // Clutch pedal down on the brake: the driver holds the revs at the launch rpm.
+      const holdRpm = lerp(e.idleRpm, tr.launchClutch!.brakeHoldRpmLimit, throttleCmd);
+      throttle = Math.min(throttle, clamp((holdRpm - s.engineRpm) / 300, 0, 1));
+    }
     throttle = Math.max(throttle, idleThrottle(e, s.engineRpm));
 
     // 4. Manifold pressure and engine torque -------------------------------
     s.manifoldBar = stepManifold(e, s.manifoldBar, s.engineRpm, throttle, dt);
     if (s.engineRpm >= e.revLimitRpm) s.fuelCut = true;
     else if (s.engineRpm < e.revLimitRpm - 150) s.fuelCut = false;
+    s.fuelCutTime = s.fuelCut || s.engineRpm > e.revLimitRpm - 160 ? s.fuelCutTime + dt : 0;
     const engineT = engineTorque(e, s.engineRpm, s.manifoldBar, s.fuelCut);
     s.engineTorqueNm = engineT;
 
     // 5. Coupling ------------------------------------------------------------
     const engineOmega = rpmToRadS(s.engineRpm);
-    const stationaryHold = s.speed < 0.3 && brake > 0.2;
     let inputTorque: number;
     let engineCoupled = false;
 
@@ -197,16 +216,29 @@ export class VehicleSimulator {
       if (s.coupling === 'locked' && inputRpm < e.idleRpm * 0.9 && !s.shift) s.coupling = 'slipping';
       if (s.coupling === 'slipping') {
         const slip = engineOmega - inputOmega;
+        // A manual driver squeezes the clutch in over `driverEngageS`; a TCU is instant.
+        if (lc.driverEngageS > 0) {
+          s.clutchEngage =
+            throttleCmd < 0.02 || stationaryHold ? 0 : Math.min(1, s.clutchEngage + dt / lc.driverEngageS);
+        } else {
+          s.clutchEngage = 1;
+        }
         let clutchT: number;
         if (slip <= 0) {
           clutchT = 0;
         } else if (throttleCmd < 0.02) {
-          clutchT = brake > 0.05 ? 0 : Math.min(25, slip * 2); // creep
+          clutchT = brake > 0.05 || !lc.creep ? 0 : Math.min(25, slip * 2); // creep
+        } else if (stationaryHold && manual) {
+          clutchT = 0; // pedal down while pre-revving
         } else {
           const targetRpm = stationaryHold
             ? lerp(e.idleRpm, lc.brakeHoldRpmLimit, throttleCmd)
             : lerp(e.idleRpm, lc.launchRpm, throttleCmd ** 0.8);
-          clutchT = clamp(engineT + 3 * (engineOmega - rpmToRadS(targetRpm)), 0, lc.maxClutchTorqueNm);
+          clutchT = clamp(
+            engineT + 3 * (engineOmega - rpmToRadS(targetRpm)),
+            0,
+            lc.maxClutchTorqueNm * s.clutchEngage,
+          );
         }
         const nextOmega = engineOmega + ((engineT - clutchT) / e.inertiaKgM2) * dt;
         s.engineRpm = Math.max(MIN_ENGINE_RPM, radSToRpm(nextOmega));
@@ -224,31 +256,36 @@ export class VehicleSimulator {
 
     // 6. Wheel force and traction --------------------------------------------
     const eta = v.drivetrain.efficiency;
-    let driveForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
+    const engineForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
     const tractionMax = tractionLimitN(v, s.accelFiltered) * TRACTION_CONTROL_EFFICIENCY;
-    s.tractionLimited = false;
-    if (driveForce > tractionMax) {
-      driveForce = tractionMax;
-      // Held on the brakes the wheels cannot spin, so traction control stays idle.
-      s.tractionLimited = !stationaryHold;
-    } else if (driveForce < -tractionMax) {
-      driveForce = -tractionMax;
-    }
+    const driveForce = clamp(engineForce, -tractionMax, tractionMax);
 
     // 7. Resistances and integration ------------------------------------------
     const m = v.massKg;
     const brakeForce = brake * Math.min(MAX_BRAKE_G, v.tireMu * 1.05) * m * GRAVITY;
     const resist = aeroDragN(v, s.speed) + rollingResistanceN(v, s.speed) + brakeForce;
-    let effectiveMass = m + v.wheelInertiaKgM2 / (r * r);
-    if (engineCoupled) effectiveMass += (e.inertiaKgM2 * ratio * ratio) / (r * r);
+    const carMass = m + v.wheelInertiaKgM2 / (r * r);
+    // A coupled engine's inertia, reflected through the gearing, is spun up by
+    // the engine's own torque. With grip to spare it loads the car (engine-
+    // limited); at the grip limit the surplus torque feeds it and only the tire
+    // force moves the car (traction-limited). The binding limit is the smaller.
+    const engineMass = carMass + (engineCoupled ? (e.inertiaKgM2 * ratio * ratio) / (r * r) : 0);
+    const accelEngine = (engineForce - resist) / engineMass;
+    const accelTraction = (driveForce - resist) / carMass;
+    // Held on the brakes the wheels cannot spin, so traction control stays idle.
+    s.tractionLimited = engineForce > tractionMax && accelTraction < accelEngine && !stationaryHold;
 
-    const net = driveForce - resist;
     let accel: number;
-    if (s.speed <= 1e-6 && net <= 0) {
+    if (s.speed <= 1e-6 && driveForce - resist <= 0) {
       accel = 0;
       s.speed = 0;
     } else {
-      accel = net / effectiveMass;
+      accel =
+        engineForce > tractionMax
+          ? Math.min(accelEngine, accelTraction)
+          : engineForce < -tractionMax
+            ? Math.max(accelEngine, accelTraction)
+            : accelEngine;
       s.speed = Math.max(0, s.speed + accel * dt);
       if (s.speed === 0) accel = 0;
     }

@@ -1,7 +1,8 @@
 import { useDeferredValue, useMemo } from 'react';
 import { LineChart } from '../components/LineChart';
 import { Icon } from '../components/Icon';
-import { Badge, Button, Panel, Segmented, Slider, Toggle, VehiclePicker } from '../components/ui';
+import { CarSwitcher } from '../components/catalog/CarPicker';
+import { Badge, Button, Panel, Segmented, Slider, Toggle } from '../components/ui';
 import { TIRE_COMPOUNDS } from '../data/tires';
 import { seriesColor } from '../lib/colors';
 import { fmt, fmtSigned } from '../lib/format';
@@ -24,7 +25,7 @@ export function TuningView() {
   const spec = app.activeVehicle;
   const tuning = app.tuningFor(spec.id);
   const deferred = useDeferredValue(tuning);
-  const color = seriesColor(spec.colorSlot);
+  const color = seriesColor(spec.colorSlot ?? 0);
   const launch = app.settings.launch;
 
   const update = (patch: Partial<TuningConfig>) => app.setTuning(spec.id, { ...tuning, ...patch });
@@ -42,7 +43,7 @@ export function TuningView() {
   return (
     <div className="view tuning">
       <div className="view__bar">
-        <VehiclePicker vehicles={app.vehicles} value={spec.id} onChange={app.setActiveVehicle} />
+        <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Car to tune" />
         <div className="view__bar-actions">
           {isStock(spec, tuning) ? (
             <Badge tone="neutral">Stock configuration</Badge>
@@ -63,11 +64,25 @@ export function TuningView() {
               value={tuning.ecuStage}
               onChange={(ecuStage) => update({ ecuStage })}
               options={[
-                { value: 'stock', label: <StageLabel title="Stock" detail={`${spec.engine.rated.powerPs} PS · ${spec.engine.rated.torqueNm} Nm`} /> },
-                { value: 'stage1', label: <StageLabel title="Stage 1" detail={`≈${spec.stage1.claimedPowerPs} PS · ${spec.stage1.claimedTorqueNm} Nm`} /> },
+                { value: 'stock', label: <StageLabel title="Stock" detail={`${fmt(spec.engine.rated.powerPs)} PS · ${fmt(spec.engine.rated.torqueNm)} Nm`} /> },
+                {
+                  value: 'stage1',
+                  disabled: !spec.stage1,
+                  label: spec.stage1 ? (
+                    <StageLabel title="Stage 1" detail={`≈${spec.stage1.claimedPowerPs} PS · ${spec.stage1.claimedTorqueNm} Nm`} />
+                  ) : (
+                    <StageLabel title="Stage 1" detail="Not offered for this car" />
+                  ),
+                },
               ]}
             />
-            <p className="help">{tuning.ecuStage === 'stage1' ? spec.stage1.description : 'Factory calibration.'}</p>
+            <p className="help">
+              {tuning.ecuStage === 'stage1' && spec.stage1
+                ? spec.stage1.description
+                : spec.stage1
+                  ? 'Factory calibration.'
+                  : 'Factory calibration. No Stage 1 is modelled for this configuration because no credible, documented calibration was found.'}
+            </p>
             <Slider
               label="Power adjustment"
               value={tuning.powerAdjustPct}

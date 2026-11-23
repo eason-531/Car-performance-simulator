@@ -4,7 +4,8 @@ import { Icon } from '../components/Icon';
 import { Paddle } from '../components/Paddle';
 import { Pedal } from '../components/Pedal';
 import { ShiftLights } from '../components/ShiftLights';
-import { Badge, Button, Segmented, VehiclePicker } from '../components/ui';
+import { CarSwitcher } from '../components/catalog/CarPicker';
+import { Badge, Button, Segmented } from '../components/ui';
 import { useDriveSimulation } from '../hooks/useDriveSimulation';
 import { STATUS, seriesColor } from '../lib/colors';
 import { fmt, fmtSeconds } from '../lib/format';
@@ -22,7 +23,7 @@ export function DriveView() {
   const vehicle = app.simVehicle(spec.id);
   const mode = app.settings.shiftMode;
   const { snapshot: s, setPedal, shift, reset, runSamples } = useDriveSimulation(vehicle, mode);
-  const color = seriesColor(spec.colorSlot);
+  const color = seriesColor(spec.colorSlot ?? 0);
   const [flash, setFlash] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -104,7 +105,7 @@ export function DriveView() {
       source: 'drive',
       vehicleId: spec.id,
       vehicleName: spec.shortName,
-      colorSlot: spec.colorSlot,
+      colorSlot: spec.colorSlot ?? -1,
       tuningLabel: describeTuning(spec, app.tuningFor(spec.id)),
       tuning: app.tuningFor(spec.id),
       launch: 'driver',
@@ -123,7 +124,7 @@ export function DriveView() {
   return (
     <div className="view drive">
       <div className="view__bar">
-        <VehiclePicker vehicles={app.vehicles} value={spec.id} onChange={app.setActiveVehicle} />
+        <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Active car" />
         <div className="view__bar-actions">
           <Segmented
             ariaLabel="Gear-shift mode"

@@ -90,7 +90,7 @@ export function sanitizeTuning(spec: VehicleSpec, raw: unknown): TuningConfig {
   const o = (r.overrides && typeof r.overrides === 'object' ? r.overrides : {}) as Record<string, unknown>;
   const L = TUNING_LIMITS;
   return {
-    ecuStage: r.ecuStage === 'stage1' ? 'stage1' : 'stock',
+    ecuStage: r.ecuStage === 'stage1' && spec.stage1 ? 'stage1' : 'stock',
     powerAdjustPct: Math.round(clampNum(r.powerAdjustPct, L.powerAdjustPct.min, L.powerAdjustPct.max, 0)),
     tireSizeId:
       typeof r.tireSizeId === 'string' && spec.tires.sizes.some((s) => s.id === r.tireSizeId)

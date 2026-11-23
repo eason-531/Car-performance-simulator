@@ -2630,3 +2630,594 @@ small {
     transition-duration: 1ms !important;
   }
 }
+
+/* ==========================================================================
+   Catalog: picker, browser, garage
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.select {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-weight: 600;
+  max-width: 100%;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--text-primary);
+  color: #0b0b0b;
+  border-color: var(--text-primary);
+}
+
+.browser {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.browser__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 54px;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+}
+
+.browser__search:focus-within {
+  border-color: var(--series-1);
+}
+
+.browser__input {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 17px; /* ≥16px stops iOS Safari zooming on focus */
+  outline: none;
+}
+
+.browser__quick,
+.facet__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.browser__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.browser__count {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text-muted);
+}
+
+.browser__filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px 18px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.facet {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.facet__title {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.browser__empty {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.car-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.car-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.car-row__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms, background 140ms;
+}
+
+.car-row__main:hover:not(:disabled) {
+  background: var(--surface-3);
+}
+
+.car-row.is-selected .car-row__main {
+  border-color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px var(--text-primary);
+}
+
+.car-row.is-disabled .car-row__main {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.car-row__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-row__title {
+  font-weight: 650;
+}
+
+.car-row__meta,
+.car-row__reason {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.car-row__reason {
+  white-space: normal;
+  color: var(--warning);
+}
+
+.car-row__badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.car-row__owner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--good-text);
+}
+
+.star {
+  flex: none;
+  width: 56px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.star.is-on {
+  color: var(--warning);
+}
+
+.monogram {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.class-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+/* A one-hue ordinal ramp (light → bright) — classes are ordered, not categories. */
+.class-badge--d {
+  color: var(--text-muted);
+}
+.class-badge--c {
+  color: var(--text-secondary);
+}
+.class-badge--b {
+  background: #1d2a3a;
+  border-color: #2b4a70;
+}
+.class-badge--a {
+  background: #1f3550;
+  border-color: #3466a3;
+}
+.class-badge--s {
+  background: #24477a;
+  border-color: #3987e5;
+}
+.class-badge--splus {
+  background: #3987e5;
+  border-color: #86b6ef;
+  color: #fff;
+}
+.class-badge--pending {
+  color: var(--text-muted);
+  border-style: dashed;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px 16px;
+  background: rgba(5, 6, 8, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: view-in 200ms var(--ease);
+}
+
+.dialog {
+  width: min(880px, 100%);
+  max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow);
+}
+
+.dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 8px 18px;
+}
+
+.dialog__title {
+  font-size: 19px;
+}
+
+.dialog__body {
+  padding: 4px 18px 18px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.car-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.car-switcher__chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
+  padding: 2px;
+}
+
+.car-chip {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  max-width: 240px;
+  padding: 8px 14px 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.car-chip.is-active {
+  border-color: var(--text-primary);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px var(--text-primary);
+}
+
+.car-chip__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.car-chip__name {
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.car-chip__meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.car-switcher__browse {
+  flex: none;
+  min-height: 56px;
+}
+
+.garage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--gap);
+}
+
+.garage-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.garage-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.garage-card__head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.garage-card__title {
+  font-size: 17px;
+}
+
+.garage-card__meta,
+.garage-card__note {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.garage-card__badges,
+.garage-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.garage-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.garage-card__stats div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.garage-card__stats dt {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.garage-card__stats dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.garage-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 220px;
+  border-style: dashed;
+  color: var(--text-muted);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.benchmark {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--grid);
+}
+
+.benchmark:first-child {
+  padding-top: 0;
+}
+
+.benchmark__title {
+  font-size: 16px;
+}
+
+.benchmark__title a,
+.sources a {
+  color: var(--text-primary);
+}
+
+.benchmark__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+.table td.is-off {
+  color: var(--critical-text);
+  font-weight: 650;
+}
+
+.table td.is-close {
+  color: var(--good-text);
+  font-weight: 650;
+}
+
+.sources {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tests__basis {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.lane-car {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.lane-car__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lane-car__name {
+  font-weight: 700;
+}
+
+.lane-car__meta {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.dyno-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 4px 0 14px;
+  border-radius: 22px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  font-weight: 650;
+}
+
+.dyno-chip__x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .car-row__badges .badge {
+    display: none;
+  }
+  .garage-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

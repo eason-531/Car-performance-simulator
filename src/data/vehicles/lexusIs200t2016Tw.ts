@@ -145,24 +145,6 @@ export const lexusIs200t2016Tw: VehicleSpec = {
   speedLimiterKmh: 230,
   factory: { zeroTo100S: 7.0, topSpeedKmh: 230 },
 
-  benchmarks: [
-    { label: '0–100 km/h', value: '7.0 s', source: 'Lexus factory claim (IS 200t)', kind: 'factory' },
-    { label: 'Top speed', value: '230 km/h (limited)', source: 'Lexus factory claim', kind: 'factory' },
-    {
-      label: '0–100 km/h',
-      value: '7.76 s',
-      source: '8891 / P-Box road test, IS 200t F SPORT (Taiwan, 25 °C)',
-      kind: 'measured',
-    },
-    {
-      label: '¼ mile',
-      value: '15.3 s @ 91 mph (146 km/h)',
-      source: 'US press road test as cited by Motorway America (US-spec, 241 hp)',
-      kind: 'measured',
-    },
-    { label: '0–60 mph', value: '6.8 s', source: 'Car and Driver, as cited by Motorway America', kind: 'measured' },
-  ],
-
   stage1: {
     label: 'Stage 1 ECU remap',
     description:
@@ -197,12 +179,14 @@ export const lexusIs200t2016Tw: VehicleSpec = {
       value: '245 PS @ 5,800 rpm',
       status: 'verified',
       source: 'Taiwan launch coverage (U-CAR: 245 hp / 35.7 kgm); auto-data.net',
+      url: 'https://news.u-car.com.tw/27506.html',
     },
     {
       parameter: 'Peak torque',
       value: '350 Nm @ 1,650–4,400 rpm',
       status: 'verified',
       source: '35.7 kgm (Taiwan spec); 350 Nm @ 1,650–4,400 rpm (auto-data.net)',
+      url: 'https://www.auto-data.net/en/lexus-is-iii-xe30-facelift-2016-200t-245hp-direct-shift-52854',
     },
     {
       parameter: 'Torque curve shape',
@@ -216,14 +200,15 @@ export const lexusIs200t2016Tw: VehicleSpec = {
       status: 'verified',
       source: 'Multiple spec sheets; Lexus IS product information',
     },
-    { parameter: 'Final drive', value: '3.133', status: 'reported', source: 'Spec sheets (3.133 / 3.13)' },
+    { parameter: 'Final drive', value: '3.133', status: 'reported', source: 'Spec sheets (3.133 / 3.13)', url: 'https://www.motormatchup.com/catalog/Lexus/IS-200T/2016/Base-4DR-RWD-Sedan' },
     {
       parameter: 'Curb mass',
       value: '1,680 kg',
       status: 'reported',
       source: 'Taiwan spec sheet via U-CAR (JP-market 1,620 kg, US 1,625 kg). Adjust in Tuning if your trim differs.',
+      url: 'https://news.u-car.com.tw/27506.html',
     },
-    { parameter: 'Dimensions', value: '4,665 × 1,810 × 1,430 mm, WB 2,800 mm', status: 'verified', source: 'Taiwan spec sheet (U-CAR)' },
+    { parameter: 'Dimensions', value: '4,665 × 1,810 × 1,430 mm, WB 2,800 mm', status: 'verified', source: 'Taiwan spec sheet (U-CAR)', url: 'https://news.u-car.com.tw/27506.html' },
     { parameter: 'Drag coefficient', value: 'Cd 0.28', status: 'reported', source: 'Published XE30 figures range 0.28–0.29' },
     {
       parameter: 'Frontal area',

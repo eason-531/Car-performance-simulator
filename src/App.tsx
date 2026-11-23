@@ -27,11 +27,11 @@ export const VIEWS: readonly ViewDef[] = [
   { id: 'dyno', label: 'Dyno', title: 'Dyno', description: 'Power, torque and boost versus rpm', icon: 'dyno', component: DynoView },
   { id: 'tuning', label: 'Tuning', title: 'Tuning', description: 'ECU, tires, weight and model parameters', icon: 'tuning', component: TuningView },
   { id: 'results', label: 'Results', title: 'Saved results', description: 'Stored on this device — compare runs side by side', icon: 'results', component: ResultsView },
-  { id: 'garage', label: 'Garage', title: 'Garage', description: 'Specifications and data sources', icon: 'garage', component: GarageView },
+  { id: 'garage', label: 'Garage', title: 'Garage', description: 'My Garage, the full car catalog, specifications and sources', icon: 'garage', component: GarageView },
 ];
 
 function readHash(): ViewId {
-  const id = window.location.hash.replace(/^#\/?/, '');
+  const id = window.location.hash.replace(/^#\/?/, '').split('/')[0];
   return (VIEWS.find((v) => v.id === id)?.id ?? 'drive') as ViewId;
 }
 
@@ -46,7 +46,7 @@ export function App() {
   }, []);
 
   const go = (id: ViewId) => {
-    if (id === view) return;
+    if (id === view && !window.location.hash.includes(`${id}/`)) return;
     window.location.hash = `/${id}`;
     setView(id);
   };

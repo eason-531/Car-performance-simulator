@@ -1,11 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from 'react';
+import { CATALOG, OWNER_IDS } from '../data/catalog';
+import type { CatalogEntry } from '../data/catalog/types';
 import type { VehicleSpec } from '../data/types';
 import { VEHICLES, getVehicle } from '../data/vehicles';
+import type { TimingBasis } from '../physics/metrics';
 import type { LaunchTechnique } from '../physics/runners';
 import type { ShiftMode, SimVehicle } from '../physics/types';
 import { createBrowserStore, type KeyValueStore } from '../storage/kv';
 import { addResult, createResult, loadResults, persistResults, removeResult, type NewResult, type SavedResult } from '../storage/results';
-import { loadSettings, persistSettings, type AppSettings } from '../storage/settings';
+import { loadSettings, persistSettings, type AppSettings, type CarChoice } from '../storage/settings';
 import { buildSimVehicle } from '../tuning/buildSimVehicle';
 import { defaultTuning, type TuningConfig } from '../tuning/tuning';
 
@@ -15,27 +18,28 @@ interface State {
 }
 
 type Action =
-  | { type: 'setActiveVehicle'; id: string }
-  | { type: 'setTuning'; id: string; tuning: TuningConfig }
-  | { type: 'setShiftMode'; mode: ShiftMode }
-  | { type: 'setLaunch'; launch: LaunchTechnique }
+  | { type: 'patchSettings'; patch: Partial<AppSettings> }
+  | { type: 'setTuning'; id: string; tuning: TuningConfig | null }
+  | { type: 'toggleFavorite'; id: string }
   | { type: 'addResult'; result: SavedResult }
   | { type: 'deleteResult'; id: string }
   | { type: 'clearResults' };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'setActiveVehicle':
-      return { ...state, settings: { ...state.settings, activeVehicleId: action.id } };
-    case 'setTuning':
-      return {
-        ...state,
-        settings: { ...state.settings, tunings: { ...state.settings.tunings, [action.id]: action.tuning } },
-      };
-    case 'setShiftMode':
-      return { ...state, settings: { ...state.settings, shiftMode: action.mode } };
-    case 'setLaunch':
-      return { ...state, settings: { ...state.settings, launch: action.launch } };
+    case 'patchSettings':
+      return { ...state, settings: { ...state.settings, ...action.patch } };
+    case 'setTuning': {
+      const tunings = { ...state.settings.tunings };
+      if (action.tuning) tunings[action.id] = action.tuning;
+      else delete tunings[action.id];
+      return { ...state, settings: { ...state.settings, tunings } };
+    }
+    case 'toggleFavorite': {
+      const f = state.settings.favorites;
+      const favorites = f.includes(action.id) ? f.filter((x) => x !== action.id) : [...f, action.id];
+      return { ...state, settings: { ...state.settings, favorites } };
+    }
     case 'addResult':
       return { ...state, results: addResult(state.results, action.result) };
     case 'deleteResult':
@@ -52,7 +56,10 @@ export interface Toast {
 }
 
 export interface AppContextValue {
+  /** Every car the simulator can run. */
   vehicles: readonly VehicleSpec[];
+  catalog: readonly CatalogEntry[];
+  ownerIds: readonly string[];
   activeVehicle: VehicleSpec;
   settings: AppSettings;
   results: SavedResult[];
@@ -64,6 +71,11 @@ export interface AppContextValue {
   resetTuning(id: string): void;
   setShiftMode(mode: ShiftMode): void;
   setLaunch(launch: LaunchTechnique): void;
+  setTimingBasis(basis: TimingBasis): void;
+  setDragLane(index: 0 | 1, choice: CarChoice): void;
+  setTestCompare(choice: CarChoice | null): void;
+  isFavorite(id: string): boolean;
+  toggleFavorite(id: string): void;
   /** Simulation model for a vehicle with its current tune (or stock). Memoised. */
   simVehicle(id: string, variant?: 'current' | 'stock'): SimVehicle;
   saveResult(result: NewResult): SavedResult;
@@ -90,18 +102,17 @@ export function AppProvider({ children, store }: { children: ReactNode; store?: 
     persistResults(kv, state.results);
   }, [kv, state.results]);
 
-  // Cache built SimVehicles by vehicle + tuning identity.
-  const cache = useRef(new Map<string, { tuning: TuningConfig; vehicle: SimVehicle }>());
+  // Cache built SimVehicles by vehicle + tuning identity (undefined = stock).
+  const cache = useRef(new Map<string, { tuning: TuningConfig | undefined; vehicle: SimVehicle }>());
   const simVehicle = useCallback(
     (id: string, variant: 'current' | 'stock' = 'current'): SimVehicle => {
       const spec = getVehicle(id);
-      const tuning = variant === 'stock' ? null : state.settings.tunings[id];
+      const tuning = variant === 'stock' ? undefined : state.settings.tunings[id];
       const key = `${id}:${variant}`;
       const hit = cache.current.get(key);
-      if (hit && (variant === 'stock' || hit.tuning === tuning)) return hit.vehicle;
-      const t = tuning ?? defaultTuning(spec);
-      const vehicle = buildSimVehicle(spec, t);
-      cache.current.set(key, { tuning: t, vehicle });
+      if (hit && hit.tuning === tuning) return hit.vehicle;
+      const vehicle = buildSimVehicle(spec, tuning ?? defaultTuning(spec));
+      cache.current.set(key, { tuning, vehicle });
       return vehicle;
     },
     [state.settings.tunings],
@@ -117,18 +128,30 @@ export function AppProvider({ children, store }: { children: ReactNode; store?: 
 
   const value = useMemo<AppContextValue>(() => {
     const activeVehicle = getVehicle(state.settings.activeVehicleId);
+    const patch = (p: Partial<AppSettings>) => dispatch({ type: 'patchSettings', patch: p });
     return {
       vehicles: VEHICLES,
+      catalog: CATALOG,
+      ownerIds: OWNER_IDS,
       activeVehicle,
       settings: state.settings,
       results: state.results,
       persistent,
-      setActiveVehicle: (id) => dispatch({ type: 'setActiveVehicle', id }),
+      setActiveVehicle: (id) => patch({ activeVehicleId: id }),
       tuningFor: (id) => state.settings.tunings[id] ?? defaultTuning(getVehicle(id)),
       setTuning: (id, tuning) => dispatch({ type: 'setTuning', id, tuning }),
-      resetTuning: (id) => dispatch({ type: 'setTuning', id, tuning: defaultTuning(getVehicle(id)) }),
-      setShiftMode: (mode) => dispatch({ type: 'setShiftMode', mode }),
-      setLaunch: (launch) => dispatch({ type: 'setLaunch', launch }),
+      resetTuning: (id) => dispatch({ type: 'setTuning', id, tuning: null }),
+      setShiftMode: (mode) => patch({ shiftMode: mode }),
+      setLaunch: (launch) => patch({ launch }),
+      setTimingBasis: (timingBasis) => patch({ timingBasis }),
+      setDragLane: (index, choice) => {
+        const lanes = [...state.settings.dragLanes] as AppSettings['dragLanes'];
+        lanes[index] = choice;
+        patch({ dragLanes: lanes });
+      },
+      setTestCompare: (choice) => patch({ testCompare: choice }),
+      isFavorite: (id) => state.settings.favorites.includes(id),
+      toggleFavorite: (id) => dispatch({ type: 'toggleFavorite', id }),
       simVehicle,
       saveResult: (input) => {
         const result = createResult(input);

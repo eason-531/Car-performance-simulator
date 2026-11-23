@@ -18,7 +18,10 @@ export type IconName =
   | 'chart'
   | 'info'
   | 'warning'
-  | 'skip';
+  | 'skip'
+  | 'search'
+  | 'close'
+  | 'external';
 
 const PATHS: Record<IconName, string> = {
   drive: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 7.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM3.5 11h5.5M15 11h5.5M12 13.5V21',
@@ -41,6 +44,9 @@ const PATHS: Record<IconName, string> = {
   info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-11v6m0-9.5v.5',
   warning: 'M12 3 2 20h20L12 3Zm0 6v5m0 3v.5',
   skip: 'M5 5v14l9-7-9-7Zm12 0v14',
+  search: 'M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm5.3-2.2L21 21',
+  close: 'M6 6l12 12M18 6 6 18',
+  external: 'M14 4h6v6M20 4l-9 9M18 14v5H5V6h5',
 };
 
 export function Icon({ name, size = 22, className }: { name: IconName; size?: number; className?: string }) {
