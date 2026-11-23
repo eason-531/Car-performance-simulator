@@ -87,8 +87,10 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
 
   it('documents provenance and clearly flags estimates', () => {
     const statuses = new Set(v.provenance.map((p) => p.status));
-    expect(statuses.has('verified')).toBe(true);
+    // Every car needs sourced (verified or reported) data, and estimates must be declared.
+    expect(statuses.has('verified') || statuses.has('reported')).toBe(true);
     expect(statuses.has('estimated')).toBe(true);
+    for (const p of v.provenance) if (p.status !== 'estimated' && p.url) expect(p.url).toMatch(/^https:\/\//);
     for (const p of v.provenance) {
       expect(['verified', 'reported', 'estimated']).toContain(p.status);
       expect(p.parameter.length).toBeGreaterThan(0);

@@ -198,6 +198,11 @@ export interface VehicleSpec {
     sizes: readonly TireSizeOption[];
     defaultSizeId: string;
     defaultCompoundId: string;
+    /**
+     * Declared calibration of tire grip relative to the compound class
+     * (default 1). Fitted to a published launch metric only; see provenance.
+     */
+    gripScale?: number;
   };
   /** Electronic top-speed limiter, km/h (null = none). */
   speedLimiterKmh: number | null;

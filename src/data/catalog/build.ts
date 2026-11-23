@@ -179,6 +179,8 @@ export interface SimInput {
     defaultSizeId?: string;
     /** Stock compound class id (see data/tires.ts). */
     compound: string;
+    /** Declared grip calibration (default 1); document the fit in provenance. */
+    gripScale?: number;
   };
   speedLimiterKmh: number | null;
   factory?: { zeroTo100S?: number | null; topSpeedKmh?: number | null; zeroTo60MphS?: number | null };
@@ -355,7 +357,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       upshiftTimeS: up,
       downshiftTimeS: down,
       shiftTorqueDip: dip,
-      maxAutoUpshiftRpm: t.maxAutoUpshiftRpm ?? (tc ? e.redlineRpm : e.revLimitRpm - 100),
+      maxAutoUpshiftRpm: t.maxAutoUpshiftRpm ?? Math.min(e.redlineRpm, e.revLimitRpm - (tc ? 300 : 100)),
       ratedInputTorqueNm: t.ratedInputTorqueNm ?? Math.round(tPk * 1.1),
       torqueConverter,
       launchClutch,
@@ -375,6 +377,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       sizes,
       defaultSizeId: input.tires.defaultSizeId ?? sizes[0].id,
       defaultCompoundId: input.tires.compound,
+      gripScale: input.tires.gripScale,
     },
     speedLimiterKmh: input.speedLimiterKmh,
     factory: {

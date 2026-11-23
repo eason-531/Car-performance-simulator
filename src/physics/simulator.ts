@@ -41,6 +41,7 @@ export function initialState(vehicle: SimVehicle): SimState {
     brake: 0,
     timeSinceShift: 10,
     clutchEngage: 0,
+    fuelCutTime: 0,
   };
 }
 
@@ -139,7 +140,10 @@ export class VehicleSimulator {
           timeSinceShift: s.timeSinceShift,
           idleRpm: e.idleRpm,
         };
-        const target = this.shiftMode === 'auto' ? autoShiftTarget(tr, ctx) : manualStallProtection(ctx);
+        let target = this.shiftMode === 'auto' ? autoShiftTarget(tr, ctx) : manualStallProtection(ctx);
+        // TCU protection: if the engine has been held on the limiter (e.g. converter
+        // slip in 1st), upshift rather than bounce indefinitely.
+        if (this.shiftMode === 'auto' && target === null && s.fuelCutTime > 0.4 && s.gear < this.gearCount) target = s.gear + 1;
         if (target !== null && target !== s.gear) this.startShift(target);
       }
     }
@@ -181,6 +185,7 @@ export class VehicleSimulator {
     s.manifoldBar = stepManifold(e, s.manifoldBar, s.engineRpm, throttle, dt);
     if (s.engineRpm >= e.revLimitRpm) s.fuelCut = true;
     else if (s.engineRpm < e.revLimitRpm - 150) s.fuelCut = false;
+    s.fuelCutTime = s.fuelCut || s.engineRpm > e.revLimitRpm - 160 ? s.fuelCutTime + dt : 0;
     const engineT = engineTorque(e, s.engineRpm, s.manifoldBar, s.fuelCut);
     s.engineTorqueNm = engineT;
 

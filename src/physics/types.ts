@@ -126,4 +126,6 @@ export interface SimState {
   timeSinceShift: number;
   /** Manual: fraction of full clamp the driver has applied during a launch, 0..1. */
   clutchEngage: number;
+  /** Continuous time spent on the rev limiter, s. */
+  fuelCutTime: number;
 }

@@ -129,7 +129,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     dragAreaM2: cd * area,
     wheelRadiusM: drivenRadius,
     wheelInertiaKgM2: size.wheelInertiaKgM2 * 4,
-    tireMu: compound.mu * widthFactor,
+    tireMu: compound.mu * widthFactor * (spec.tires.gripScale ?? 1),
     rollingResistance: compound.rollingResistance,
     speedLimitMs: tuning.speedLimiter && spec.speedLimiterKmh !== null ? kmhToMs(spec.speedLimiterKmh) : null,
   };

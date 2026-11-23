@@ -22,7 +22,7 @@ describe('VehicleSimulator', () => {
     expect(s.state.engineRpm).toBeLessThan(spec.engine.idleRpm * 1.1);
   });
 
-  it.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s creeps forward off the brake', (_n, spec) => {
+  it.each(VEHICLES.filter((v) => v.transmission.type !== 'manual').map((v) => [v.shortName, v] as const))('%s creeps forward off the brake', (_n, spec) => {
     const s = new VehicleSimulator(sim(spec));
     s.advance(4, { throttle: 0, brake: 0 });
     expect(msToKmh(s.state.speed)).toBeGreaterThan(2);
@@ -65,7 +65,7 @@ describe('VehicleSimulator', () => {
     expect(s.requestShift(1).ok).toBe(false); // shift already in progress
   });
 
-  it.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s respects its speed limiter', (_n, spec) => {
+  it.each(VEHICLES.filter((v) => v.speedLimiterKmh !== null).map((v) => [v.shortName, v] as const))('%s respects its speed limiter', (_n, spec) => {
     const s = new VehicleSimulator(sim(spec));
     s.advance(70, { throttle: 1, brake: 0 });
     const kmh = msToKmh(s.state.speed);

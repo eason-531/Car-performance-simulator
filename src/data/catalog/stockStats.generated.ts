@@ -116,5 +116,473 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "testMassKg": 1635,
     "score": 33.6,
     "cls": "C"
+  },
+  "2022-volkswagen-golf-r-us-hatch-awd-7dct": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.615,
+      "zeroTo200KmhS": 18.877,
+      "sixtyFootS": 2.083,
+      "quarterMileS": 12.936,
+      "quarterMileTrapKmh": 174.316,
+      "kilometerS": 23.834,
+      "splits": {
+        "30mph": 1.62,
+        "60mph": 4.362,
+        "100mph": 11.006,
+        "130mph": 21.259,
+        "150mph": 33.022,
+        "100kmh": 4.615,
+        "160kmh": 10.882,
+        "180kmh": 14.22,
+        "200kmh": 18.877
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.353,
+      "zeroTo200KmhS": 18.615,
+      "sixtyFootS": 1.821,
+      "quarterMileS": 12.674,
+      "quarterMileTrapKmh": 174.316,
+      "kilometerS": 23.572,
+      "splits": {
+        "30mph": 1.358,
+        "60mph": 4.101,
+        "100mph": 10.744,
+        "130mph": 20.997,
+        "150mph": 32.76,
+        "100kmh": 4.353,
+        "160kmh": 10.62,
+        "180kmh": 13.958,
+        "200kmh": 18.615
+      }
+    },
+    "topSpeedKmh": 250,
+    "peakPowerPs": 320,
+    "peakTorqueNm": 400,
+    "testMassKg": 1608,
+    "score": 50.7,
+    "cls": "A"
+  },
+  "2022-volkswagen-golf-gti-autobahn-us-hatch-fwd-7dct": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.155,
+      "zeroTo200KmhS": 23.467,
+      "sixtyFootS": 2.585,
+      "quarterMileS": 14.356,
+      "quarterMileTrapKmh": 163.4,
+      "kilometerS": 25.833,
+      "splits": {
+        "30mph": 2.562,
+        "60mph": 5.863,
+        "100mph": 13.913,
+        "130mph": 26.845,
+        "150mph": 53.643,
+        "100kmh": 6.155,
+        "160kmh": 13.749,
+        "180kmh": 17.942,
+        "200kmh": 23.467
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.84,
+      "zeroTo200KmhS": 23.152,
+      "sixtyFootS": 2.27,
+      "quarterMileS": 14.041,
+      "quarterMileTrapKmh": 163.4,
+      "kilometerS": 25.518,
+      "splits": {
+        "30mph": 2.247,
+        "60mph": 5.548,
+        "100mph": 13.598,
+        "130mph": 26.531,
+        "150mph": 53.328,
+        "100kmh": 5.84,
+        "160kmh": 13.434,
+        "180kmh": 17.627,
+        "200kmh": 23.152
+      }
+    },
+    "topSpeedKmh": 249,
+    "peakPowerPs": 245,
+    "peakTorqueNm": 370,
+    "testMassKg": 1522,
+    "score": 30.9,
+    "cls": "C"
+  },
+  "2018-honda-accord-touring-2-0t-us-sedan-fwd-10at": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.107,
+      "zeroTo200KmhS": 24.739,
+      "sixtyFootS": 2.485,
+      "quarterMileS": 14.39,
+      "quarterMileTrapKmh": 159.845,
+      "kilometerS": 26.067,
+      "splits": {
+        "30mph": 2.281,
+        "60mph": 5.794,
+        "100mph": 14.589,
+        "130mph": 28.168,
+        "150mph": 55.629,
+        "100kmh": 6.107,
+        "160kmh": 14.418,
+        "180kmh": 18.843,
+        "200kmh": 24.739
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.799,
+      "zeroTo200KmhS": 24.431,
+      "sixtyFootS": 2.177,
+      "quarterMileS": 14.082,
+      "quarterMileTrapKmh": 159.845,
+      "kilometerS": 25.759,
+      "splits": {
+        "30mph": 1.974,
+        "60mph": 5.486,
+        "100mph": 14.281,
+        "130mph": 27.86,
+        "150mph": 55.321,
+        "100kmh": 5.799,
+        "160kmh": 14.11,
+        "180kmh": 18.535,
+        "200kmh": 24.431
+      }
+    },
+    "topSpeedKmh": 252,
+    "peakPowerPs": 256,
+    "peakTorqueNm": 370,
+    "testMassKg": 1630,
+    "score": 29,
+    "cls": "C"
+  },
+  "2021-mazda-mazda3-2-5-turbo-premium-plus-us-hatch-awd-6at": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.013,
+      "zeroTo200KmhS": 27.411,
+      "sixtyFootS": 2.239,
+      "quarterMileS": 14.263,
+      "quarterMileTrapKmh": 155.711,
+      "kilometerS": 26.203,
+      "splits": {
+        "30mph": 1.907,
+        "60mph": 5.525,
+        "100mph": 15.286,
+        "130mph": 32.191,
+        "150mph": 71.45,
+        "100kmh": 6.013,
+        "160kmh": 15.1,
+        "180kmh": 19.683,
+        "200kmh": 27.411
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.745,
+      "zeroTo200KmhS": 27.143,
+      "sixtyFootS": 1.971,
+      "quarterMileS": 13.996,
+      "quarterMileTrapKmh": 155.711,
+      "kilometerS": 25.936,
+      "splits": {
+        "30mph": 1.639,
+        "60mph": 5.257,
+        "100mph": 15.018,
+        "130mph": 31.924,
+        "150mph": 71.183,
+        "100kmh": 5.745,
+        "160kmh": 14.832,
+        "180kmh": 19.415,
+        "200kmh": 27.143
+      }
+    },
+    "topSpeedKmh": 244,
+    "peakPowerPs": 254,
+    "peakTorqueNm": 434,
+    "testMassKg": 1605,
+    "score": 28.1,
+    "cls": "C"
+  },
+  "2025-hyundai-elantra-n-dct-us-sedan-fwd-8dct": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.612,
+      "zeroTo200KmhS": 20.958,
+      "sixtyFootS": 2.437,
+      "quarterMileS": 13.877,
+      "quarterMileTrapKmh": 167.731,
+      "kilometerS": 25.02,
+      "splits": {
+        "30mph": 2.271,
+        "60mph": 5.338,
+        "100mph": 12.785,
+        "130mph": 23.552,
+        "150mph": 39.706,
+        "100kmh": 5.612,
+        "160kmh": 12.642,
+        "180kmh": 16.155,
+        "200kmh": 20.958
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.317,
+      "zeroTo200KmhS": 20.663,
+      "sixtyFootS": 2.142,
+      "quarterMileS": 13.582,
+      "quarterMileTrapKmh": 167.731,
+      "kilometerS": 24.725,
+      "splits": {
+        "30mph": 1.976,
+        "60mph": 5.043,
+        "100mph": 12.491,
+        "130mph": 23.257,
+        "150mph": 39.411,
+        "100kmh": 5.317,
+        "160kmh": 12.347,
+        "180kmh": 15.86,
+        "200kmh": 20.663
+      }
+    },
+    "topSpeedKmh": 265,
+    "peakPowerPs": 280,
+    "peakTorqueNm": 392,
+    "testMassKg": 1570,
+    "score": 38,
+    "cls": "B"
+  },
+  "2016-lexus-gs-350-f-sport-rwd-us-sedan-rwd-8at": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.175,
+      "zeroTo200KmhS": 22.564,
+      "sixtyFootS": 2.658,
+      "quarterMileS": 14.476,
+      "quarterMileTrapKmh": 162.515,
+      "kilometerS": 25.828,
+      "splits": {
+        "30mph": 2.574,
+        "60mph": 5.877,
+        "100mph": 14.205,
+        "130mph": 25.156,
+        "150mph": 40.659,
+        "100kmh": 6.175,
+        "160kmh": 14.047,
+        "180kmh": 17.656,
+        "200kmh": 22.564
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.82,
+      "zeroTo200KmhS": 22.209,
+      "sixtyFootS": 2.302,
+      "quarterMileS": 14.12,
+      "quarterMileTrapKmh": 162.515,
+      "kilometerS": 25.473,
+      "splits": {
+        "30mph": 2.218,
+        "60mph": 5.522,
+        "100mph": 13.85,
+        "130mph": 24.8,
+        "150mph": 40.303,
+        "100kmh": 5.82,
+        "160kmh": 13.691,
+        "180kmh": 17.3,
+        "200kmh": 22.209
+      }
+    },
+    "topSpeedKmh": 274,
+    "peakPowerPs": 315,
+    "peakTorqueNm": 380,
+    "testMassKg": 1765,
+    "score": 29.5,
+    "cls": "C"
+  },
+  "2018-kia-stinger-gt2-3-3t-awd-us-liftback-awd-8at": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.926,
+      "zeroTo200KmhS": 18.699,
+      "sixtyFootS": 2.115,
+      "quarterMileS": 13.196,
+      "quarterMileTrapKmh": 171.333,
+      "kilometerS": 24.047,
+      "splits": {
+        "30mph": 1.683,
+        "60mph": 4.648,
+        "100mph": 11.669,
+        "130mph": 20.809,
+        "150mph": 32.009,
+        "100kmh": 4.926,
+        "160kmh": 11.538,
+        "180kmh": 14.768,
+        "200kmh": 18.699
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.666,
+      "zeroTo200KmhS": 18.44,
+      "sixtyFootS": 1.856,
+      "quarterMileS": 12.937,
+      "quarterMileTrapKmh": 171.333,
+      "kilometerS": 23.787,
+      "splits": {
+        "30mph": 1.424,
+        "60mph": 4.388,
+        "100mph": 11.41,
+        "130mph": 20.55,
+        "150mph": 31.75,
+        "100kmh": 4.666,
+        "160kmh": 11.279,
+        "180kmh": 14.508,
+        "200kmh": 18.44
+      }
+    },
+    "topSpeedKmh": 279,
+    "peakPowerPs": 370,
+    "peakTorqueNm": 510,
+    "testMassKg": 1900,
+    "score": 46.6,
+    "cls": "B"
+  },
+  "2020-bmw-m340i-xdrive-us-sedan-awd-8at": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.514,
+      "zeroTo200KmhS": 16.549,
+      "sixtyFootS": 2.05,
+      "quarterMileS": 12.749,
+      "quarterMileTrapKmh": 176.748,
+      "kilometerS": 23.225,
+      "splits": {
+        "30mph": 1.548,
+        "60mph": 4.268,
+        "100mph": 10.409,
+        "130mph": 18.363,
+        "150mph": 27.333,
+        "100kmh": 4.514,
+        "160kmh": 10.289,
+        "180kmh": 13.232,
+        "200kmh": 16.549
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.255,
+      "zeroTo200KmhS": 16.29,
+      "sixtyFootS": 1.791,
+      "quarterMileS": 12.49,
+      "quarterMileTrapKmh": 176.748,
+      "kilometerS": 22.967,
+      "splits": {
+        "30mph": 1.289,
+        "60mph": 4.009,
+        "100mph": 10.15,
+        "130mph": 18.104,
+        "150mph": 27.075,
+        "100kmh": 4.255,
+        "160kmh": 10.031,
+        "180kmh": 12.973,
+        "200kmh": 16.29
+      }
+    },
+    "topSpeedKmh": 250,
+    "peakPowerPs": 388,
+    "peakTorqueNm": 500,
+    "testMassKg": 1875,
+    "score": 53.6,
+    "cls": "A"
+  },
+  "2021-skoda-octavia-combi-rs-2-0-tsi-dsg-de-wagon-fwd-7dct": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.39,
+      "zeroTo200KmhS": 24.71,
+      "sixtyFootS": 2.61,
+      "quarterMileS": 14.578,
+      "quarterMileTrapKmh": 160.684,
+      "kilometerS": 26.226,
+      "splits": {
+        "30mph": 2.611,
+        "60mph": 6.079,
+        "100mph": 14.625,
+        "130mph": 28.217,
+        "150mph": 54.145,
+        "100kmh": 6.39,
+        "160kmh": 14.451,
+        "180kmh": 18.923,
+        "200kmh": 24.71
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 6.072,
+      "zeroTo200KmhS": 24.392,
+      "sixtyFootS": 2.292,
+      "quarterMileS": 14.26,
+      "quarterMileTrapKmh": 160.684,
+      "kilometerS": 25.907,
+      "splits": {
+        "30mph": 2.293,
+        "60mph": 5.761,
+        "100mph": 14.307,
+        "130mph": 27.899,
+        "150mph": 53.827,
+        "100kmh": 6.072,
+        "160kmh": 14.133,
+        "180kmh": 18.605,
+        "200kmh": 24.392
+      }
+    },
+    "topSpeedKmh": 250,
+    "peakPowerPs": 246,
+    "peakTorqueNm": 370,
+    "testMassKg": 1628,
+    "score": 27.3,
+    "cls": "C"
+  },
+  "2022-subaru-brz-limited-6at-us-coupe-rwd-6at": {
+    "formula": "SLC-1",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.601,
+      "zeroTo200KmhS": 26.728,
+      "sixtyFootS": 2.639,
+      "quarterMileS": 14.824,
+      "quarterMileTrapKmh": 155.156,
+      "kilometerS": 26.827,
+      "splits": {
+        "30mph": 2.552,
+        "60mph": 6.171,
+        "100mph": 16.122,
+        "130mph": 33.625,
+        "100kmh": 6.601,
+        "160kmh": 15.909,
+        "180kmh": 20.821,
+        "200kmh": 26.728
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 6.248,
+      "zeroTo200KmhS": 26.375,
+      "sixtyFootS": 2.286,
+      "quarterMileS": 14.471,
+      "quarterMileTrapKmh": 155.156,
+      "kilometerS": 26.474,
+      "splits": {
+        "30mph": 2.199,
+        "60mph": 5.818,
+        "100mph": 15.769,
+        "130mph": 33.272,
+        "100kmh": 6.248,
+        "160kmh": 15.556,
+        "180kmh": 20.468,
+        "200kmh": 26.375
+      }
+    },
+    "topSpeedKmh": 237,
+    "peakPowerPs": 232,
+    "peakTorqueNm": 249,
+    "testMassKg": 1374,
+    "score": 22.2,
+    "cls": "C"
   }
 };
