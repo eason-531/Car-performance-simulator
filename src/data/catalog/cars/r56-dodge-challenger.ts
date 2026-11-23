@@ -141,10 +141,11 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive, limited-slip differential' },
     chassis: { curbMassKg: 2040, frontWeightFraction: 0.57, wheelbaseM: 2.946, lengthMm: 5027, widthMm: 2018, heightMm: 1450 },
     aero: {},
-    tires: { sizes: [square('r20', '305/35 R20', 305, 35, 20, 'Widebody fitment, Pirelli P Zero (assumed)')], compound: 'uhp' },
+    tires: { sizes: [square('r20', '305/35 R20', 305, 35, 20, 'Widebody fitment, Pirelli P Zero (assumed)')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 3.4 },
     provenance: [
+      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'No defensible launch benchmark for this car (only forum-relayed tests): median of the fitted rear-drive cars (1.30, which is also the fit bound)' },
       { parameter: 'Peak power', value: '797 hp @ 6,300 rpm', status: 'reported', source: 'Dodge rating (multiple reviews)', url: 'https://www.thedrive.com/new-cars/22708/2019-dodge-challenger-first-drive-review-797-hp-hellcat-redeye-hot-handling-scat-pack-widebody' },
       { parameter: 'Peak torque', value: '707 lb-ft @ 4,500 rpm', status: 'reported', source: 'Dodge rating (multiple reviews)', url: 'https://www.thedrive.com/new-cars/22708/2019-dodge-challenger-first-drive-review-797-hp-hellcat-redeye-hot-handling-scat-pack-widebody' },
       { parameter: 'Gear ratios', value: '4.71/3.14/2.10/1.67/1.29/1.00/0.84/0.67 (8HP90)', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },

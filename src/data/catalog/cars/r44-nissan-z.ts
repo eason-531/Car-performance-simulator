@@ -82,9 +82,10 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive with mechanical limited-slip differential' },
     chassis: { curbMassKg: 1634, frontWeightFraction: 0.55, cgHeightM: 0.47, wheelbaseM: 2.55, lengthMm: 4379, widthMm: 1844, heightMm: 1316 },
     aero: {},
-    tires: { sizes: [staggered('r19', '255/40 R19 F · 275/35 R19 R', { widthMm: 255, aspectPct: 40, rimIn: 19 }, { widthMm: 275, aspectPct: 35, rimIn: 19 }, 'Performance fitment (assumed)')], compound: 'oe-performance' },
+    tires: { sizes: [staggered('r19', '255/40 R19 F · 275/35 R19 R', { widthMm: 255, aspectPct: 40, rimIn: 19 }, { widthMm: 275, aspectPct: 35, rimIn: 19 }, 'Performance fitment (assumed)')], compound: 'oe-performance', gripScale: 1.3 },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'No defensible launch benchmark for this car (no benchmark): median of the fitted rear-drive cars (1.30, which is also the fit bound)' },
       { parameter: 'Peak power', value: '400 hp', status: 'reported', source: 'Nissan rating', url: 'https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/' },
       { parameter: 'Peak torque', value: '350 lb-ft', status: 'reported', source: 'Nissan rating', url: 'https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/' },
       { parameter: 'Power / torque rpm', value: '6,400 / 1,600–5,200 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },

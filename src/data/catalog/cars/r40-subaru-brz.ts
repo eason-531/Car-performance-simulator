@@ -98,10 +98,11 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive with Torsen limited-slip differential' },
     chassis: { curbMassKg: 1299, frontWeightFraction: 0.54, cgHeightM: 0.46, wheelbaseM: 2.576, lengthMm: 4265, widthMm: 1775, heightMm: 1310 },
     aero: {},
-    tires: { sizes: [square('r18', '215/40 R18', 215, 40, 18, 'Limited fitment (assumed)'), square('r17', '215/45 R17', 215, 45, 17, 'Premium fitment')], compound: 'uhp' },
+    tires: { sizes: [square('r18', '215/40 R18', 215, 40, 18, 'Limited fitment (assumed)'), square('r17', '215/45 R17', 215, 45, 17, 'Premium fitment')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 6.5 },
     provenance: [
+      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'No defensible launch benchmark for this car (no benchmark): median of the fitted rear-drive cars (1.30, which is also the fit bound)' },
       { parameter: 'Peak power', value: '228 hp @ 7,000 rpm', status: 'reported', source: 'Subaru US rating', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },
       { parameter: 'Peak torque', value: '184 lb-ft @ 3,700 rpm', status: 'reported', source: 'Subaru US rating', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },
       { parameter: 'Gear ratios', value: '3.538/2.060/1.404/1.000/0.713/0.582', status: 'reported', source: 'Specification listings (1st, 2nd, 3rd, 6th confirmed; 5th recalled)', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },

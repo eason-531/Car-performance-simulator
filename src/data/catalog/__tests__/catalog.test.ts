@@ -89,6 +89,10 @@ describe('catalog', () => {
 describe('stock class formula', () => {
   it('orders classes by straight-line performance', () => {
     expect(classForScore(classScore(16.5, 135, 9.5))).toBe('D');
+    // SLC-2 reference fixtures: slow → D, middle → B, fast → S+.
+    expect(classForScore(classScore(15.5, 150, 7.5))).toBe('D');
+    expect(classForScore(classScore(13.5, 170, 5.5))).toBe('B');
+    expect(classForScore(classScore(11.0, 210, 3.0))).toBe('S+');
     expect(classForScore(classScore(10.0, 220, 2.8))).toBe('S+');
     expect(classScore(12, 190, 4)).toBeGreaterThan(classScore(13, 175, 5));
   });

@@ -1,7 +1,7 @@
 /**
  * Stock straight-line classes (simulator classes, not road-test verdicts).
  *
- * Formula SLC-1 (versioned — bump the version and regenerate the stock stats
+ * Formula SLC-2 (versioned — bump the version and regenerate the stock stats
  * if any constant below changes):
  *
  *   each input is standardized to a 0–100 scale between a "slow" and a "fast"
@@ -13,6 +13,15 @@
  * class never depends on the user's tuning or test settings. Quarter-mile ET
  * and trap speed dominate; 0–100 km/h makes launch count without letting it
  * dominate. Body style and usage play no part.
+ *
+ * Thresholds (SLC-2) were derived against three reference fixtures and the
+ * stock roster: a slow fixture (15.5 s @ 150 km/h, 7.5 s to 100 → 12) must be
+ * D, a middle one (13.5 s @ 170 km/h, 5.5 s → 42) B and a fast one (11.0 s @
+ * 210 km/h, 3.0 s → 87) S+. Within those constraints each boundary sits in the
+ * widest nearby gap of the stock-score distribution, so no stock car lies
+ * within half a point of a boundary (a test enforces this). SLC-1 used
+ * 20/34/48/64/82, which left the GTI and Superb 0.4 points under B and split
+ * the GT-R from the M5 and 911 GT3 by under a point.
  */
 
 export type StockClass = 'D' | 'C' | 'B' | 'A' | 'S' | 'S+';
@@ -20,7 +29,7 @@ export type StockClass = 'D' | 'C' | 'B' | 'A' | 'S' | 'S+';
 export const CLASS_ORDER: readonly StockClass[] = ['D', 'C', 'B', 'A', 'S', 'S+'];
 
 export const CLASS_FORMULA = {
-  version: 'SLC-1',
+  version: 'SLC-2',
   weights: { quarterMileS: 0.45, trapKmh: 0.4, zeroTo100KmhS: 0.15 },
   /** Standardization anchors: slow → 0, fast → 100. */
   anchors: {
@@ -29,7 +38,7 @@ export const CLASS_FORMULA = {
     zeroTo100KmhS: { slow: 9.0, fast: 2.8 },
   },
   /** Lower bound of each class on the score scale. */
-  thresholds: { C: 20, B: 34, A: 48, S: 64, 'S+': 82 } as Record<Exclude<StockClass, 'D'>, number>,
+  thresholds: { C: 20, B: 39, A: 49, S: 64, 'S+': 78 } as Record<Exclude<StockClass, 'D'>, number>,
 } as const;
 
 export const CLASS_POLICY = {

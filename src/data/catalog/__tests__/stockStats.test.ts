@@ -2,6 +2,7 @@
 import { writeFileSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { CATALOG } from '..';
+import { CLASS_FORMULA } from '../classes';
 import { computeStockStats } from '../stockStats';
 import { STOCK_STATS, type StockStats } from '../stockStats.generated';
 
@@ -28,6 +29,16 @@ describe('generated stock stats', () => {
 
   it('covers exactly the playable cars', () => {
     expect(Object.keys(STOCK_STATS).sort()).toEqual(Object.keys(fresh).sort());
+  });
+
+  it('keeps every stock car at least half a point from a class boundary', () => {
+    // A car sitting on a boundary would flip class on any small data change;
+    // if this fails, re-derive the thresholds and bump the formula version.
+    const bounds = Object.values(CLASS_FORMULA.thresholds);
+    for (const [id, s] of Object.entries(fresh)) {
+      if (s.score === null) continue;
+      for (const b of bounds) expect(Math.abs(s.score - b), `${id} (${s.score}) near ${b}`).toBeGreaterThanOrEqual(0.5);
+    }
   });
 
   it.each(Object.keys(fresh))('%s is up to date', (id) => {

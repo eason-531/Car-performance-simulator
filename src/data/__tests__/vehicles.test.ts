@@ -32,7 +32,9 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     for (let i = 1; i < overall.length; i++) expect(overall[i]).toBeLessThan(overall[i - 1]);
     expect(t.upshiftTimeS).toBeGreaterThan(0);
     expect(t.shiftTorqueDip).toBeGreaterThanOrEqual(0);
-    expect(t.shiftTorqueDip).toBeLessThan(1);
+    // A manual cuts drive completely while the clutch is out; automatics only dip.
+    if (t.type === 'manual') expect(t.shiftTorqueDip).toBeLessThanOrEqual(1);
+    else expect(t.shiftTorqueDip).toBeLessThan(1);
     if (t.type === 'torque-converter-automatic') expect(t.torqueConverter).toBeDefined();
     if (t.type === 'dual-clutch') expect(t.launchClutch).toBeDefined();
   });

@@ -267,11 +267,11 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
   const finalDrive = typeof t.finalDrive === 'number' ? Array<number>(n).fill(t.finalDrive) : [...t.finalDrive];
   const isManual = t.type === 'manual';
   const isDct = t.type === 'dual-clutch';
-  const up = t.upshiftTimeS ?? (isManual ? 0.42 : isDct ? 0.15 : 0.3);
+  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : 0.3);
   const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : 0.4);
   const dip = t.shiftTorqueDip ?? (isManual ? 1 : isDct ? 0.18 : 0.45);
   if (t.upshiftTimeS === undefined) {
-    estimate('Shift time', `${up} s up / ${down} s down`, isManual ? 'Typical magazine test driver shift' : isDct ? 'Typical dual-clutch handover' : 'Typical modern planetary automatic');
+    estimate('Shift time', `${up} s up / ${down} s down`, isManual ? 'Deterministic test driver: brisk full-throttle clutch shift' : isDct ? 'Typical dual-clutch handover' : 'Typical modern planetary automatic');
   }
   const tPk = toNm(e.torque);
   const torqueConverter: TorqueConverterSpec | undefined = tc
@@ -283,17 +283,21 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       }
     : undefined;
   if (tc && t.torqueConverter?.stallRpm === undefined) estimate('Torque converter', 'Stall ≈ 2,400 rpm, 1.9:1', 'Typical for modern planetary automatics');
+  // Deterministic manual launch: slip the clutch at the peak-torque rpm, no
+  // lower than 4,000 rpm (turbo spool) and no higher than 75 % of the redline.
+  const manualLaunchRpm = Math.round(Math.min(Math.max(e.torque.rpm[0], 4000), e.redlineRpm * 0.75) / 100) * 100;
+  const defaultLaunchRpm = isManual ? manualLaunchRpm : 3000;
   const launchClutch: LaunchClutchSpec | undefined = tc
     ? undefined
     : {
-        launchRpm: t.launchClutch?.launchRpm ?? (isManual ? 4000 : 3000),
-        brakeHoldRpmLimit: t.launchClutch?.brakeHoldRpmLimit ?? t.launchClutch?.launchRpm ?? (isManual ? 4000 : 3000),
+        launchRpm: t.launchClutch?.launchRpm ?? defaultLaunchRpm,
+        brakeHoldRpmLimit: t.launchClutch?.brakeHoldRpmLimit ?? t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         maxClutchTorqueNm: t.launchClutch?.maxClutchTorqueNm ?? Math.round(tPk * 1.6),
         creep: t.launchClutch?.creep ?? !isManual,
         driverEngageS: t.launchClutch?.driverEngageS ?? (isManual ? 0.3 : undefined),
       };
   if (launchClutch && t.launchClutch?.launchRpm === undefined) {
-    estimate('Launch rpm', `≈ ${launchClutch.launchRpm} rpm`, isManual ? 'Deterministic test-driver launch (clutch slip)' : 'Launch-control / brake-boost behaviour');
+    estimate('Launch rpm', `≈ ${launchClutch.launchRpm} rpm`, isManual ? 'Deterministic test driver: clutch slip at the peak-torque rpm (4,000 rpm minimum, 75 % of redline maximum)' : 'Launch-control / brake-boost behaviour');
   }
 
   const d = input.drivetrain;

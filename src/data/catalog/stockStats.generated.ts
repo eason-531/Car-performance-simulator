@@ -26,7 +26,7 @@ export interface StockStats {
 
 export const STOCK_STATS: Record<string, StockStats> = {
   "lexus-is200t-2016-tw": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 7.091,
       "zeroTo200KmhS": 28.143,
@@ -71,7 +71,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "skoda-superb-combi-lk-280": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 5.658,
       "zeroTo200KmhS": 23.396,
@@ -117,8 +117,196 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 33.6,
     "cls": "C"
   },
+  "2023-honda-civic-type-r-us-hatch-fwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.8,
+      "zeroTo200KmhS": 19.215,
+      "sixtyFootS": 2.557,
+      "quarterMileS": 13.841,
+      "quarterMileTrapKmh": 172.793,
+      "kilometerS": 24.629,
+      "splits": {
+        "30mph": 2.365,
+        "60mph": 5.279,
+        "100mph": 12.205,
+        "130mph": 21.342,
+        "150mph": 34.551,
+        "100kmh": 5.8,
+        "160kmh": 12.083,
+        "180kmh": 14.918,
+        "200kmh": 19.215
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.431,
+      "zeroTo200KmhS": 18.846,
+      "sixtyFootS": 2.188,
+      "quarterMileS": 13.471,
+      "quarterMileTrapKmh": 172.793,
+      "kilometerS": 24.259,
+      "splits": {
+        "30mph": 1.995,
+        "60mph": 4.91,
+        "100mph": 11.835,
+        "130mph": 20.972,
+        "150mph": 34.181,
+        "100kmh": 5.431,
+        "160kmh": 11.713,
+        "180kmh": 14.548,
+        "200kmh": 18.846
+      }
+    },
+    "topSpeedKmh": 271,
+    "peakPowerPs": 319,
+    "peakTorqueNm": 420,
+    "testMassKg": 1521,
+    "score": 40.3,
+    "cls": "B"
+  },
+  "2024-acura-integra-type-s-us-liftback-fwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.771,
+      "zeroTo200KmhS": 18.867,
+      "sixtyFootS": 2.55,
+      "quarterMileS": 13.804,
+      "quarterMileTrapKmh": 173.561,
+      "kilometerS": 24.521,
+      "splits": {
+        "30mph": 2.35,
+        "60mph": 5.253,
+        "100mph": 12.1,
+        "130mph": 20.881,
+        "150mph": 32.661,
+        "100kmh": 5.771,
+        "160kmh": 11.98,
+        "180kmh": 14.739,
+        "200kmh": 18.867
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.4,
+      "zeroTo200KmhS": 18.497,
+      "sixtyFootS": 2.18,
+      "quarterMileS": 13.434,
+      "quarterMileTrapKmh": 173.561,
+      "kilometerS": 24.151,
+      "splits": {
+        "30mph": 1.98,
+        "60mph": 4.883,
+        "100mph": 11.73,
+        "130mph": 20.511,
+        "150mph": 32.291,
+        "100kmh": 5.4,
+        "160kmh": 11.61,
+        "180kmh": 14.369,
+        "200kmh": 18.497
+      }
+    },
+    "topSpeedKmh": 277,
+    "peakPowerPs": 324,
+    "peakTorqueNm": 420,
+    "testMassKg": 1535,
+    "score": 41.1,
+    "cls": "B"
+  },
+  "2023-toyota-gr-corolla-circuit-edition-us-hatch-awd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.482,
+      "zeroTo200KmhS": 20.411,
+      "sixtyFootS": 2.274,
+      "quarterMileS": 13.609,
+      "quarterMileTrapKmh": 168.958,
+      "kilometerS": 24.704,
+      "splits": {
+        "30mph": 1.83,
+        "60mph": 5.192,
+        "100mph": 12.401,
+        "130mph": 22.908,
+        "150mph": 39.427,
+        "100kmh": 5.482,
+        "160kmh": 12.267,
+        "180kmh": 16.005,
+        "200kmh": 20.411
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.099,
+      "zeroTo200KmhS": 20.028,
+      "sixtyFootS": 1.891,
+      "quarterMileS": 13.226,
+      "quarterMileTrapKmh": 168.958,
+      "kilometerS": 24.321,
+      "splits": {
+        "30mph": 1.447,
+        "60mph": 4.809,
+        "100mph": 12.018,
+        "130mph": 22.525,
+        "150mph": 39.044,
+        "100kmh": 5.099,
+        "160kmh": 11.884,
+        "180kmh": 15.623,
+        "200kmh": 20.028
+      }
+    },
+    "topSpeedKmh": 260,
+    "peakPowerPs": 304,
+    "peakTorqueNm": 370,
+    "testMassKg": 1565,
+    "score": 40.9,
+    "cls": "B"
+  },
+  "2021-toyota-gr-yaris-circuit-pack-uk-hatch-awd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.325,
+      "zeroTo200KmhS": 20.9,
+      "sixtyFootS": 2.171,
+      "quarterMileS": 13.505,
+      "quarterMileTrapKmh": 168.035,
+      "kilometerS": 24.713,
+      "splits": {
+        "30mph": 1.676,
+        "60mph": 5.056,
+        "100mph": 12.383,
+        "130mph": 23.701,
+        "150mph": 45.456,
+        "100kmh": 5.325,
+        "160kmh": 12.243,
+        "180kmh": 16.185,
+        "200kmh": 20.9
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.964,
+      "zeroTo200KmhS": 20.539,
+      "sixtyFootS": 1.81,
+      "quarterMileS": 13.144,
+      "quarterMileTrapKmh": 168.035,
+      "kilometerS": 24.352,
+      "splits": {
+        "30mph": 1.315,
+        "60mph": 4.695,
+        "100mph": 12.022,
+        "130mph": 23.34,
+        "150mph": 45.095,
+        "100kmh": 4.964,
+        "160kmh": 11.882,
+        "180kmh": 15.824,
+        "200kmh": 20.539
+      }
+    },
+    "topSpeedKmh": 252,
+    "peakPowerPs": 261,
+    "peakTorqueNm": 360,
+    "testMassKg": 1355,
+    "score": 41.6,
+    "cls": "B"
+  },
   "2022-volkswagen-golf-r-us-hatch-awd-7dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.615,
       "zeroTo200KmhS": 18.877,
@@ -165,7 +353,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-volkswagen-golf-gti-autobahn-us-hatch-fwd-7dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 5.852,
       "zeroTo200KmhS": 23.163,
@@ -211,8 +399,55 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 33.6,
     "cls": "C"
   },
+  "2019-hyundai-veloster-n-performance-package-us-hatch-fwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.228,
+      "zeroTo200KmhS": 21.676,
+      "sixtyFootS": 2.601,
+      "quarterMileS": 14.252,
+      "quarterMileTrapKmh": 166.223,
+      "kilometerS": 25.438,
+      "splits": {
+        "30mph": 2.432,
+        "60mph": 5.918,
+        "100mph": 13.444,
+        "130mph": 24.221,
+        "150mph": 41.811,
+        "100kmh": 6.228,
+        "160kmh": 13.304,
+        "180kmh": 16.583,
+        "200kmh": 21.676
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.84,
+      "zeroTo200KmhS": 21.287,
+      "sixtyFootS": 2.213,
+      "quarterMileS": 13.863,
+      "quarterMileTrapKmh": 166.223,
+      "kilometerS": 25.049,
+      "splits": {
+        "30mph": 2.044,
+        "60mph": 5.53,
+        "100mph": 13.056,
+        "130mph": 23.832,
+        "150mph": 41.423,
+        "100kmh": 5.84,
+        "160kmh": 12.916,
+        "180kmh": 16.195,
+        "200kmh": 21.287
+      }
+    },
+    "topSpeedKmh": 262,
+    "peakPowerPs": 279,
+    "peakTorqueNm": 353,
+    "testMassKg": 1484,
+    "score": 32.9,
+    "cls": "C"
+  },
   "2018-honda-accord-touring-2-0t-us-sedan-fwd-10at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 6.107,
       "zeroTo200KmhS": 24.739,
@@ -259,7 +494,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2020-toyota-camry-trd-v6-us-sedan-fwd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 6.27,
       "zeroTo200KmhS": 22.445,
@@ -306,7 +541,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2021-mazda-mazda3-2-5-turbo-premium-plus-us-hatch-awd-6at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 6.013,
       "zeroTo200KmhS": 27.411,
@@ -352,8 +587,53 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 28.1,
     "cls": "C"
   },
+  "2022-honda-civic-si-us-sedan-fwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 7.565,
+      "zeroTo200KmhS": 28.996,
+      "sixtyFootS": 2.751,
+      "quarterMileS": 15.451,
+      "quarterMileTrapKmh": 152.899,
+      "kilometerS": 27.615,
+      "splits": {
+        "30mph": 2.988,
+        "60mph": 7.201,
+        "100mph": 17.002,
+        "130mph": 34.579,
+        "100kmh": 7.565,
+        "160kmh": 16.814,
+        "180kmh": 22.259,
+        "200kmh": 28.996
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 7.158,
+      "zeroTo200KmhS": 28.589,
+      "sixtyFootS": 2.344,
+      "quarterMileS": 15.043,
+      "quarterMileTrapKmh": 152.899,
+      "kilometerS": 27.207,
+      "splits": {
+        "30mph": 2.581,
+        "60mph": 6.793,
+        "100mph": 16.595,
+        "130mph": 34.171,
+        "100kmh": 7.158,
+        "160kmh": 16.406,
+        "180kmh": 21.852,
+        "200kmh": 28.589
+      }
+    },
+    "topSpeedKmh": 242,
+    "peakPowerPs": 203,
+    "peakTorqueNm": 260,
+    "testMassKg": 1393,
+    "score": 14,
+    "cls": "D"
+  },
   "2025-hyundai-elantra-n-dct-us-sedan-fwd-8dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 5.668,
       "zeroTo200KmhS": 21.014,
@@ -397,10 +677,149 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakTorqueNm": 392,
     "testMassKg": 1570,
     "score": 37.4,
+    "cls": "C"
+  },
+  "2022-subaru-wrx-limited-us-sedan-awd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.152,
+      "zeroTo200KmhS": 22.852,
+      "sixtyFootS": 2.34,
+      "quarterMileS": 14.232,
+      "quarterMileTrapKmh": 162.539,
+      "kilometerS": 25.702,
+      "splits": {
+        "30mph": 1.921,
+        "60mph": 5.826,
+        "100mph": 13.974,
+        "130mph": 25.636,
+        "150mph": 43.96,
+        "100kmh": 6.152,
+        "160kmh": 13.828,
+        "180kmh": 18.096,
+        "200kmh": 22.852
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.764,
+      "zeroTo200KmhS": 22.464,
+      "sixtyFootS": 1.952,
+      "quarterMileS": 13.844,
+      "quarterMileTrapKmh": 162.539,
+      "kilometerS": 25.314,
+      "splits": {
+        "30mph": 1.533,
+        "60mph": 5.439,
+        "100mph": 13.587,
+        "130mph": 25.248,
+        "150mph": 43.572,
+        "100kmh": 5.764,
+        "160kmh": 13.441,
+        "180kmh": 17.708,
+        "200kmh": 22.464
+      }
+    },
+    "topSpeedKmh": 260,
+    "peakPowerPs": 275,
+    "peakTorqueNm": 350,
+    "testMassKg": 1613,
+    "score": 31.4,
+    "cls": "C"
+  },
+  "2019-subaru-wrx-sti-s209-us-sedan-awd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.972,
+      "zeroTo200KmhS": 17.927,
+      "sixtyFootS": 2.15,
+      "quarterMileS": 13.173,
+      "quarterMileTrapKmh": 172.216,
+      "kilometerS": 23.872,
+      "splits": {
+        "30mph": 1.637,
+        "60mph": 4.732,
+        "100mph": 11.479,
+        "130mph": 19.756,
+        "150mph": 30.906,
+        "100kmh": 4.972,
+        "160kmh": 11.344,
+        "180kmh": 14.412,
+        "200kmh": 17.927
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.614,
+      "zeroTo200KmhS": 17.569,
+      "sixtyFootS": 1.792,
+      "quarterMileS": 12.814,
+      "quarterMileTrapKmh": 172.216,
+      "kilometerS": 23.514,
+      "splits": {
+        "30mph": 1.279,
+        "60mph": 4.374,
+        "100mph": 11.121,
+        "130mph": 19.397,
+        "150mph": 30.548,
+        "100kmh": 4.614,
+        "160kmh": 10.986,
+        "180kmh": 14.054,
+        "200kmh": 17.569
+      }
+    },
+    "topSpeedKmh": 280,
+    "peakPowerPs": 346,
+    "peakTorqueNm": 447,
+    "testMassKg": 1656,
+    "score": 47.1,
     "cls": "B"
   },
+  "2015-mitsubishi-lancer-evolution-final-edition-us-sedan-awd-5mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.674,
+      "zeroTo200KmhS": 21.808,
+      "sixtyFootS": 2.298,
+      "quarterMileS": 13.836,
+      "quarterMileTrapKmh": 163.59,
+      "kilometerS": 25.176,
+      "splits": {
+        "30mph": 1.872,
+        "60mph": 5.391,
+        "100mph": 12.974,
+        "130mph": 24.379,
+        "100kmh": 5.674,
+        "160kmh": 12.824,
+        "180kmh": 17.093,
+        "200kmh": 21.808
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.288,
+      "zeroTo200KmhS": 21.421,
+      "sixtyFootS": 1.911,
+      "quarterMileS": 13.45,
+      "quarterMileTrapKmh": 163.59,
+      "kilometerS": 24.789,
+      "splits": {
+        "30mph": 1.486,
+        "60mph": 5.005,
+        "100mph": 12.588,
+        "130mph": 23.992,
+        "100kmh": 5.288,
+        "160kmh": 12.438,
+        "180kmh": 16.707,
+        "200kmh": 21.421
+      }
+    },
+    "topSpeedKmh": 241,
+    "peakPowerPs": 307,
+    "peakTorqueNm": 413,
+    "testMassKg": 1675,
+    "score": 36.1,
+    "cls": "C"
+  },
   "2016-lexus-gs-350-f-sport-rwd-us-sedan-rwd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 6.175,
       "zeroTo200KmhS": 22.564,
@@ -447,7 +866,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2016-lexus-gs-f-us-sedan-rwd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.763,
       "zeroTo200KmhS": 15.588,
@@ -494,7 +913,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-lexus-is-500-f-sport-performance-premium-us-sedan-rwd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 5.129,
       "zeroTo200KmhS": 15.807,
@@ -541,7 +960,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2018-kia-stinger-gt2-3-3t-awd-us-liftback-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.926,
       "zeroTo200KmhS": 18.699,
@@ -588,7 +1007,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2022-genesis-g70-3-3t-awd-us-sedan-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.871,
       "zeroTo200KmhS": 18.356,
@@ -634,8 +1053,55 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 47.6,
     "cls": "B"
   },
+  "2022-cadillac-ct4-v-blackwing-us-sedan-rwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.282,
+      "zeroTo200KmhS": 13.889,
+      "sixtyFootS": 2.216,
+      "quarterMileS": 12.435,
+      "quarterMileTrapKmh": 188.7,
+      "kilometerS": 22.257,
+      "splits": {
+        "30mph": 1.723,
+        "60mph": 4.099,
+        "100mph": 9.442,
+        "130mph": 15.67,
+        "150mph": 21.367,
+        "100kmh": 4.282,
+        "160kmh": 9.345,
+        "180kmh": 11.464,
+        "200kmh": 13.889
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.912,
+      "zeroTo200KmhS": 13.519,
+      "sixtyFootS": 1.846,
+      "quarterMileS": 12.065,
+      "quarterMileTrapKmh": 188.7,
+      "kilometerS": 21.887,
+      "splits": {
+        "30mph": 1.353,
+        "60mph": 3.73,
+        "100mph": 9.073,
+        "130mph": 15.3,
+        "150mph": 20.997,
+        "100kmh": 3.912,
+        "160kmh": 8.975,
+        "180kmh": 11.094,
+        "200kmh": 13.519
+      }
+    },
+    "topSpeedKmh": 315,
+    "peakPowerPs": 480,
+    "peakTorqueNm": 603,
+    "testMassKg": 1826,
+    "score": 62.5,
+    "cls": "A"
+  },
   "2022-cadillac-ct5-v-blackwing-10at-us-sedan-rwd-10at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.796,
       "zeroTo200KmhS": 11.786,
@@ -682,7 +1148,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-bmw-m5-standard-us-sedan-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.268,
       "zeroTo200KmhS": 10.712,
@@ -729,7 +1195,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2023-bmw-m3-competition-xdrive-edition-50-jahre-bmw-m-us-sedan-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.29,
       "zeroTo200KmhS": 12.116,
@@ -776,7 +1242,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2020-bmw-m340i-xdrive-us-sedan-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.514,
       "zeroTo200KmhS": 16.549,
@@ -823,7 +1289,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2017-alfa-romeo-giulia-quadrifoglio-us-sedan-rwd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 4.032,
       "zeroTo200KmhS": 12.542,
@@ -870,7 +1336,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2024-acura-tlx-type-s-us-sedan-awd-10at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 5.058,
       "zeroTo200KmhS": 20.488,
@@ -917,7 +1383,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2021-skoda-octavia-combi-rs-2-0-tsi-dsg-de-wagon-fwd-7dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 6.391,
       "zeroTo200KmhS": 24.711,
@@ -964,7 +1430,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2021-audi-rs-6-avant-us-wagon-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.519,
       "zeroTo200KmhS": 12.495,
@@ -1010,100 +1476,378 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 72.5,
     "cls": "S"
   },
-  "2022-subaru-brz-limited-6at-us-coupe-rwd-6at": {
-    "formula": "SLC-1",
+  "1993-toyota-supra-turbo-us-coupe-rwd-6mt": {
+    "formula": "SLC-2",
     "brakeRelease": {
-      "zeroTo100KmhS": 6.601,
-      "zeroTo200KmhS": 26.728,
-      "sixtyFootS": 2.639,
-      "quarterMileS": 14.824,
-      "quarterMileTrapKmh": 155.156,
-      "kilometerS": 26.827,
+      "zeroTo100KmhS": 5.172,
+      "zeroTo200KmhS": 19.238,
+      "sixtyFootS": 2.358,
+      "quarterMileS": 13.529,
+      "quarterMileTrapKmh": 171.846,
+      "kilometerS": 24.376,
       "splits": {
-        "30mph": 2.552,
-        "60mph": 6.171,
-        "100mph": 16.122,
-        "130mph": 33.625,
-        "100kmh": 6.601,
-        "160kmh": 15.909,
-        "180kmh": 20.821,
-        "200kmh": 26.728
+        "30mph": 1.974,
+        "60mph": 4.922,
+        "100mph": 11.989,
+        "130mph": 21.295,
+        "150mph": 32.423,
+        "100kmh": 5.172,
+        "160kmh": 11.868,
+        "180kmh": 14.853,
+        "200kmh": 19.238
       }
     },
     "rollout": {
-      "zeroTo100KmhS": 6.248,
-      "zeroTo200KmhS": 26.375,
-      "sixtyFootS": 2.286,
-      "quarterMileS": 14.471,
-      "quarterMileTrapKmh": 155.156,
-      "kilometerS": 26.474,
+      "zeroTo100KmhS": 4.797,
+      "zeroTo200KmhS": 18.863,
+      "sixtyFootS": 1.982,
+      "quarterMileS": 13.154,
+      "quarterMileTrapKmh": 171.846,
+      "kilometerS": 24.001,
       "splits": {
-        "30mph": 2.199,
-        "60mph": 5.818,
-        "100mph": 15.769,
-        "130mph": 33.272,
-        "100kmh": 6.248,
-        "160kmh": 15.556,
-        "180kmh": 20.468,
-        "200kmh": 26.375
+        "30mph": 1.598,
+        "60mph": 4.547,
+        "100mph": 11.614,
+        "130mph": 20.919,
+        "150mph": 32.048,
+        "100kmh": 4.797,
+        "160kmh": 11.493,
+        "180kmh": 14.478,
+        "200kmh": 18.863
+      }
+    },
+    "topSpeedKmh": 278,
+    "peakPowerPs": 325,
+    "peakTorqueNm": 427,
+    "testMassKg": 1639,
+    "score": 43.7,
+    "cls": "B"
+  },
+  "2023-toyota-gr-supra-a91-mt-edition-us-coupe-rwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.439,
+      "zeroTo200KmhS": 15.236,
+      "sixtyFootS": 2.232,
+      "quarterMileS": 12.739,
+      "quarterMileTrapKmh": 184.946,
+      "kilometerS": 22.803,
+      "splits": {
+        "30mph": 1.768,
+        "60mph": 4.248,
+        "100mph": 9.982,
+        "130mph": 16.713,
+        "150mph": 24.185,
+        "100kmh": 4.439,
+        "160kmh": 9.883,
+        "180kmh": 12.124,
+        "200kmh": 15.236
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.091,
+      "zeroTo200KmhS": 14.888,
+      "sixtyFootS": 1.884,
+      "quarterMileS": 12.391,
+      "quarterMileTrapKmh": 184.946,
+      "kilometerS": 22.455,
+      "splits": {
+        "30mph": 1.42,
+        "60mph": 3.9,
+        "100mph": 9.634,
+        "130mph": 16.364,
+        "150mph": 23.837,
+        "100kmh": 4.091,
+        "160kmh": 9.535,
+        "180kmh": 11.776,
+        "200kmh": 14.888
+      }
+    },
+    "topSpeedKmh": 290,
+    "peakPowerPs": 388,
+    "peakTorqueNm": 499,
+    "testMassKg": 1612,
+    "score": 58,
+    "cls": "A"
+  },
+  "2022-toyota-gr86-premium-us-coupe-rwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.57,
+      "zeroTo200KmhS": 25.899,
+      "sixtyFootS": 2.377,
+      "quarterMileS": 14.568,
+      "quarterMileTrapKmh": 158.938,
+      "kilometerS": 26.336,
+      "splits": {
+        "30mph": 2.12,
+        "60mph": 6.22,
+        "100mph": 14.919,
+        "130mph": 30.642,
+        "150mph": 62.181,
+        "100kmh": 6.57,
+        "160kmh": 14.753,
+        "180kmh": 19.431,
+        "200kmh": 25.899
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 6.195,
+      "zeroTo200KmhS": 25.524,
+      "sixtyFootS": 2.002,
+      "quarterMileS": 14.193,
+      "quarterMileTrapKmh": 158.938,
+      "kilometerS": 25.961,
+      "splits": {
+        "30mph": 1.745,
+        "60mph": 5.845,
+        "100mph": 14.544,
+        "130mph": 30.267,
+        "150mph": 61.806,
+        "100kmh": 6.195,
+        "160kmh": 14.378,
+        "180kmh": 19.056,
+        "200kmh": 25.524
+      }
+    },
+    "topSpeedKmh": 249,
+    "peakPowerPs": 231,
+    "peakTorqueNm": 249,
+    "testMassKg": 1360,
+    "score": 26.1,
+    "cls": "C"
+  },
+  "2022-subaru-brz-limited-6at-us-coupe-rwd-6at": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.304,
+      "zeroTo200KmhS": 26.432,
+      "sixtyFootS": 2.457,
+      "quarterMileS": 14.57,
+      "quarterMileTrapKmh": 155.348,
+      "kilometerS": 26.563,
+      "splits": {
+        "30mph": 2.335,
+        "60mph": 5.875,
+        "100mph": 15.826,
+        "130mph": 33.328,
+        "100kmh": 6.304,
+        "160kmh": 15.612,
+        "180kmh": 20.525,
+        "200kmh": 26.432
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.999,
+      "zeroTo200KmhS": 26.126,
+      "sixtyFootS": 2.151,
+      "quarterMileS": 14.265,
+      "quarterMileTrapKmh": 155.348,
+      "kilometerS": 26.258,
+      "splits": {
+        "30mph": 2.029,
+        "60mph": 5.569,
+        "100mph": 15.52,
+        "130mph": 33.023,
+        "100kmh": 5.999,
+        "160kmh": 15.307,
+        "180kmh": 20.219,
+        "200kmh": 26.126
       }
     },
     "topSpeedKmh": 237,
     "peakPowerPs": 232,
     "peakTorqueNm": 249,
     "testMassKg": 1374,
-    "score": 22.2,
+    "score": 24.9,
     "cls": "C"
   },
-  "2023-nissan-z-performance-9at-us-coupe-rwd-9at": {
-    "formula": "SLC-1",
+  "2016-mazda-mx-5-miata-club-us-conv-rwd-6mt": {
+    "formula": "SLC-2",
     "brakeRelease": {
-      "zeroTo100KmhS": 5.863,
-      "zeroTo200KmhS": 17.151,
-      "sixtyFootS": 2.736,
-      "quarterMileS": 13.804,
-      "quarterMileTrapKmh": 178.361,
-      "kilometerS": 24.139,
+      "zeroTo100KmhS": 7.295,
+      "zeroTo200KmhS": 35.497,
+      "sixtyFootS": 2.399,
+      "quarterMileS": 15.211,
+      "quarterMileTrapKmh": 148.491,
+      "kilometerS": 27.85,
       "splits": {
-        "30mph": 2.726,
-        "60mph": 5.644,
-        "100mph": 11.323,
-        "130mph": 18.739,
-        "150mph": 27.142,
-        "100kmh": 5.863,
-        "160kmh": 11.153,
-        "180kmh": 14.042,
-        "200kmh": 17.151
+        "30mph": 2.164,
+        "60mph": 6.888,
+        "100mph": 18.106,
+        "130mph": 51.059,
+        "100kmh": 7.295,
+        "160kmh": 17.86,
+        "180kmh": 24.778,
+        "200kmh": 35.497
       }
     },
     "rollout": {
-      "zeroTo100KmhS": 5.497,
-      "zeroTo200KmhS": 16.785,
-      "sixtyFootS": 2.37,
-      "quarterMileS": 13.438,
-      "quarterMileTrapKmh": 178.361,
-      "kilometerS": 23.773,
+      "zeroTo100KmhS": 6.917,
+      "zeroTo200KmhS": 35.119,
+      "sixtyFootS": 2.02,
+      "quarterMileS": 14.832,
+      "quarterMileTrapKmh": 148.491,
+      "kilometerS": 27.472,
       "splits": {
-        "30mph": 2.361,
-        "60mph": 5.278,
-        "100mph": 10.957,
-        "130mph": 18.373,
-        "150mph": 26.776,
-        "100kmh": 5.497,
-        "160kmh": 10.788,
-        "180kmh": 13.676,
-        "200kmh": 16.785
+        "30mph": 1.786,
+        "60mph": 6.51,
+        "100mph": 17.728,
+        "130mph": 50.681,
+        "100kmh": 6.917,
+        "160kmh": 17.482,
+        "180kmh": 24.399,
+        "200kmh": 35.119
+      }
+    },
+    "topSpeedKmh": 218,
+    "peakPowerPs": 157,
+    "peakTorqueNm": 201,
+    "testMassKg": 1129,
+    "score": 14.3,
+    "cls": "D"
+  },
+  "2024-mazda-mx-5-miata-rf-club-us-conv-rwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 7.31,
+      "zeroTo200KmhS": 32.924,
+      "sixtyFootS": 2.478,
+      "quarterMileS": 15.218,
+      "quarterMileTrapKmh": 149.523,
+      "kilometerS": 27.646,
+      "splits": {
+        "30mph": 2.338,
+        "60mph": 6.605,
+        "100mph": 17.778,
+        "130mph": 39.152,
+        "100kmh": 7.31,
+        "160kmh": 17.559,
+        "180kmh": 22.838,
+        "200kmh": 32.924
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 6.925,
+      "zeroTo200KmhS": 32.54,
+      "sixtyFootS": 2.093,
+      "quarterMileS": 14.833,
+      "quarterMileTrapKmh": 149.523,
+      "kilometerS": 27.262,
+      "splits": {
+        "30mph": 1.953,
+        "60mph": 6.221,
+        "100mph": 17.393,
+        "130mph": 38.768,
+        "100kmh": 6.925,
+        "160kmh": 17.174,
+        "180kmh": 22.453,
+        "200kmh": 32.54
+      }
+    },
+    "topSpeedKmh": 227,
+    "peakPowerPs": 184,
+    "peakTorqueNm": 205,
+    "testMassKg": 1187,
+    "score": 14.7,
+    "cls": "D"
+  },
+  "2000-honda-s2000-us-conv-rwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 6.725,
+      "zeroTo200KmhS": 24.628,
+      "sixtyFootS": 2.705,
+      "quarterMileS": 14.772,
+      "quarterMileTrapKmh": 160.396,
+      "kilometerS": 26.423,
+      "splits": {
+        "30mph": 2.621,
+        "60mph": 6.401,
+        "100mph": 14.86,
+        "130mph": 27.628,
+        "150mph": 52.46,
+        "100kmh": 6.725,
+        "160kmh": 14.709,
+        "180kmh": 19.299,
+        "200kmh": 24.628
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 6.308,
+      "zeroTo200KmhS": 24.211,
+      "sixtyFootS": 2.288,
+      "quarterMileS": 14.356,
+      "quarterMileTrapKmh": 160.396,
+      "kilometerS": 26.006,
+      "splits": {
+        "30mph": 2.204,
+        "60mph": 5.984,
+        "100mph": 14.443,
+        "130mph": 27.212,
+        "150mph": 52.043,
+        "100kmh": 6.308,
+        "160kmh": 14.292,
+        "180kmh": 18.883,
+        "200kmh": 24.211
+      }
+    },
+    "topSpeedKmh": 251,
+    "peakPowerPs": 244,
+    "peakTorqueNm": 207,
+    "testMassKg": 1349,
+    "score": 24.9,
+    "cls": "C"
+  },
+  "2023-nissan-z-performance-9at-us-coupe-rwd-9at": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.713,
+      "zeroTo200KmhS": 16,
+      "sixtyFootS": 2.327,
+      "quarterMileS": 12.894,
+      "quarterMileTrapKmh": 180.019,
+      "kilometerS": 23.175,
+      "splits": {
+        "30mph": 1.967,
+        "60mph": 4.493,
+        "100mph": 10.174,
+        "130mph": 17.588,
+        "150mph": 25.992,
+        "100kmh": 4.713,
+        "160kmh": 10.003,
+        "180kmh": 12.891,
+        "200kmh": 16
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.396,
+      "zeroTo200KmhS": 15.684,
+      "sixtyFootS": 2.011,
+      "quarterMileS": 12.578,
+      "quarterMileTrapKmh": 180.019,
+      "kilometerS": 22.858,
+      "splits": {
+        "30mph": 1.65,
+        "60mph": 4.177,
+        "100mph": 9.857,
+        "130mph": 17.272,
+        "150mph": 25.675,
+        "100kmh": 4.396,
+        "160kmh": 9.686,
+        "180kmh": 12.575,
+        "200kmh": 15.684
       }
     },
     "topSpeedKmh": 294,
     "peakPowerPs": 406,
     "peakTorqueNm": 475,
     "testMassKg": 1709,
-    "score": 43.2,
-    "cls": "B"
+    "score": 53.7,
+    "cls": "A"
   },
   "2018-nissan-gt-r-track-edition-us-coupe-awd-6dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.134,
       "zeroTo200KmhS": 11,
@@ -1147,10 +1891,57 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakTorqueNm": 633,
     "testMassKg": 1851,
     "score": 81.2,
-    "cls": "S"
+    "cls": "S+"
+  },
+  "2023-bmw-m2-carbon-package-6mt-us-coupe-rwd-6mt": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.313,
+      "zeroTo200KmhS": 14.349,
+      "sixtyFootS": 2.186,
+      "quarterMileS": 12.537,
+      "quarterMileTrapKmh": 186.452,
+      "kilometerS": 22.486,
+      "splits": {
+        "30mph": 1.703,
+        "60mph": 4.13,
+        "100mph": 9.327,
+        "130mph": 16.179,
+        "150mph": 23.239,
+        "100kmh": 4.313,
+        "160kmh": 9.231,
+        "180kmh": 11.773,
+        "200kmh": 14.349
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.967,
+      "zeroTo200KmhS": 14.003,
+      "sixtyFootS": 1.84,
+      "quarterMileS": 12.191,
+      "quarterMileTrapKmh": 186.452,
+      "kilometerS": 22.14,
+      "splits": {
+        "30mph": 1.357,
+        "60mph": 3.783,
+        "100mph": 8.981,
+        "130mph": 15.832,
+        "150mph": 22.893,
+        "100kmh": 3.967,
+        "160kmh": 8.885,
+        "180kmh": 11.426,
+        "200kmh": 14.003
+      }
+    },
+    "topSpeedKmh": 295,
+    "peakPowerPs": 460,
+    "peakTorqueNm": 551,
+    "testMassKg": 1805,
+    "score": 60.5,
+    "cls": "A"
   },
   "2022-porsche-718-cayman-gt4-rs-us-coupe-rwd-7dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.285,
       "zeroTo200KmhS": 10.897,
@@ -1194,10 +1985,10 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakTorqueNm": 449,
     "testMassKg": 1539,
     "score": 80.9,
-    "cls": "S"
+    "cls": "S+"
   },
   "2022-porsche-911-gt3-gt3-pdk-us-coupe-rwd-7dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.269,
       "zeroTo200KmhS": 10.713,
@@ -1244,7 +2035,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2020-chevrolet-corvette-stingray-z51-fe4-us-coupe-rwd-8dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.485,
       "zeroTo200KmhS": 12.021,
@@ -1291,7 +2082,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2023-chevrolet-corvette-z06-z07-carbon-fiber-aero-us-coupe-rwd-8dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 2.977,
       "zeroTo200KmhS": 9.303,
@@ -1337,55 +2128,102 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 91.9,
     "cls": "S+"
   },
-  "2019-dodge-challenger-srt-hellcat-redeye-widebody-us-coupe-rwd-8at": {
-    "formula": "SLC-1",
+  "2018-chevrolet-camaro-zl1-1le-us-coupe-rwd-6mt": {
+    "formula": "SLC-2",
     "brakeRelease": {
-      "zeroTo100KmhS": 5.289,
-      "zeroTo200KmhS": 12.162,
-      "sixtyFootS": 2.64,
-      "quarterMileS": 12.724,
-      "quarterMileTrapKmh": 205.428,
-      "kilometerS": 21.67,
+      "zeroTo100KmhS": 3.462,
+      "zeroTo200KmhS": 10.477,
+      "sixtyFootS": 2.042,
+      "quarterMileS": 11.313,
+      "quarterMileTrapKmh": 208.982,
+      "kilometerS": 20.298,
       "splits": {
-        "30mph": 2.539,
-        "60mph": 5.103,
-        "100mph": 8.914,
-        "130mph": 13.123,
-        "150mph": 16.807,
-        "100kmh": 5.289,
-        "160kmh": 8.848,
-        "180kmh": 10.289,
-        "200kmh": 12.162
+        "30mph": 1.488,
+        "60mph": 3.322,
+        "100mph": 6.988,
+        "130mph": 11.336,
+        "150mph": 15.944,
+        "100kmh": 3.462,
+        "160kmh": 6.929,
+        "180kmh": 8.752,
+        "200kmh": 10.477
       }
     },
     "rollout": {
-      "zeroTo100KmhS": 4.936,
-      "zeroTo200KmhS": 11.809,
-      "sixtyFootS": 2.287,
-      "quarterMileS": 12.371,
-      "quarterMileTrapKmh": 205.428,
-      "kilometerS": 21.317,
+      "zeroTo100KmhS": 3.132,
+      "zeroTo200KmhS": 10.148,
+      "sixtyFootS": 1.713,
+      "quarterMileS": 10.984,
+      "quarterMileTrapKmh": 208.982,
+      "kilometerS": 19.968,
       "splits": {
-        "30mph": 2.186,
-        "60mph": 4.75,
-        "100mph": 8.561,
-        "130mph": 12.77,
-        "150mph": 16.454,
-        "100kmh": 4.936,
-        "160kmh": 8.495,
-        "180kmh": 9.936,
-        "200kmh": 11.809
+        "30mph": 1.158,
+        "60mph": 2.992,
+        "100mph": 6.659,
+        "130mph": 11.006,
+        "150mph": 15.615,
+        "100kmh": 3.132,
+        "160kmh": 6.599,
+        "180kmh": 8.423,
+        "200kmh": 10.148
+      }
+    },
+    "topSpeedKmh": 326,
+    "peakPowerPs": 659,
+    "peakTorqueNm": 881,
+    "testMassKg": 1808,
+    "score": 83,
+    "cls": "S+"
+  },
+  "2019-dodge-challenger-srt-hellcat-redeye-widebody-us-coupe-rwd-8at": {
+    "formula": "SLC-2",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.792,
+      "zeroTo200KmhS": 10.528,
+      "sixtyFootS": 2.247,
+      "quarterMileS": 11.537,
+      "quarterMileTrapKmh": 209.663,
+      "kilometerS": 20.382,
+      "splits": {
+        "30mph": 1.834,
+        "60mph": 3.66,
+        "100mph": 7.28,
+        "130mph": 11.489,
+        "150mph": 15.173,
+        "100kmh": 3.792,
+        "160kmh": 7.214,
+        "180kmh": 8.655,
+        "200kmh": 10.528
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.486,
+      "zeroTo200KmhS": 10.222,
+      "sixtyFootS": 1.941,
+      "quarterMileS": 11.231,
+      "quarterMileTrapKmh": 209.663,
+      "kilometerS": 20.077,
+      "splits": {
+        "30mph": 1.528,
+        "60mph": 3.354,
+        "100mph": 6.974,
+        "130mph": 11.183,
+        "150mph": 14.867,
+        "100kmh": 3.486,
+        "160kmh": 6.908,
+        "180kmh": 8.349,
+        "200kmh": 10.222
       }
     },
     "topSpeedKmh": 341,
     "peakPowerPs": 808,
     "peakTorqueNm": 959,
     "testMassKg": 2115,
-    "score": 66.3,
-    "cls": "S"
+    "score": 80.9,
+    "cls": "S+"
   },
   "2022-hyundai-kona-n-us-cuv-fwd-8dct": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 5.871,
       "zeroTo200KmhS": 22.877,
@@ -1429,10 +2267,10 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakTorqueNm": 392,
     "testMassKg": 1590,
     "score": 34.1,
-    "cls": "B"
+    "cls": "C"
   },
   "2018-jeep-grand-cherokee-trackhawk-us-suv-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.524,
       "zeroTo200KmhS": 12.829,
@@ -1479,7 +2317,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-alfa-romeo-stelvio-quadrifoglio-us-suv-awd-8at": {
-    "formula": "SLC-1",
+    "formula": "SLC-2",
     "brakeRelease": {
       "zeroTo100KmhS": 3.747,
       "zeroTo200KmhS": 14.38,
