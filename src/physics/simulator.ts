@@ -13,6 +13,13 @@ export interface ShiftRequestResult {
 
 const MIN_ENGINE_RPM = 300;
 
+/** Manual / single-clutch shift: drive torque drops out while the clutch is open. */
+function interruptFactor(p: number): number {
+  if (p < 0.12) return 1 - p / 0.12;
+  if (p > 0.8) return (p - 0.8) / 0.2;
+  return 0;
+}
+
 export function initialState(vehicle: SimVehicle): SimState {
   return {
     time: 0,
@@ -33,6 +40,7 @@ export function initialState(vehicle: SimVehicle): SimState {
     throttle: 0,
     brake: 0,
     timeSinceShift: 10,
+    clutchEngage: 0,
   };
 }
 
@@ -144,7 +152,7 @@ export class VehicleSimulator {
       sh.elapsed += dt;
       const p = Math.min(1, sh.elapsed / sh.duration);
       ratio = lerp(tr.overallRatios[sh.from - 1], tr.overallRatios[sh.to - 1], smoothstep(p));
-      torqueFactor = 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
+      torqueFactor = tr.shiftProfile === 'interrupt' ? interruptFactor(p) : 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
       if (p >= 1) s.shift = null;
     }
     const inputOmega = wheelOmega * ratio;
@@ -160,6 +168,13 @@ export class VehicleSimulator {
         s.speedLimited = true;
       }
     }
+    const stationaryHold = s.speed < 0.3 && brake > 0.2;
+    const manual = tr.type === 'manual';
+    if (manual && stationaryHold && s.coupling === 'slipping') {
+      // Clutch pedal down on the brake: the driver holds the revs at the launch rpm.
+      const holdRpm = lerp(e.idleRpm, tr.launchClutch!.brakeHoldRpmLimit, throttleCmd);
+      throttle = Math.min(throttle, clamp((holdRpm - s.engineRpm) / 300, 0, 1));
+    }
     throttle = Math.max(throttle, idleThrottle(e, s.engineRpm));
 
     // 4. Manifold pressure and engine torque -------------------------------
@@ -171,7 +186,6 @@ export class VehicleSimulator {
 
     // 5. Coupling ------------------------------------------------------------
     const engineOmega = rpmToRadS(s.engineRpm);
-    const stationaryHold = s.speed < 0.3 && brake > 0.2;
     let inputTorque: number;
     let engineCoupled = false;
 
@@ -197,16 +211,29 @@ export class VehicleSimulator {
       if (s.coupling === 'locked' && inputRpm < e.idleRpm * 0.9 && !s.shift) s.coupling = 'slipping';
       if (s.coupling === 'slipping') {
         const slip = engineOmega - inputOmega;
+        // A manual driver squeezes the clutch in over `driverEngageS`; a TCU is instant.
+        if (lc.driverEngageS > 0) {
+          s.clutchEngage =
+            throttleCmd < 0.02 || stationaryHold ? 0 : Math.min(1, s.clutchEngage + dt / lc.driverEngageS);
+        } else {
+          s.clutchEngage = 1;
+        }
         let clutchT: number;
         if (slip <= 0) {
           clutchT = 0;
         } else if (throttleCmd < 0.02) {
-          clutchT = brake > 0.05 ? 0 : Math.min(25, slip * 2); // creep
+          clutchT = brake > 0.05 || !lc.creep ? 0 : Math.min(25, slip * 2); // creep
+        } else if (stationaryHold && manual) {
+          clutchT = 0; // pedal down while pre-revving
         } else {
           const targetRpm = stationaryHold
             ? lerp(e.idleRpm, lc.brakeHoldRpmLimit, throttleCmd)
             : lerp(e.idleRpm, lc.launchRpm, throttleCmd ** 0.8);
-          clutchT = clamp(engineT + 3 * (engineOmega - rpmToRadS(targetRpm)), 0, lc.maxClutchTorqueNm);
+          clutchT = clamp(
+            engineT + 3 * (engineOmega - rpmToRadS(targetRpm)),
+            0,
+            lc.maxClutchTorqueNm * s.clutchEngage,
+          );
         }
         const nextOmega = engineOmega + ((engineT - clutchT) / e.inertiaKgM2) * dt;
         s.engineRpm = Math.max(MIN_ENGINE_RPM, radSToRpm(nextOmega));

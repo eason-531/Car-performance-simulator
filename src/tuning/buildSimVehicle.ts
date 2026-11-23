@@ -7,6 +7,15 @@ import type { SimTransmission, SimVehicle } from '../physics/types';
 import { kmhToMs, rpmToRadS } from '../physics/units';
 import { defaultTuning, type TuningConfig } from './tuning';
 
+/** Feasible front-axle share of drive force for the drivetrain layout. */
+export function frontShareRange(spec: VehicleSpec): readonly [number, number] {
+  const d = spec.drivetrain;
+  if (d.layout === 'FWD') return [1, 1];
+  if (d.layout === 'RWD') return [0, 0];
+  if (d.frontShareRange) return d.frontShareRange;
+  return [1 - (d.maxRearShare ?? 0.5), 1];
+}
+
 /** Dynamic rolling radius of a tire, m (≈ 97 % of the unloaded radius). */
 export function tireRollingRadiusM(t: TireDims): number {
   const unloadedMm = (t.rimIn * 25.4) / 2 + (t.widthMm * t.aspectPct) / 100;
@@ -52,6 +61,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     upshiftTimeS: t.upshiftTimeS * shiftScale,
     downshiftTimeS: t.downshiftTimeS * shiftScale,
     shiftTorqueDip: t.shiftTorqueDip,
+    shiftProfile: t.shiftProfile ?? (t.type === 'manual' ? 'interrupt' : 'blend'),
     maxAutoUpshiftRpm: t.maxAutoUpshiftRpm,
     wotUpshiftRpm: computeWotUpshiftRpms(torque, overallRatios, t.maxAutoUpshiftRpm, spec.engine.revLimitRpm),
   };
@@ -65,7 +75,15 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
       capacityAtStall: stockStallTorque / (stallOmega * stallOmega),
     };
   }
-  if (t.launchClutch) transmission.launchClutch = { ...t.launchClutch };
+  if (t.launchClutch) {
+    transmission.launchClutch = {
+      launchRpm: t.launchClutch.launchRpm,
+      brakeHoldRpmLimit: t.launchClutch.brakeHoldRpmLimit,
+      maxClutchTorqueNm: t.launchClutch.maxClutchTorqueNm,
+      creep: t.launchClutch.creep ?? t.type !== 'manual',
+      driverEngageS: t.launchClutch.driverEngageS ?? 0,
+    };
+  }
 
   const size = resolveTireSize(spec, tuning);
   const compound = getTireCompound(tuning.tireCompoundId);
@@ -102,7 +120,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     drivetrain: {
       layout,
       efficiency: o.drivetrainEfficiency ?? spec.drivetrain.efficiency,
-      maxRearShare: spec.drivetrain.maxRearShare ?? 0.5,
+      frontShare: frontShareRange(spec),
     },
     massKg: spec.chassis.curbMassKg + DRIVER_MASS_KG + tuning.weightDeltaKg,
     frontWeightFraction: spec.chassis.frontWeightFraction,

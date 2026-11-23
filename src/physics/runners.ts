@@ -1,5 +1,5 @@
 import { ATMOSPHERE_BAR, FIXED_DT, GRAVITY } from './constants';
-import { MetricsTracker, type PerformanceMetrics } from './metrics';
+import { MetricsTracker, type PerformanceMetrics, type TimingBasis } from './metrics';
 import { VehicleSimulator } from './simulator';
 import type { SimVehicle } from './types';
 import { kmhToMs, msToKmh } from './units';
@@ -29,7 +29,12 @@ export interface AccelerationRunOptions {
 export interface AccelerationRunResult {
   vehicleId: string;
   launch: LaunchTechnique;
+  /** Timed from brake release (simulator baseline). */
   metrics: PerformanceMetrics;
+  /** Same run timed with a 1-ft rollout (US magazine / drag-strip basis). */
+  metricsRollout: PerformanceMetrics;
+  /** Speed split times keyed like `60mph` / `100kmh`, per timing basis. */
+  splits: Record<TimingBasis, Record<string, number>>;
   trace: TraceSample[];
   /** Duration of the recorded run, s. */
   durationS: number;
@@ -109,6 +114,8 @@ export function runAccelerationRun(vehicle: SimVehicle, options: AccelerationRun
     vehicleId: vehicle.id,
     launch,
     metrics: tracker.metrics,
+    metricsRollout: tracker.metricsFor('rollout-1ft'),
+    splits: { 'brake-release': tracker.splitsFor('brake-release'), 'rollout-1ft': tracker.splitsFor('rollout-1ft') },
     trace,
     durationS: s.time,
     completed,

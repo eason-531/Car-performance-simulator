@@ -37,11 +37,22 @@ export function tractionLimitN(v: SimVehicle, accel: number): number {
       return mu * rear;
     case 'FWD':
       return mu * front;
-    case 'AWD': {
-      // The coupling can send at most `maxRearShare` of the force rearwards,
-      // so the front axle must carry the rest.
-      const frontShare = 1 - v.drivetrain.maxRearShare;
-      return Math.min(mu * (front + rear), frontShare > 0 ? (mu * front) / frontShare : Infinity);
-    }
+    case 'AWD':
+    case '4WD':
+      return splitTractionLimit(mu * front, mu * rear, v.drivetrain.frontShare);
   }
+}
+
+/**
+ * Best total force when the front share s of drive force can be chosen within
+ * [min, max]: F(s) = min(Ff/s, Fr/(1−s)). The unconstrained optimum is
+ * s* = Ff/(Ff+Fr) (both axles at their limit); otherwise the nearest bound.
+ */
+export function splitTractionLimit(frontMax: number, rearMax: number, range: readonly [number, number]): number {
+  const total = frontMax + rearMax;
+  if (total <= 0) return 0;
+  const s = Math.min(range[1], Math.max(range[0], frontMax / total));
+  if (s <= 0) return rearMax;
+  if (s >= 1) return frontMax;
+  return Math.min(frontMax / s, rearMax / (1 - s));
 }
