@@ -27,7 +27,11 @@ export const entry: CatalogEntry = {
   powertrain: "Petrol",
   engineLabel: "1.5 turbo I4 (L15CA)",
   modelPath: "CVT",
-  factory: {},
+  factory: {
+    power: "180 hp @ 6,000 rpm",
+    curbMass: "3,102 lb (Motor Matchup)",
+    sourceId: "src2"
+  },
   sources: [
     {
       id: "test",
@@ -35,12 +39,39 @@ export const entry: CatalogEntry = {
       publisher: "MotorTrend",
       url: "https://www.motortrend.com/reviews/2022-honda-civic-sport-touring-hatchback-cvt-automatic-first-test-review",
       kind: "road-test"
+    },
+    {
+      id: "src2",
+      title: "Tested: 2022 Honda Civic hatchback loses speed but wins our hearts",
+      publisher: "Edmunds",
+      url: "https://www.edmunds.com/car-news/tested-2022-honda-civic-hatchback-loses-speed-but-wins-our-hearts.html",
+      kind: "road-test"
     }
   ],
-  benchmarks: [],
-  unsupportedReason: "Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet.",
+  benchmarks: [
+    {
+      id: "edmunds",
+      sourceId: "src2",
+      publication: "Edmunds",
+      timing: "standing-start",
+      timingNote: "Edmunds times from a standstill (\"zero should mean zero\"), no rollout.",
+      results: {
+        zeroTo60MphS: 7.9
+      },
+      conditions: {
+        temperatureC: 19
+      },
+      match: "exact",
+      verification: "Search-result summary of the article (page itself not reachable from this environment).",
+      date: "2021"
+    }
+  ],
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "MotorTrend first test (roster source)",
+    "CVT ratio range and final drive",
+    "Torque figure",
+    "Tire size",
+    "Drag coefficient"
+  ],
+  unsupportedReason: "Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet."
 };

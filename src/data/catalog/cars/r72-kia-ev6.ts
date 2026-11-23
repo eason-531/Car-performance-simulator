@@ -28,7 +28,12 @@ export const entry: CatalogEntry = {
   powertrain: "Electric",
   engineLabel: "Dual-motor",
   modelPath: "EV",
-  factory: {},
+  factory: {
+    power: "576 hp",
+    torque: "545 lb-ft",
+    zeroTo60MphS: 3.4,
+    sourceId: "src2"
+  },
   sources: [
     {
       id: "test",
@@ -36,12 +41,39 @@ export const entry: CatalogEntry = {
       publisher: "Car and Driver",
       url: "https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/",
       kind: "road-test"
+    },
+    {
+      id: "src2",
+      title: "2023 Kia EV6 GT review",
+      publisher: "Gear Patrol (citing Car and Driver)",
+      url: "https://gearpatrol.com/cars/g42261748/2023-kia-ev6-gt-review/",
+      kind: "reference"
     }
   ],
-  benchmarks: [],
-  unsupportedReason: "EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.",
+  benchmarks: [
+    {
+      id: "cd",
+      sourceId: "src2",
+      publication: "Car and Driver (as cited by Gear Patrol)",
+      timing: "rollout-1ft",
+      timingNote: "Car and Driver results since late 2019 subtract a 1-ft rollout.",
+      results: {
+        zeroTo60MphS: 3.2
+      },
+      conditions: {},
+      match: "exact",
+      verification: "Second-hand citation; the original page was not reachable.",
+      date: "2023"
+    }
+  ],
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "Car and Driver quarter-mile and trap speed (roster source)",
+    "Curb mass",
+    "Motor ratings and battery limits",
+    "Drag coefficient"
+  ],
+  notes: [
+    "Drag-strip runs by other outlets (11.2–11.5 s) used prepared surfaces and are not transcribed; Kia claims 3.4 s to 60 mph."
+  ],
+  unsupportedReason: "EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet."
 };

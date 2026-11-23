@@ -28,7 +28,11 @@ export const entry: CatalogEntry = {
   powertrain: "Plug-in hybrid",
   engineLabel: "4.0 twin-turbo V8 + 3 motors",
   modelPath: "Hybrid",
-  factory: {},
+  factory: {
+    power: "986 hp (1,000 CV, system)",
+    curbMass: "≈1,570 kg (CarSales)",
+    sourceId: "src2"
+  },
   sources: [
     {
       id: "test",
@@ -36,12 +40,21 @@ export const entry: CatalogEntry = {
       publisher: "MotorTrend",
       url: "https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review",
       kind: "road-test"
+    },
+    {
+      id: "src2",
+      title: "Ferrari SF90 Assetto Fiorano 2021 review",
+      publisher: "CarSales (AU)",
+      url: "https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922",
+      kind: "reference"
     }
   ],
   benchmarks: [],
-  unsupportedReason: "Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.",
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "MotorTrend first test results (roster source)",
+    "Hybrid system power split",
+    "8-speed DCT ratios",
+    "Drag coefficient"
+  ],
+  unsupportedReason: "Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet."
 };

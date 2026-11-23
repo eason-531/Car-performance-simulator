@@ -28,7 +28,11 @@ export const entry: CatalogEntry = {
   powertrain: "Petrol",
   engineLabel: "3.5 twin-turbo V6 (EcoBoost HO)",
   modelPath: "4WD",
-  factory: {},
+  factory: {
+    power: "450 hp",
+    torque: "510 lb-ft",
+    sourceId: "src2"
+  },
   sources: [
     {
       id: "test",
@@ -36,12 +40,73 @@ export const entry: CatalogEntry = {
       publisher: "Car and Driver",
       url: "https://www.caranddriver.com/reviews/a40059355/2021-ford-f-150-raptor-37-performance-package-by-the-numbers/",
       kind: "road-test"
+    },
+    {
+      id: "src2",
+      title: "2021 Ford Raptor first drive",
+      publisher: "Motor1",
+      url: "https://www.motor1.com/reviews/529834/2021-ford-raptor-first-drive/",
+      kind: "reference"
+    },
+    {
+      id: "src3",
+      title: "Tested: 2021 Ford Raptor slower than F-150 Hybrid",
+      publisher: "Edmunds (via Carscoops)",
+      url: "https://www.carscoops.com/2022/05/want-a-fast-ford-f-150-buy-the-hybrid-not-the-raptor/",
+      kind: "road-test"
+    },
+    {
+      id: "src4",
+      title: "2021 Ford F-150 (Raptor)",
+      publisher: "MotorTrend (via Magzter)",
+      url: "https://www.magzter.com/ja/stories/Automotive/Motor-Trend/2021-Ford-F-150",
+      kind: "road-test"
     }
   ],
-  benchmarks: [],
-  unsupportedReason: "Transfer-case 4WD test mode (4A/4H) not modeled yet.",
+  benchmarks: [
+    {
+      id: "edmunds",
+      sourceId: "src3",
+      publication: "Edmunds",
+      timing: "standing-start",
+      timingNote: "Edmunds times from a standstill (\"zero should mean zero\"), no rollout.",
+      results: {
+        zeroTo60MphS: 5.8,
+        quarterMileS: 14.3
+      },
+      conditions: {
+        tires: "37-inch tires"
+      },
+      match: "exact",
+      verification: "Second-hand citation; the original page was not reachable.",
+      date: "2022"
+    },
+    {
+      id: "mt",
+      sourceId: "src4",
+      publication: "MotorTrend",
+      timing: "rollout-1ft",
+      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
+      results: {
+        zeroTo60MphS: 5.6
+      },
+      conditions: {
+        tires: "37-inch tires"
+      },
+      match: "exact",
+      verification: "Magazine excerpt.",
+      date: "2021"
+    }
+  ],
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "Car and Driver 37 Performance Package results (roster source)",
+    "Curb mass",
+    "10-speed ratios and axle ratio",
+    "4WD torque split",
+    "Drag coefficient"
+  ],
+  notes: [
+    "Car and Driver tested the 37 Performance Package truck, but only its 35-inch-tire results (5.2 s, 13.9 s) were reachable, so they are not transcribed."
+  ],
+  unsupportedReason: "Transfer-case 4WD test mode (4A/4H) not modeled yet."
 };

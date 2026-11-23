@@ -28,7 +28,11 @@ export const entry: CatalogEntry = {
   powertrain: "Electric",
   engineLabel: "Dual-motor",
   modelPath: "EV",
-  factory: {},
+  factory: {
+    power: "750 hp (overboost)",
+    curbMass: "2,355 kg as weighed by Autocar (60 kg over claim)",
+    sourceId: "src2"
+  },
   sources: [
     {
       id: "test",
@@ -36,12 +40,21 @@ export const entry: CatalogEntry = {
       publisher: "Car and Driver",
       url: "https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/",
       kind: "road-test"
+    },
+    {
+      id: "src2",
+      title: "Porsche Taycan Turbo S review",
+      publisher: "Autocar",
+      url: "https://autocar.co.uk/node/99423",
+      kind: "road-test"
     }
   ],
   benchmarks: [],
-  unsupportedReason: "EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.",
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "Car and Driver acceleration test (roster source)",
+    "Motor ratings and battery limits",
+    "Two-speed rear gear ratios",
+    "Drag coefficient"
+  ],
+  unsupportedReason: "EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet."
 };

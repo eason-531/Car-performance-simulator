@@ -27,7 +27,11 @@ export const entry: CatalogEntry = {
   powertrain: "Petrol",
   engineLabel: "4.8 V10 (1LR-GUE)",
   modelPath: "AMT",
-  factory: {},
+  factory: {
+    power: "553 hp",
+    torque: "354 lb-ft",
+    sourceId: "src2"
+  },
   sources: [
     {
       id: "test",
@@ -35,12 +39,63 @@ export const entry: CatalogEntry = {
       publisher: "Car and Driver",
       url: "https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/",
       kind: "road-test"
+    },
+    {
+      id: "src2",
+      title: "2012 Lexus LFA tested — short take road test (reprint)",
+      publisher: "PakWheels forum (Car and Driver reprint)",
+      url: "https://www.pakwheels.com/forums/t/lexus-fan-club/119439?page=8",
+      kind: "reference"
+    },
+    {
+      id: "src3",
+      title: "C/D comparison: Lexus LFA vs Ferrari 599 HGTE",
+      publisher: "ClubLexus forum (quote)",
+      url: "https://clublexus.com/forums/lfa-model-2012/533844-hell-has-frozen-over-c-and-d-comparo-lexus-lfa-vs-ferrari-599-hgte-spoiler-2.html",
+      kind: "reference"
     }
   ],
-  benchmarks: [],
-  unsupportedReason: "Single-clutch automated manual (ASG) launch and shift model not added yet.",
+  benchmarks: [
+    {
+      id: "cd",
+      sourceId: "src2",
+      publication: "Car and Driver (short take, forum reprint)",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      results: {
+        zeroTo60MphS: 3.7,
+        quarterMileS: 11.8,
+        quarterMileTrapMph: 124
+      },
+      conditions: {},
+      match: "exact",
+      verification: "Forum reprint of the magazine page.",
+      date: "2010"
+    },
+    {
+      id: "cd-comparo",
+      sourceId: "src3",
+      publication: "Car and Driver comparison (forum quote)",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      results: {
+        zeroTo60MphS: 3.6,
+        quarterMileS: 11.7,
+        quarterMileTrapMph: 125
+      },
+      conditions: {
+        launchControl: "Launch control"
+      },
+      match: "exact",
+      verification: "Forum quote; an aggregator attributes the same run to Car and Driver.",
+      date: "2011"
+    }
+  ],
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "Car and Driver instrumented test page (roster source)",
+    "Curb mass (sources span 3,263–3,559 lb)",
+    "ASG ratios and final drive",
+    "Drag coefficient"
+  ],
+  unsupportedReason: "Single-clutch automated manual (ASG) launch and shift model not added yet."
 };
