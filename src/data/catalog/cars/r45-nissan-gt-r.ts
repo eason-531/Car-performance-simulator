@@ -99,10 +99,10 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'AWD', efficiency: 0.85, description: 'ATTESA E-TS (rear-biased, up to 50 % front)', frontShareRange: [0, 0.5] },
     chassis: { curbMassKg: 1776, frontWeightFraction: 0.54, cgHeightM: 0.47, wheelbaseM: 2.78, lengthMm: 4710, widthMm: 1895, heightMm: 1370 },
     aero: { dragCoefficient: 0.26 },
-    tires: { sizes: [staggered('r20', '255/40 R20 F · 285/35 R20 R', { widthMm: 255, aspectPct: 40, rimIn: 20 }, { widthMm: 285, aspectPct: 35, rimIn: 20 }, 'Track Edition fitment (assumed)')], compound: 'uhp', gripScale: 1.19 },
+    tires: { sizes: [staggered('r20', '255/40 R20 F · 285/35 R20 R', { widthMm: 255, aspectPct: 40, rimIn: 20 }, { widthMm: 285, aspectPct: 35, rimIn: 20 }, 'Track Edition fitment (assumed)')], compound: 'uhp', gripScale: 1.18 },
     speedLimiterKmh: 315,
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.19', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 2.9 s' },
+      { parameter: 'Tire grip calibration', value: '×1.18', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 2.9 s' },
       { parameter: 'Drivetrain efficiency', value: '85 %', status: 'estimated', source: 'Typical AWD loss; no trap speed available to fit against' },
       { parameter: 'Peak power', value: '565 hp', status: 'reported', source: 'Nissan rating (Car and Driver Lightning Lap entry)', url: 'https://autos.yahoo.com/lightning-lap-2017-nissan-gt-140000223.html' },
       { parameter: 'Peak torque', value: '467 lb-ft', status: 'reported', source: 'Nissan rating' },

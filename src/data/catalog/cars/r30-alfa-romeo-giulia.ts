@@ -100,11 +100,11 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive with torque-vectoring differential' },
     chassis: { curbMassKg: 1734, frontWeightFraction: 0.5, wheelbaseM: 2.82, lengthMm: 4639, widthMm: 1873, heightMm: 1426 },
     aero: {},
-    tires: { sizes: [staggered('r19', '245/35 R19 F · 285/30 R19 R', { widthMm: 245, aspectPct: 35, rimIn: 19 }, { widthMm: 285, aspectPct: 30, rimIn: 19 }, 'Pirelli P Zero Corsa (assumed)')], compound: 'uhp', gripScale: 1.2 },
+    tires: { sizes: [staggered('r19', '245/35 R19 F · 285/30 R19 R', { widthMm: 245, aspectPct: 35, rimIn: 19 }, { widthMm: 285, aspectPct: 30, rimIn: 19 }, 'Pirelli P Zero Corsa (assumed)')], compound: 'uhp', gripScale: 1.18 },
     speedLimiterKmh: 307,
     factory: { zeroTo60MphS: 3.8 },
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.20', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 3.7 s; held-out ET 11.86 s vs 11.9 s' },
+      { parameter: 'Tire grip calibration', value: '×1.18', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 3.7 s' },
       { parameter: 'Peak power', value: '505 hp', status: 'reported', source: 'Alfa Romeo rating (reviews)', url: 'https://autos.yahoo.com/2017-alfa-romeo-giulia-quadrifoglio-164700328.html' },
       { parameter: 'Peak torque', value: '443 lb-ft', status: 'reported', source: 'Alfa Romeo rating (reviews)', url: 'https://autos.yahoo.com/2017-alfa-romeo-giulia-quadrifoglio-164700328.html' },
       { parameter: 'Power / torque rpm', value: '6,500 / 2,500–5,500 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },

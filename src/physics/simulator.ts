@@ -256,31 +256,36 @@ export class VehicleSimulator {
 
     // 6. Wheel force and traction --------------------------------------------
     const eta = v.drivetrain.efficiency;
-    let driveForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
+    const engineForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
     const tractionMax = tractionLimitN(v, s.accelFiltered) * TRACTION_CONTROL_EFFICIENCY;
-    s.tractionLimited = false;
-    if (driveForce > tractionMax) {
-      driveForce = tractionMax;
-      // Held on the brakes the wheels cannot spin, so traction control stays idle.
-      s.tractionLimited = !stationaryHold;
-    } else if (driveForce < -tractionMax) {
-      driveForce = -tractionMax;
-    }
+    const driveForce = clamp(engineForce, -tractionMax, tractionMax);
 
     // 7. Resistances and integration ------------------------------------------
     const m = v.massKg;
     const brakeForce = brake * Math.min(MAX_BRAKE_G, v.tireMu * 1.05) * m * GRAVITY;
     const resist = aeroDragN(v, s.speed) + rollingResistanceN(v, s.speed) + brakeForce;
-    let effectiveMass = m + v.wheelInertiaKgM2 / (r * r);
-    if (engineCoupled) effectiveMass += (e.inertiaKgM2 * ratio * ratio) / (r * r);
+    const carMass = m + v.wheelInertiaKgM2 / (r * r);
+    // A coupled engine's inertia, reflected through the gearing, is spun up by
+    // the engine's own torque. With grip to spare it loads the car (engine-
+    // limited); at the grip limit the surplus torque feeds it and only the tire
+    // force moves the car (traction-limited). The binding limit is the smaller.
+    const engineMass = carMass + (engineCoupled ? (e.inertiaKgM2 * ratio * ratio) / (r * r) : 0);
+    const accelEngine = (engineForce - resist) / engineMass;
+    const accelTraction = (driveForce - resist) / carMass;
+    // Held on the brakes the wheels cannot spin, so traction control stays idle.
+    s.tractionLimited = engineForce > tractionMax && accelTraction < accelEngine && !stationaryHold;
 
-    const net = driveForce - resist;
     let accel: number;
-    if (s.speed <= 1e-6 && net <= 0) {
+    if (s.speed <= 1e-6 && driveForce - resist <= 0) {
       accel = 0;
       s.speed = 0;
     } else {
-      accel = net / effectiveMass;
+      accel =
+        engineForce > tractionMax
+          ? Math.min(accelEngine, accelTraction)
+          : engineForce < -tractionMax
+            ? Math.max(accelEngine, accelTraction)
+            : accelEngine;
       s.speed = Math.max(0, s.speed + accel * dt);
       if (s.speed === 0) accel = 0;
     }

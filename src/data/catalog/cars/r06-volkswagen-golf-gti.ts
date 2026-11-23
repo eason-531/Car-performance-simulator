@@ -124,10 +124,10 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'FWD', description: 'Front-wheel drive with VAQ electronic limited-slip differential' },
     chassis: { curbMassKg: 1447, frontWeightFraction: 0.61, wheelbaseM: 2.626, lengthMm: 4288, widthMm: 1789, heightMm: 1442 },
     aero: {},
-    tires: { sizes: [square('r19', '235/35 R19', 235, 35, 19, 'Autobahn fitment (assumed)'), square('r18', '225/40 R18', 225, 40, 18, 'GTI S fitment')], compound: 'oe-performance', gripScale: 1.26 },
+    tires: { sizes: [square('r19', '235/35 R19', 235, 35, 19, 'Autobahn fitment (assumed)'), square('r18', '225/40 R18', 225, 40, 18, 'GTI S fitment')], compound: 'oe-performance', gripScale: 1.3 },
     speedLimiterKmh: 250,
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.26', status: 'estimated', source: 'Transferred from the Octavia RS Combi fit (same MQB Evo platform and 180 kW EA888 evo4)' },
+      { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Fit toward the Car and Driver 0–60 mph 5.1 s stopped at the 1.30 bound (sim 5.25 s); residual shown' },
       { parameter: 'Peak power', value: '241 hp (US rating)', status: 'reported', source: 'Multiple 2022 GTI specification listings', url: 'https://www.motormatchup.com/catalog/Volkswagen/Golf-GTI/2022/2.0T-Autobahn-DSG' },
       { parameter: 'Peak torque', value: '273 lb-ft', status: 'reported', source: 'Multiple 2022 GTI specification listings', url: 'https://www.motormatchup.com/catalog/Volkswagen/Golf-GTI/2022/2.0T-Autobahn-DSG' },
       { parameter: 'Power / torque bands', value: '5,000–6,500 / 1,750–4,500 rpm', status: 'estimated', source: 'Recalled VW figures; not verified' },

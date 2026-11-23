@@ -99,3 +99,30 @@ describe('manual transmission path', () => {
     expect(a).toEqual(b);
   });
 });
+
+describe('traction-limited acceleration', () => {
+  it('does not charge reflected engine inertia against tire-limited force', () => {
+    // A very short first gear and a big engine guarantee a coupled, wheel-spinning phase.
+    const v = buildSimVehicle({
+      ...lexus,
+      id: 'test-short-gear',
+      // The Superb's dual-clutch (no converter slip) on the rear-drive Lexus.
+      transmission: { ...skoda.transmission, gearRatios: [5, 2.8, 1.8, 1.3, 1, 0.8], finalDrive: [4, 4, 4, 4, 4, 4] },
+      engine: { ...lexus.engine, inertiaKgM2: 0.4 },
+    });
+    const s = new VehicleSimulator(v);
+    s.advance(2.5, { throttle: 1, brake: 1 });
+    const carMass = v.massKg + v.wheelInertiaKgM2 / v.wheelRadiusM ** 2;
+    let checked = 0;
+    for (let i = 0; i < 4000; i++) {
+      s.step(0.001, { throttle: 1, brake: 0 });
+      const st = s.state;
+      if (st.coupling === 'locked' && st.tractionLimited && st.speed < 15) {
+        // Resistances are small at this speed: acceleration ≈ tire force / car mass.
+        expect(st.accel).toBeGreaterThan((st.driveForceN / carMass) * 0.95);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+});

@@ -112,11 +112,11 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'FWD', description: 'Front-wheel drive with VAQ electronic limited-slip differential' },
     chassis: { curbMassKg: 1553, frontWeightFraction: 0.6, wheelbaseM: 2.686, lengthMm: 4689, widthMm: 1829, heightMm: 1457 },
     aero: { dragCoefficient: 0.3 },
-    tires: { sizes: [square('r18', '225/40 R18', 225, 40, 18, 'RS standard fitment (assumed)'), square('r19', '225/35 R19', 225, 35, 19, 'Optional 19-inch')], compound: 'oe-performance', gripScale: 1.26 },
+    tires: { sizes: [square('r18', '225/40 R18', 225, 40, 18, 'RS standard fitment (assumed)'), square('r19', '225/35 R19', 225, 35, 19, 'Optional 19-inch')], compound: 'oe-performance', gripScale: 1.15 },
     speedLimiterKmh: 250,
     factory: { zeroTo100S: 6.7, topSpeedKmh: 250 },
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.26', status: 'estimated', source: 'Fitted to the Auto Zeitung measured 0–100 km/h of 6.4 s (sim 6.39 s); no held-out metric published' },
+      { parameter: 'Tire grip calibration', value: '×1.15', status: 'estimated', source: 'Fitted to the Auto Zeitung 0–100 km/h 6.4 s' },
       { parameter: 'Peak power', value: '245 PS (180 kW)', status: 'verified', source: 'ADAC data sheet; Auto Zeitung test', url: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/skoda/octavia/4generation/315157' },
       { parameter: 'Peak torque', value: '370 Nm', status: 'verified', source: 'Auto Zeitung test data', url: 'https://www.autozeitung.de/skoda-octavia-combi-rs-test-199702.html' },
       { parameter: 'Power / torque bands', value: '5,000–6,500 / 1,600–4,300 rpm', status: 'estimated', source: 'Recalled Škoda figures; not verified' },
