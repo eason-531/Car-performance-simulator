@@ -8,9 +8,14 @@ describe('dyno', () => {
     expect(d.peakPowerPs).toBeGreaterThan(spec.engine.rated.powerPs * 0.985);
     expect(d.peakPowerPs).toBeLessThan(spec.engine.rated.powerPs * 1.015);
     expect(d.peakTorqueNm).toBeCloseTo(spec.engine.rated.torqueNm, 0);
+    // The peak lands in the rated band, or the curve is flat (within 0.5 %) from
+    // the peak to the band: some published ratings put the torque plateau's end
+    // at almost exactly rated power (e.g. the S58: 479 lb-ft to 5,500, 503 hp at 6,250).
     const [lo, hi] = spec.engine.rated.powerRpm;
-    expect(d.peakPowerRpm).toBeGreaterThanOrEqual(lo - 300);
-    expect(d.peakPowerRpm).toBeLessThanOrEqual(hi + 300);
+    if (d.peakPowerRpm < lo - 300 || d.peakPowerRpm > hi + 300) {
+      const nearest = d.points.reduce((a, p) => (Math.abs(p.rpm - lo) < Math.abs(a.rpm - lo) ? p : a));
+      expect(nearest.powerPs).toBeGreaterThan(d.peakPowerPs * 0.995);
+    }
     expect(d.peakWheelPowerPs).toBeLessThan(d.peakPowerPs);
   });
 

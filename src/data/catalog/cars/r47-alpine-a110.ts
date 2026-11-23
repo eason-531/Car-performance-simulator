@@ -28,7 +28,10 @@ export const entry: CatalogEntry = {
   powertrain: "Petrol",
   engineLabel: "1.8 turbo I4 (M5P)",
   modelPath: "Existing",
-  factory: {},
+  factory: {
+    power: "252 CV (185 kW)",
+    sourceId: "test"
+  },
   sources: [
     {
       id: "test",
@@ -46,9 +49,16 @@ export const entry: CatalogEntry = {
     }
   ],
   benchmarks: [],
-  unsupportedReason: "Research in progress — factory gearing, mass and output not yet modeled.",
   dataGaps: [
-    "Factory specifications not yet researched",
-    "Measured benchmark not yet transcribed"
-  ]
+    "Quattroruote measured 0–100 km/h, 0–400 m and 0–1000 m",
+    "7-speed DCT (Getrag 7DCT300) gear ratios and final drive",
+    "Curb mass (DIN/EU)",
+    "Torque figure and rpm bands",
+    "Tire size",
+    "Drag coefficient"
+  ],
+  notes: [
+    "Quattroruote road test from the September 2018 issue (no. 757); the acceleration table labels were scrambled in the reachable text, so no figure is transcribed."
+  ],
+  unsupportedReason: "Awaiting spec sheet: the 7-speed DCT ratios and the Quattroruote measured figures (the reachable text of the test table is garbled) not found in any reachable source, so the car is not routed through the physics model."
 };

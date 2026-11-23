@@ -49,7 +49,8 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     expect(c.at(tHi)).toBeCloseTo(e.rated.torqueNm, 0);
     const [pLo, pHi] = e.rated.powerRpm;
     for (const rpm of [pLo, pHi]) {
-      expect(Math.abs(powerPs(c.at(rpm), rpm) - e.rated.powerPs) / e.rated.powerPs).toBeLessThan(0.015);
+      // Published bands are rounded: e.g. 553 lb-ft at 5,600 rpm is 1.7 % short of 600 hp.
+      expect(Math.abs(powerPs(c.at(rpm), rpm) - e.rated.powerPs) / e.rated.powerPs).toBeLessThan(0.02);
     }
     for (const [rpm, nm] of e.torqueCurveNm) {
       expect(nm).toBeLessThanOrEqual(e.rated.torqueNm + 0.05);
@@ -69,7 +70,7 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     const c = v.chassis;
     expect(c.curbMassKg).toBeGreaterThan(900);
     expect(c.curbMassKg).toBeLessThan(3200);
-    expect(c.frontWeightFraction).toBeGreaterThan(0.4);
+    expect(c.frontWeightFraction).toBeGreaterThan(0.35); // rear-engine 911s sit near 0.39
     expect(c.frontWeightFraction).toBeLessThan(0.7);
     expect(v.aero.dragCoefficient).toBeGreaterThan(0.2);
     expect(v.aero.dragCoefficient).toBeLessThan(0.6);
