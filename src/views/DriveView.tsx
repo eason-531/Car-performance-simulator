@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArcGauge, type GaugeZone } from '../components/ArcGauge';
 import { Icon } from '../components/Icon';
+import { Paddle } from '../components/Paddle';
 import { Pedal } from '../components/Pedal';
 import { ShiftLights } from '../components/ShiftLights';
 import { Badge, Button, Segmented, VehiclePicker } from '../components/ui';
@@ -239,10 +240,7 @@ export function DriveView() {
 
         <div className="drive__center">
           <div className="paddles">
-            <button type="button" className="paddle" onClick={() => doShift(-1)} aria-label="Shift down" title="Shift down (Q or ←)">
-              <Icon name="minus" size={30} />
-              <span>Down</span>
-            </button>
+            <Paddle direction={-1} onShift={doShift} label="Shift down" title="Shift down (Q or ←)" />
             <div className="paddles__gear">
               <span className="paddles__gear-label">{mode === 'auto' ? 'Automatic' : 'Manual'}</span>
               <span className="paddles__tune" title="Change in Tuning">{describeTuning(spec, app.tuningFor(spec.id))}</span>
@@ -251,10 +249,7 @@ export function DriveView() {
                 <small>/{s.gearCount}</small>
               </span>
             </div>
-            <button type="button" className="paddle" onClick={() => doShift(1)} aria-label="Shift up" title="Shift up (E or →)">
-              <Icon name="plus" size={30} />
-              <span>Up</span>
-            </button>
+            <Paddle direction={1} onShift={doShift} label="Shift up" title="Shift up (E or →)" />
           </div>
 
           <div className="timer panel">

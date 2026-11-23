@@ -1508,9 +1508,11 @@ small {
   transition: transform 100ms var(--ease), background 120ms;
 }
 
-.paddle:active {
+.paddle:active,
+.paddle.is-pressed {
   transform: scale(0.96);
   background: var(--surface-3);
+  border-color: var(--text-secondary);
 }
 
 .paddles__gear {
