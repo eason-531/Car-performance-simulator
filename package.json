@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run lint && npm run test && vite build",
-    "generate:stats": "UPDATE_GENERATED=1 vitest run src/data/catalog/__tests__/stockStats.test.ts"
+    "generate:stats": "UPDATE_GENERATED=1 vitest run src/data/catalog/__tests__/stockStats.test.ts",
+    "generate:gaps": "UPDATE_GENERATED=1 vitest run src/data/catalog/__tests__/gapsReport.test.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

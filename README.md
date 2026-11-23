@@ -1,8 +1,10 @@
 # Car Performance Simulator
 
-An interactive, physics-based performance simulator for two real cars, built
-with React, TypeScript and Vite. It runs entirely in the browser (no backend,
-no paid APIs) and is designed for iPad Safari.
+An interactive, physics-based performance simulator built with React,
+TypeScript and Vite. It centres on the owner's two cars (**My Garage**) and adds
+a researched catalog of 73 stock configurations, 48 of which can be driven,
+tested, raced and tuned. It runs entirely in the browser (no backend, no paid
+APIs) and is designed for iPad Safari.
 
 *This project is held by Eason and built mainly with Claude and ChatGPT.*
 
@@ -43,10 +45,17 @@ no paid APIs) and is designed for iPad Safari.
 - **Results.** Save tests, drag runs and live drives on the device. Compare up
   to four runs side by side with best values marked and a speed-vs-time overlay,
   or export them as JSON.
-- **Garage.** Specifications and gearing tables, simulation compared with
-  published figures, and a source/confidence rating for every parameter.
+- **Garage.** *My Garage* holds the owner's cars; *All Cars* browses the
+  catalog with search (case- and accent-insensitive), filters (brand, origin,
+  market, class, body, use, era, drivetrain, transmission, powertrain),
+  labelled sorts and favourites. Each car page shows specifications, gearing,
+  measured benchmarks next to the simulation (with residuals), its stock class
+  and a source/confidence rating for every parameter.
+- **One car picker everywhere.** The same searchable picker chooses the active
+  car, the test comparison and each drag lane; a car can race itself stock vs
+  tuned. Favourites come first.
 
-## The vehicles
+## My Garage: the owner's cars
 
 | | 2016 Lexus IS 200t (Taiwan) | Škoda Superb Combi L&K 2.0 TSI 280 4x4 |
 |---|---|---|
@@ -71,7 +80,51 @@ high-output DQ250 set and marks it as estimated.
 | Lexus ¼ mile | 15.2 s | ≈ 15.3 s (US press test) |
 
 These comparisons are enforced by unit tests, so a change that breaks realism
-fails CI.
+fails CI. The owner cars keep their IDs, saved results, calibration and colours,
+and remain the default drag matchup on a fresh install.
+
+## The catalog
+
+73 stock configurations (`src/data/catalog/cars/rNN-*.ts`, one file each) carry
+an identity (year, make, model, trim, market, body, drivetrain, gearbox),
+factory claims, sources, measured benchmarks and the data gaps still open.
+
+- **Playable (48).** Torque-converter automatics, dual-clutch and manual
+  gearboxes, front, rear and all-wheel drive. Their physics input is built by
+  `buildSpec()` from rated peaks (the curves never exceed the published power or
+  torque), and every value that is not sourced is labelled *estimated* with a
+  reason.
+- **Catalog-only (25).** CVTs, hybrids, EVs, the AMG MCT, the LFA's automated
+  manual and the Raptor's 4WD wait for models of their own, so they are never
+  routed through an incompatible one. Some conventional cars wait for gear
+  ratios that no reachable source published. They can still be browsed and
+  compared on their measured results.
+- **Benchmarks.** Each result records the publication, the timing basis
+  (from brake release, or 1-ft rollout as Car and Driver has used since late
+  2019 and MotorTrend uses), test conditions, and whether the tested car is the
+  exact configuration or an *equivalent* (with the deviation stated). 0–60 mph
+  figures are never converted to 0–100 km/h. The Tests view can show both
+  timing bases.
+- **Calibration.** Only two declared estimates are fitted, and only against
+  defensible tests: tire grip (×1.00–1.30) and drivetrain efficiency (within
+  plausible bounds for the layout and gearbox). Where a fit hits a bound, the
+  residual is left visible. Cars without a usable launch benchmark take the
+  median fitted grip of their layout (front drive 1.15, rear drive 1.30).
+- **Manual gearboxes** are driven by a deterministic test driver: no creep,
+  a pre-revved launch at the peak-torque rpm (4,000 rpm minimum, 75 % of the
+  redline maximum), a 0.3 s clutch engagement and 0.3 s shifts with the drive
+  interrupted.
+- **Stock classes D, C, B, A, S and S+** come from one standardized stock run
+  per car (formula SLC-2: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
+  km/h). They ignore your tuning. The thresholds (20/39/49/64/78) sit in wide
+  gaps of the score distribution and are checked against slow, middle and
+  fast reference fixtures. The table is generated offline into
+  `stockStats.generated.ts` (`npm run generate:stats`), and a test fails if it
+  goes stale.
+- **Open data.** [`docs/DATA_GAPS.md`](docs/DATA_GAPS.md) lists every car's
+  missing or unconfirmed inputs with the sources already consulted
+  (`npm run generate:gaps`). Spec sheets for those cars can be dropped into the
+  car files to confirm values or make catalog-only cars playable.
 
 ## The physics model
 
@@ -106,7 +159,9 @@ headless tests run the same code.
 src/
   physics/        Pure simulation: engine, torque converter, gearbox, forces,
                   simulator, metrics, test runners, dyno, live timer (+ tests)
-  data/           Vehicle database (one file per car) and tire compounds (+ tests)
+  data/           Owner-car specs, tire compounds (+ tests)
+  data/catalog/   Catalog types, spec builder, classes, generated stock stats,
+                  filters/sorting, gaps report, and cars/ (one file per row)
   tuning/         Tuning config, validation, and SimVehicle builder (+ tests)
   storage/        localStorage persistence with validation (+ tests)
   state/          React context: settings, tunings, saved results, toasts
@@ -116,18 +171,20 @@ src/
   __tests__/      UI smoke tests (jsdom)
 ```
 
-### Adding a vehicle
+### Adding or completing a catalog car
 
-1. Copy `src/data/vehicles/skodaSuperbCombiLk280.ts` to a new file and fill in
-   the `VehicleSpec`: engine curves, gearbox, chassis, aero, tires, Stage 1 and
-   provenance.
-2. Give it the next unused `colorSlot` (2 or 3), which fixes its chart colour.
-3. Add it to the `VEHICLES` array in `src/data/vehicles/index.ts`.
-4. Run `npm test`. The data tests check that the curves reproduce the rated
+1. Open (or copy) a file in `src/data/catalog/cars/` and fill in the identity,
+   factory claims, sources and benchmarks.
+2. To make it playable, add `sim: buildSpec(identity, { engine, transmission,
+   drivetrain, chassis, aero, tires, provenance })` with sourced values; any
+   omitted input falls back to a labelled estimate.
+3. Run `npm run generate:stats` and `npm run generate:gaps`, then
+   `npm run check`. The data tests check that the curves reproduce the rated
    power and torque, that the gearing is valid and that the provenance is
    complete.
 
-Every screen picks up new vehicles automatically.
+Chart colours are allocated per chart, so new cars need no colour slot. Every
+screen picks up new cars automatically.
 
 ## Working entirely from an iPad
 
@@ -203,6 +260,8 @@ then release the brake, to brake-boost.
 | `npm test` | Run all tests once |
 | `npm run lint` | ESLint |
 | `npm run check` | Typecheck + lint + tests + build |
+| `npm run generate:stats` | Regenerate the stock benchmark and class table |
+| `npm run generate:gaps` | Regenerate `docs/DATA_GAPS.md` |
 
 ## Assumptions and limitations
 
@@ -210,9 +269,13 @@ then release the brake, to brake-boost.
   driver included in every test mass.
 - Traction control is always active. The model limits drive force to the
   available grip rather than simulating spinning wheels.
-- Timed tests start at brake release with no 1-ft roll-out. US magazine times
-  usually subtract roll-out (≈ 0.3 s). The live timer, like a GPS box, starts
-  at first motion.
+- Timed tests start at brake release; the Tests view can also report times
+  after a 1-ft rollout, as Car and Driver and MotorTrend publish them. The live
+  timer, like a GPS box, starts at first motion.
+- Catalog research was limited to what web search could reach: many
+  publication pages could not be opened directly, so results read from
+  syndicated copies, aggregators or second-hand citations say so. Unconfirmed
+  inputs are listed in `docs/DATA_GAPS.md`.
 - Stage 1 figures are typical aftermarket claims, not dyno sheets of a specific
   tune. Real cars vary with fuel, temperature and calibration.
 
@@ -223,6 +286,9 @@ from:
 - manufacturer technical data and Taiwan launch coverage (U-CAR);
 - spec databases (auto-data.net, ultimatespecs);
 - road tests: Automobil Revue (CZ), 8891/P-Box (TW), US press tests;
-- gearbox references for the DQ250.
+- gearbox references for the DQ250;
+- for the catalog: manufacturer press kits and specification sheets, road
+  tests by Car and Driver, MotorTrend, Edmunds, MotorWeek and others, and
+  specification databases, each linked from its car.
 
-Each value's source is listed in the Garage view and in the vehicle data files.
+Each value's source is listed in the Garage view and in the data files.
