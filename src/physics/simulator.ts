@@ -227,7 +227,7 @@ export class VehicleSimulator {
         if (slip <= 0) {
           clutchT = 0;
         } else if (throttleCmd < 0.02) {
-          clutchT = brake > 0.05 || !lc.creep ? 0 : Math.min(25, slip * 2); // creep
+          clutchT = brake > 0.05 || !lc.creep ? 0 : Math.min(lc.creepTorqueNm, slip * 2); // creep
         } else if (stationaryHold && manual) {
           clutchT = 0; // pedal down while pre-revving
         } else {

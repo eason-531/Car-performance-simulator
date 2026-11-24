@@ -3035,5 +3035,323 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "testMassKg": 1630,
     "score": 99.9,
     "cls": "S+"
+  },
+  "2008-bugatti-veyron-16-4-us-coupe-awd-7dct": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.695,
+      "zeroTo200KmhS": 7.667,
+      "sixtyFootS": 1.872,
+      "quarterMileS": 10.136,
+      "quarterMileTrapKmh": 233.211,
+      "kilometerS": 18.091,
+      "kilometerTrapKmh": 300.479,
+      "metres400S": 10.1,
+      "metres400TrapKmh": 232.78,
+      "splits": {
+        "30mph": 1.285,
+        "60mph": 2.587,
+        "100mph": 5.309,
+        "130mph": 8.314,
+        "150mph": 10.866,
+        "100kmh": 2.695,
+        "160kmh": 5.262,
+        "180kmh": 6.312,
+        "200kmh": 7.667
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.454,
+      "zeroTo200KmhS": 7.426,
+      "sixtyFootS": 1.631,
+      "quarterMileS": 9.895,
+      "quarterMileTrapKmh": 233.211,
+      "kilometerS": 17.85,
+      "kilometerTrapKmh": 300.479,
+      "metres400S": 9.859,
+      "metres400TrapKmh": 232.78,
+      "splits": {
+        "30mph": 1.044,
+        "60mph": 2.346,
+        "100mph": 5.068,
+        "130mph": 8.073,
+        "150mph": 10.625,
+        "100kmh": 2.454,
+        "160kmh": 5.021,
+        "180kmh": 6.071,
+        "200kmh": 7.426
+      }
+    },
+    "topSpeedKmh": 375,
+    "peakPowerPs": 1001,
+    "peakTorqueNm": 1250,
+    "testMassKg": 2122,
+    "score": 105.8,
+    "cls": "S+"
+  },
+  "2017-bugatti-chiron-eu-coupe-awd-7dct": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.677,
+      "zeroTo200KmhS": 6.031,
+      "sixtyFootS": 1.87,
+      "quarterMileS": 9.476,
+      "quarterMileTrapKmh": 260.832,
+      "kilometerS": 16.621,
+      "kilometerTrapKmh": 333.21,
+      "metres400S": 9.444,
+      "metres400TrapKmh": 260.405,
+      "splits": {
+        "30mph": 1.283,
+        "60mph": 2.582,
+        "100mph": 4.499,
+        "130mph": 6.527,
+        "150mph": 8.317,
+        "100kmh": 2.677,
+        "160kmh": 4.464,
+        "180kmh": 5.236,
+        "200kmh": 6.031
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.437,
+      "zeroTo200KmhS": 5.79,
+      "sixtyFootS": 1.629,
+      "quarterMileS": 9.235,
+      "quarterMileTrapKmh": 260.832,
+      "kilometerS": 16.38,
+      "kilometerTrapKmh": 333.21,
+      "metres400S": 9.203,
+      "metres400TrapKmh": 260.405,
+      "splits": {
+        "30mph": 1.042,
+        "60mph": 2.341,
+        "100mph": 4.259,
+        "130mph": 6.286,
+        "150mph": 8.076,
+        "100kmh": 2.437,
+        "160kmh": 4.223,
+        "180kmh": 4.995,
+        "200kmh": 5.79
+      }
+    },
+    "topSpeedKmh": 380,
+    "peakPowerPs": 1500,
+    "peakTorqueNm": 1600,
+    "testMassKg": 2070,
+    "score": 124.6,
+    "cls": "S+"
+  },
+  "2006-koenigsegg-ccx-eu-coupe-rwd-6mt": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.178,
+      "zeroTo200KmhS": 7.534,
+      "sixtyFootS": 2.002,
+      "quarterMileS": 10.285,
+      "quarterMileTrapKmh": 238.186,
+      "kilometerS": 18.014,
+      "kilometerTrapKmh": 310.681,
+      "metres400S": 10.25,
+      "metres400TrapKmh": 237.705,
+      "splits": {
+        "30mph": 1.436,
+        "60mph": 3.062,
+        "100mph": 5.607,
+        "130mph": 8.037,
+        "150mph": 10.524,
+        "100kmh": 3.178,
+        "160kmh": 5.564,
+        "180kmh": 6.511,
+        "200kmh": 7.534
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.862,
+      "zeroTo200KmhS": 7.219,
+      "sixtyFootS": 1.687,
+      "quarterMileS": 9.969,
+      "quarterMileTrapKmh": 238.186,
+      "kilometerS": 17.698,
+      "kilometerTrapKmh": 310.681,
+      "metres400S": 9.934,
+      "metres400TrapKmh": 237.705,
+      "splits": {
+        "30mph": 1.121,
+        "60mph": 2.746,
+        "100mph": 5.292,
+        "130mph": 7.722,
+        "150mph": 10.208,
+        "100kmh": 2.862,
+        "160kmh": 5.248,
+        "180kmh": 6.195,
+        "200kmh": 7.219
+      }
+    },
+    "topSpeedKmh": 387,
+    "peakPowerPs": 817,
+    "peakTorqueNm": 920,
+    "testMassKg": 1435,
+    "score": 106,
+    "cls": "S+"
+  },
+  "2022-bugatti-chiron-super-sport-us-coupe-awd-7dct": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.459,
+      "zeroTo200KmhS": 5.687,
+      "sixtyFootS": 1.738,
+      "quarterMileS": 9.195,
+      "quarterMileTrapKmh": 265.713,
+      "kilometerS": 16.182,
+      "kilometerTrapKmh": 342.012,
+      "metres400S": 9.164,
+      "metres400TrapKmh": 265.173,
+      "splits": {
+        "30mph": 1.133,
+        "60mph": 2.364,
+        "100mph": 4.186,
+        "130mph": 6.05,
+        "150mph": 7.803,
+        "100kmh": 2.459,
+        "160kmh": 4.15,
+        "180kmh": 4.912,
+        "200kmh": 5.687
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.296,
+      "zeroTo200KmhS": 5.524,
+      "sixtyFootS": 1.576,
+      "quarterMileS": 9.033,
+      "quarterMileTrapKmh": 265.713,
+      "kilometerS": 16.019,
+      "kilometerTrapKmh": 342.012,
+      "metres400S": 9.001,
+      "metres400TrapKmh": 265.173,
+      "splits": {
+        "30mph": 0.97,
+        "60mph": 2.201,
+        "100mph": 4.024,
+        "130mph": 5.887,
+        "150mph": 7.64,
+        "100kmh": 2.296,
+        "160kmh": 3.987,
+        "180kmh": 4.749,
+        "200kmh": 5.524
+      }
+    },
+    "topSpeedKmh": 380,
+    "peakPowerPs": 1600,
+    "peakTorqueNm": 1600,
+    "testMassKg": 2047,
+    "score": 129.7,
+    "cls": "S+"
+  },
+  "2005-porsche-carrera-gt-de-convertible-rwd-6mt": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.35,
+      "zeroTo200KmhS": 9.756,
+      "sixtyFootS": 1.976,
+      "quarterMileS": 11.031,
+      "quarterMileTrapKmh": 214.596,
+      "kilometerS": 19.722,
+      "kilometerTrapKmh": 272.491,
+      "metres400S": 10.992,
+      "metres400TrapKmh": 214.163,
+      "splits": {
+        "30mph": 1.397,
+        "60mph": 3.215,
+        "100mph": 6.623,
+        "130mph": 10.55,
+        "150mph": 14.365,
+        "100kmh": 3.35,
+        "160kmh": 6.568,
+        "180kmh": 8.147,
+        "200kmh": 9.756
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.034,
+      "zeroTo200KmhS": 9.439,
+      "sixtyFootS": 1.66,
+      "quarterMileS": 10.715,
+      "quarterMileTrapKmh": 214.596,
+      "kilometerS": 19.406,
+      "kilometerTrapKmh": 272.491,
+      "metres400S": 10.676,
+      "metres400TrapKmh": 214.163,
+      "splits": {
+        "30mph": 1.081,
+        "60mph": 2.899,
+        "100mph": 6.307,
+        "130mph": 10.234,
+        "150mph": 14.049,
+        "100kmh": 3.034,
+        "160kmh": 6.251,
+        "180kmh": 7.831,
+        "200kmh": 9.439
+      }
+    },
+    "topSpeedKmh": 327,
+    "peakPowerPs": 612,
+    "peakTorqueNm": 590,
+    "testMassKg": 1455,
+    "score": 88.2,
+    "cls": "S+"
+  },
+  "2021-bugatti-chiron-sport-us-coupe-awd-7dct": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.676,
+      "zeroTo200KmhS": 6.001,
+      "sixtyFootS": 1.87,
+      "quarterMileS": 9.46,
+      "quarterMileTrapKmh": 261.318,
+      "kilometerS": 16.589,
+      "kilometerTrapKmh": 333.825,
+      "metres400S": 9.428,
+      "metres400TrapKmh": 260.954,
+      "splits": {
+        "30mph": 1.283,
+        "60mph": 2.582,
+        "100mph": 4.483,
+        "130mph": 6.493,
+        "150mph": 8.267,
+        "100kmh": 2.676,
+        "160kmh": 4.447,
+        "180kmh": 5.213,
+        "200kmh": 6.001
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.436,
+      "zeroTo200KmhS": 5.76,
+      "sixtyFootS": 1.629,
+      "quarterMileS": 9.219,
+      "quarterMileTrapKmh": 261.318,
+      "kilometerS": 16.349,
+      "kilometerTrapKmh": 333.825,
+      "metres400S": 9.187,
+      "metres400TrapKmh": 260.954,
+      "splits": {
+        "30mph": 1.042,
+        "60mph": 2.341,
+        "100mph": 4.242,
+        "130mph": 6.252,
+        "150mph": 8.027,
+        "100kmh": 2.436,
+        "160kmh": 4.207,
+        "180kmh": 4.972,
+        "200kmh": 5.76
+      }
+    },
+    "topSpeedKmh": 380,
+    "peakPowerPs": 1500,
+    "peakTorqueNm": 1600,
+    "testMassKg": 2052,
+    "score": 125,
+    "cls": "S+"
   }
 };

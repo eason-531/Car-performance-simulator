@@ -73,7 +73,8 @@ export function theoreticalTopSpeedKmh(vehicle: SimVehicle): number {
   const t = vehicle.transmission;
   const r = vehicle.wheelRadiusM;
   let best = 0;
-  for (let kmh = 20; kmh <= 400; kmh += 0.5) {
+  // Search up to 500 km/h so limiter-free hypercars (≈ 410–440 km/h) are not clipped.
+  for (let kmh = 20; kmh <= 500; kmh += 0.5) {
     const v = kmhToMs(kmh);
     let force = 0;
     for (const ratio of t.overallRatios) {

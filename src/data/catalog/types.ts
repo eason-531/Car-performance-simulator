@@ -20,7 +20,7 @@ export type Origin =
   | 'Czechia';
 
 /** Specification market (country/region the configuration was sold in). */
-export type Market = 'US' | 'UK' | 'DE' | 'IT' | 'TW';
+export type Market = 'US' | 'UK' | 'DE' | 'IT' | 'TW' | 'EU';
 
 export const MARKET_LABEL: Record<Market, string> = {
   US: 'United States',
@@ -28,6 +28,7 @@ export const MARKET_LABEL: Record<Market, string> = {
   DE: 'Germany',
   IT: 'Italy',
   TW: 'Taiwan',
+  EU: 'Europe',
 };
 
 export type BodyStyle =
@@ -55,6 +56,7 @@ export type UsageTag =
   | 'SUV'
   | 'Off-road'
   | 'Supercar'
+  | 'Hypercar'
   | 'Pickup';
 
 export type TransmissionKind = 'AT' | 'DCT' | 'MT' | 'CVT' | 'e-CVT' | 'AMT' | 'MCT' | 'Direct drive' | 'Two-speed';
@@ -174,8 +176,13 @@ export interface FactorySpecs {
 export interface CatalogEntry {
   /** Stable configuration id (year, make, model, trim, market, body, drive, transmission). */
   id: string;
-  /** Roster row number (1–73); undefined for the owner's cars. */
+  /** Roster row number (1–73); undefined for the owner's cars and extension sets. */
   roster?: number;
+  /**
+   * Playable configuration added after the original 73-car roster (handoff
+   * extension sets). `order` is the 1-based position within the set.
+   */
+  extension?: { set: 'Hypercars'; order: number };
   section: string;
   make: string;
   model: string;

@@ -65,7 +65,7 @@ export const entry: CatalogEntry = {
       sourceId: "test",
       publication: "Car and Driver",
       timing: "unconfirmed",
-      timingNote: "Car and Driver test published in 2016 under its legacy procedure (clock started at about 3 mph), which is not a measured 1-ft rollout; the basis is left unconfirmed and both simulator bases are shown.",
+      timingNote: "Car and Driver test published in 2016 under its legacy (pre-late-2019) procedure, which the Codex inspection of 358661b describes as a 3 mph procedure. It is not a measured 1-ft rollout, so the basis is left unconfirmed and both simulator bases are shown.",
       results: {
         zeroTo60MphS: 4.4,
         quarterMileS: 13.3,

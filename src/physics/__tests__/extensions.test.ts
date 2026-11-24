@@ -21,7 +21,7 @@ const manualFixture: VehicleSpec = {
     shiftTorqueDip: 1,
     maxAutoUpshiftRpm: 6100,
     ratedInputTorqueNm: 450,
-    launchClutch: { launchRpm: 3500, brakeHoldRpmLimit: 3500, maxClutchTorqueNm: 600, creep: false, driverEngageS: 0.3 },
+    launchClutch: { launchRpm: 3500, brakeHoldRpmLimit: 3500, maxClutchTorqueNm: 600, creep: false, creepTorqueNm: 25, driverEngageS: 0.3 },
   },
 };
 

@@ -17,12 +17,37 @@ import { assignSeries } from '../../../lib/colors';
 import { classForScore, classScore } from '../classes';
 
 describe('catalog', () => {
-  it('holds the owner cars plus the 73-car roster with unique stable ids', () => {
-    expect(CATALOG).toHaveLength(75);
+  it('holds the owner cars, the 73-car roster and the hypercar extension with unique stable ids', () => {
+    const extension = CATALOG.filter((e) => e.extension);
+    expect(CATALOG).toHaveLength(75 + extension.length);
     expect(OWNER_IDS).toEqual(['lexus-is200t-2016-tw', 'skoda-superb-combi-lk-280']);
     expect(new Set(CATALOG.map((e) => e.id)).size).toBe(CATALOG.length);
     const rosterNumbers = CATALOG.filter((e) => e.roster).map((e) => e.roster);
     expect(rosterNumbers).toEqual(Array.from({ length: 73 }, (_, i) => i + 1));
+    // Every entry is exactly one of: owner car, roster row, extension entry.
+    for (const e of CATALOG) expect([!!e.owner, e.roster !== undefined, !!e.extension].filter(Boolean)).toHaveLength(1);
+  });
+
+  it('keeps the hypercar extension playable, tagged and in handoff order', () => {
+    const ext = CATALOG.filter((e) => e.extension);
+    expect(ext.length).toBeGreaterThanOrEqual(6);
+    const orders = ext.map((e) => e.extension!.order);
+    expect(new Set(orders).size).toBe(orders.length);
+    expect(orders).toEqual([...orders].sort((a, b) => a - b));
+    for (const e of ext) {
+      expect(e.extension!.set).toBe('Hypercars');
+      expect(Number.isInteger(e.extension!.order) && e.extension!.order > 0).toBe(true);
+      expect(e.usage).toContain('Hypercar');
+      expect(e.section).toBe('Hypercars');
+      expect(e.sim, `${e.id} must be playable`).toBeTruthy();
+      expect(e.sim!.provenance.some((p) => p.status === 'verified' && p.parameter === 'Peak power')).toBe(true);
+    }
+    // The handoff requires Veyron 16.4, base Chiron and Koenigsegg representation.
+    expect(ext.some((e) => e.make === 'Bugatti' && e.model === 'Veyron 16.4')).toBe(true);
+    expect(ext.some((e) => e.make === 'Bugatti' && e.model === 'Chiron' && e.trim === 'Coupé')).toBe(true);
+    expect(ext.some((e) => e.make === 'Koenigsegg')).toBe(true);
+    // Only extension entries carry the Hypercar tag; the original roster is unchanged.
+    for (const e of CATALOG.filter((x) => !x.extension)) expect(e.usage).not.toContain('Hypercar');
   });
 
   it('gives every car at least one source link and a reason when it cannot run', () => {

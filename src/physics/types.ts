@@ -59,6 +59,8 @@ export interface SimLaunchClutch {
   brakeHoldRpmLimit: number;
   maxClutchTorqueNm: number;
   creep: boolean;
+  /** Clutch torque allowed while creeping off the brake, Nm. */
+  creepTorqueNm: number;
   /** Seconds for the driver to fully engage the clutch at launch; 0 = instant (TCU). */
   driverEngageS: number;
 }

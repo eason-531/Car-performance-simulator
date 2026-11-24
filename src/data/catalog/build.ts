@@ -296,6 +296,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
         brakeHoldRpmLimit: t.launchClutch?.brakeHoldRpmLimit ?? t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         maxClutchTorqueNm: t.launchClutch?.maxClutchTorqueNm ?? Math.round(tPk * 1.6),
         creep: t.launchClutch?.creep ?? !isManual,
+        ...(t.launchClutch?.creepTorqueNm !== undefined && { creepTorqueNm: t.launchClutch.creepTorqueNm }),
         driverEngageS: t.launchClutch?.driverEngageS ?? (isManual ? 0.3 : undefined),
       };
   if (launchClutch && t.launchClutch?.launchRpm === undefined) {
