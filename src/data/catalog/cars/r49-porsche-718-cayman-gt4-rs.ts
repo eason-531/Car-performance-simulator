@@ -96,7 +96,6 @@ export const entry: CatalogEntry = {
     }
   ],
   dataGaps: [
-    "1st–6th PDK ratios (GT3 set per forum report)",
     "Tire model",
     "Drag coefficient"
   ],
@@ -118,13 +117,13 @@ export const entry: CatalogEntry = {
     tires: { sizes: [staggered('r20', '245/35 R20 F · 295/30 R20 R', { widthMm: 245, aspectPct: 35, rimIn: 20 }, { widthMm: 295, aspectPct: 30, rimIn: 20 }, 'Michelin Pilot Sport Cup 2 (assumed)')], compound: 'semi-slick', gripScale: 1.3 },
     speedLimiterKmh: 315,
     provenance: [
+      { parameter: 'Gear ratios', value: '3.75/2.38/1.72/1.34/1.11/0.96/0.84', status: 'verified', source: 'Porsche GT4 RS technical data (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3Ac84793f0-4df0-4f82-830b-24f76f543988/718%20Cayman%20GT4%20RS%20Technical%20Data.pdf' },
+      { parameter: 'Final drive', value: '4.17', status: 'verified', source: 'Porsche GT4 RS technical data (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3Ac84793f0-4df0-4f82-830b-24f76f543988/718%20Cayman%20GT4%20RS%20Technical%20Data.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Fit toward the Car and Driver 0–60 mph 2.8 s stopped at the 1.30 bound (sim 2.88 s); residual shown rather than widening the bound' },
       { parameter: 'Drivetrain efficiency', value: '86.3 %', status: 'estimated', source: 'Fitted to the Car and Driver ¼-mile trap 126 mph' },
       { parameter: 'Peak power', value: '493 hp', status: 'reported', source: 'Porsche rating (multiple sources)', url: 'https://motorweek.org/road_tests/2022-porsche-cayman-gt4-rs' },
       { parameter: 'Peak torque', value: '331 lb-ft', status: 'reported', source: 'Porsche rating (multiple sources)', url: 'https://motorweek.org/road_tests/2022-porsche-cayman-gt4-rs' },
       { parameter: 'Power / torque rpm', value: '8,400 / 6,750 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Gear ratios', value: '3.75/2.38/1.72/1.34/1.11/0.96/0.84', status: 'reported', source: '7th gear 0.84 from Porsche US technical data; forum reports the GT3 PDK set is shared', url: 'https://download.newsroom.porsche.com/dam/jcr:c84793f0-4df0-4f82-830b-24f76f543988/718%20Cayman%20GT4%20RS%20Technical%20Data.pdf' },
-      { parameter: 'Final drive', value: '4.17', status: 'verified', source: 'Porsche US technical data', url: 'https://download.newsroom.porsche.com/dam/jcr:c84793f0-4df0-4f82-830b-24f76f543988/718%20Cayman%20GT4%20RS%20Technical%20Data.pdf' },
       { parameter: 'Curb mass', value: '3,227 lb (1,464 kg); 3,205 lb with magnesium wheels', status: 'reported', source: 'Specification listings' },
       { parameter: 'Tire compound', value: 'Track semi-slick class', status: 'estimated', source: 'GT4 RS ships on Michelin Pilot Sport Cup 2 (not verified here)' },
       { parameter: 'Launch rpm', value: '≈6,500 rpm', status: 'estimated', source: 'Porsche GT launch-control behaviour (6,500 rpm reported for the GT3 Touring)' },

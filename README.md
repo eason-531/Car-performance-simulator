@@ -2,7 +2,7 @@
 
 An interactive, physics-based performance simulator built with React,
 TypeScript and Vite. It centres on the owner's two cars (**My Garage**) and adds
-a researched catalog of 73 stock configurations, 48 of which can be driven,
+a researched catalog of 73 stock configurations, 55 of which can be driven,
 tested, raced and tuned. It runs entirely in the browser (no backend, no paid
 APIs) and is designed for iPad Safari.
 
@@ -89,12 +89,12 @@ and remain the default drag matchup on a fresh install.
 an identity (year, make, model, trim, market, body, drivetrain, gearbox),
 factory claims, sources, measured benchmarks and the data gaps still open.
 
-- **Playable (48).** Torque-converter automatics, dual-clutch and manual
+- **Playable (55).** Torque-converter automatics, dual-clutch and manual
   gearboxes, front, rear and all-wheel drive. Their physics input is built by
   `buildSpec()` from rated peaks (the curves never exceed the published power or
   torque), and every value that is not sourced is labelled *estimated* with a
   reason.
-- **Catalog-only (25).** CVTs, hybrids, EVs, the AMG MCT, the LFA's automated
+- **Catalog-only (18).** CVTs, hybrids, EVs, the AMG MCT, the LFA's automated
   manual and the Raptor's 4WD wait for models of their own, so they are never
   routed through an incompatible one. Some conventional cars wait for gear
   ratios that no reachable source published. They can still be browsed and
@@ -115,8 +115,8 @@ factory claims, sources, measured benchmarks and the data gaps still open.
   redline maximum), a 0.3 s clutch engagement and 0.3 s shifts with the drive
   interrupted.
 - **Stock classes D, C, B, A, S and S+** come from one standardized stock run
-  per car (formula SLC-2: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
-  km/h). They ignore your tuning. The thresholds (20/39/49/64/78) sit in wide
+  per car (formula SLC-3: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
+  km/h). They ignore your tuning. The thresholds (20/39.4/46.5/64/78) sit in wide
   gaps of the score distribution and are checked against slow, middle and
   fast reference fixtures. The table is generated offline into
   `stockStats.generated.ts` (`npm run generate:stats`), and a test fails if it
@@ -124,7 +124,8 @@ factory claims, sources, measured benchmarks and the data gaps still open.
 - **Open data.** [`docs/DATA_GAPS.md`](docs/DATA_GAPS.md) lists every car's
   missing or unconfirmed inputs with the sources already consulted
   (`npm run generate:gaps`). Spec sheets for those cars can be dropped into the
-  car files to confirm values or make catalog-only cars playable.
+  car files to confirm values or make catalog-only cars playable; the first
+  owner-supplied follow-up is kept in [`docs/spec-sheets/`](docs/spec-sheets/).
 
 ## The physics model
 

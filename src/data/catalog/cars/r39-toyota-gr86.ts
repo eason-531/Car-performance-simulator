@@ -65,6 +65,13 @@ export const entry: CatalogEntry = {
       publisher: "KSL Cars",
       url: "https://cars.ksl.com/resources/car-review/2022-toyota-gr86-premium-test-drive-review",
       kind: "reference"
+    },
+    {
+      id: "src-toy22",
+      title: "2022 Toyota GR86 product information",
+      publisher: "Toyota (mirror)",
+      url: "https://staging.cedricthecarguy.com/wp-content/uploads/2023/10/2022-Toyota-GR86-Product-Information.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -98,7 +105,6 @@ export const entry: CatalogEntry = {
     }
   ],
   dataGaps: [
-    "Gear ratios and final drive",
     "Car and Driver original test (¼-mile figures unclear)",
     "Power/torque rpm",
     "Drag coefficient"
@@ -114,18 +120,18 @@ export const entry: CatalogEntry = {
   shortName: "Toyota GR86 Premium (manual)"
 }, {
     engine: { code: 'FA24D', description: '2.4 L flat-4, D-4S', displacementCc: 2387, aspiration: 'na', idleRpm: 700, redlineRpm: 7400, revLimitRpm: 7500, power: { value: 228, unit: 'hp', rpm: [7000, 7000] }, torque: { value: 184, unit: 'lb-ft', rpm: [3700, 3700] }, lowEndFraction: 0.78 },
-    transmission: { type: 'manual', name: '6-speed manual', gearRatios: [3.626, 2.188, 1.541, 1.213, 1.0, 0.767], finalDrive: 4.3 },
+    transmission: { type: 'manual', name: '6-speed manual', gearRatios: [3.626, 2.189, 1.541, 1.213, 1.0, 0.767], finalDrive: 4.1 },
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive, Torsen limited-slip differential' },
     chassis: { curbMassKg: 1285, frontWeightFraction: 0.53, wheelbaseM: 2.575, lengthMm: 4265, widthMm: 1775, heightMm: 1310 },
     aero: {},
     tires: { sizes: [square('r18', '215/40 R18', 215, 40, 18, 'Michelin Pilot Sport 4 (Premium)')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Gear ratios', value: '3.626/2.189/1.541/1.213/1.000/0.767', status: 'verified', source: 'Toyota MY2022 product information (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://staging.cedricthecarguy.com/wp-content/uploads/2023/10/2022-Toyota-GR86-Product-Information.pdf' },
+      { parameter: 'Final drive', value: '4.10', status: 'verified', source: 'Toyota MY2022 product information (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://staging.cedricthecarguy.com/wp-content/uploads/2023/10/2022-Toyota-GR86-Product-Information.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Fit toward the Edmunds 0–60 mph 6.1 s stopped at the bound (sim 6.22 s)' },
       { parameter: 'Peak power', value: '228 hp @ 7,000', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Peak torque', value: '184 lb-ft @ 3,700 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Gear ratios', value: '3.626/2.188/1.541/1.213/1.000/0.767', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '4.300', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '2,833 lb (1,285 kg)', status: 'reported', source: 'Autoblog listing (other listings 2,811–2,868 lb)', url: 'https://www.autoblog.com/2022/04/26/2022-toyota-gr86-road-test/' },
       { parameter: 'Tire size', value: '215/40 R18', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
     ],

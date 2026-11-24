@@ -57,22 +57,6 @@ export const entry: CatalogEntry = {
   ],
   benchmarks: [
     {
-      id: "cd",
-      sourceId: "src2",
-      publication: "Car and Driver (short take, forum reprint)",
-      timing: "unconfirmed",
-      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
-      results: {
-        zeroTo60MphS: 3.7,
-        quarterMileS: 11.8,
-        quarterMileTrapMph: 124
-      },
-      conditions: {},
-      match: "exact",
-      verification: "Forum reprint of the magazine page.",
-      date: "2010"
-    },
-    {
       id: "cd-comparo",
       sourceId: "src3",
       publication: "Car and Driver comparison (forum quote)",
@@ -89,13 +73,32 @@ export const entry: CatalogEntry = {
       match: "exact",
       verification: "Forum quote; an aggregator attributes the same run to Car and Driver.",
       date: "2011"
+    },
+    {
+      id: "cd",
+      sourceId: "test",
+      publication: "Car and Driver",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      results: {
+        zeroTo60MphS: 3.7,
+        quarterMileS: 11.8,
+        quarterMileTrapMph: 124
+      },
+      conditions: {
+        testMass: "3,583 lb"
+      },
+      match: "exact",
+      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; instrumented test.",
+      date: "2010"
     }
   ],
   dataGaps: [
-    "Car and Driver instrumented test page (roster source)",
-    "Curb mass (sources span 3,263–3,559 lb)",
-    "ASG ratios and final drive",
-    "Drag coefficient"
+    "Drag coefficient",
+    "Where the 1.259 counter gear acts in the ASG driveline"
   ],
-  unsupportedReason: "Single-clutch automated manual (ASG) launch and shift model not added yet."
+  unsupportedReason: "Single-clutch automated manual (ASG) launch and shift model not added yet.",
+  notes: [
+    "Lexus press dossier: ASG 3.231/2.188/1.609/1.233/0.970/0.795, front counter gear 1.259, final drive 3.417. Where the counter gear acts must be confirmed before the ratios are combined."
+  ]
 };

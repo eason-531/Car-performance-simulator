@@ -79,7 +79,6 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "Car and Driver test results",
-    "Weight distribution",
     "Drag coefficient",
     "Launch benchmark for grip calibration"
   ],
@@ -101,13 +100,14 @@ export const entry: CatalogEntry = {
     tires: { sizes: [square('r19', '265/30 R19', 265, 30, 19, 'Michelin Pilot Sport 4S')], compound: 'uhp', gripScale: 1.15 },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Tire size', value: '265/30 R19 Michelin Pilot Sport 4S', status: 'verified', source: 'Honda US specifications (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://hondanews.com/en-US/releases/2023-honda-civic-type-r-specifications-features?downloadUrl=%2Fen-US%2Freleases%2Frelease-1503019bd8a757ea08267d79440f3aae%2Fdownload&la=1' },
+      { parameter: 'Weight distribution', value: '62/38 front/rear', status: 'verified', source: 'Honda US specifications (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://hondanews.com/en-US/releases/2023-honda-civic-type-r-specifications-features?downloadUrl=%2Fen-US%2Freleases%2Frelease-1503019bd8a757ea08267d79440f3aae%2Fdownload&la=1' },
       { parameter: 'Tire grip calibration', value: '×1.15', status: 'estimated', source: 'No launch benchmark for this car: median of the fitted front-drive cars (Camry, Elantra N, Octavia)' },
       { parameter: 'Peak power', value: '315 hp @ 6,500 rpm', status: 'reported', source: 'Honda specifications', url: 'https://hondanews.com/en-US/honda-automobiles/releases/2023-honda-civic-type-r-specifications-features' },
       { parameter: 'Peak torque', value: '310 lb-ft @ 2,600–4,000 rpm', status: 'reported', source: 'Honda specifications', url: 'https://hondanews.com/en-US/honda-automobiles/releases/2023-honda-civic-type-r-specifications-features' },
       { parameter: 'Gear ratios', value: '3.62/2.12/1.53/1.12/0.91/0.73', status: 'reported', source: 'Motor Matchup (rounded)', url: 'https://www.motormatchup.com/catalog/Honda/Civic-Type-R/2023/Manual' },
       { parameter: 'Final drive', value: '3.84', status: 'reported', source: 'Motor Matchup and Auto123 agree', url: 'https://www.motormatchup.com/catalog/Honda/Civic-Type-R/2023/Manual' },
       { parameter: 'Curb mass', value: '3,188 lb (1,446 kg)', status: 'reported', source: 'Honda specifications', url: 'https://hondanews.com/en-US/honda-automobiles/releases/2023-honda-civic-type-r-specifications-features' },
-      { parameter: 'Tire size', value: '265/30 R19', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
     ],
   }),
 };

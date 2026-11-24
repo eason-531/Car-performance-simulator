@@ -62,13 +62,13 @@ export const entry: CatalogEntry = {
   benchmarks: [],
   dataGaps: [
     "Car and Driver 2018 E 63 S wagon test (roster source)",
-    "9-speed MCT ratios and final drive",
     "Curb mass",
     "Tire size",
     "Drag coefficient"
   ],
   notes: [
-    "A Mercedes-Benz USA release quotes Car and Driver at 4.1 s to 60 mph and 12.5 s @ 114 mph, but that page may describe an earlier-generation wagon (C/D measured 3.0 s for the 2018 E 63 S sedan), so it is not transcribed."
+    "A Mercedes-Benz USA release quotes Car and Driver at 4.1 s to 60 mph and 12.5 s @ 114 mph, but that page may describe an earlier-generation wagon (C/D measured 3.0 s for the 2018 E 63 S sedan), so it is not transcribed.",
+    "Mercedes-Benz USA: 9-speed MCT 5.35/3.24/2.25/1.64/1.21/1.00/0.86/0.72/0.60, final drive 3.06."
   ],
   unsupportedReason: "AMG MCT (wet start-off clutch with a 9-speed planetary) needs its own launch and shift model; not modeled yet."
 };

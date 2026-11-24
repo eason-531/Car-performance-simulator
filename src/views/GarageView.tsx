@@ -394,7 +394,11 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
             <Spec label="Idle / redline / limiter" value={`${fmt(e.idleRpm)} / ${fmt(e.redlineRpm)} / ${fmt(e.revLimitRpm)} rpm`} />
             <h3 className="spec-list__group">Driveline</h3>
             <Spec label="Transmission" value={t.name} />
-            <Spec label="Final drive" value={[...new Set(t.finalDrive)].map((f) => f.toFixed(3)).join(' / ')} />
+            <Spec
+              label={t.frontAxleRatio !== undefined ? 'Final drive (rear)' : 'Final drive'}
+              value={[...new Set(t.finalDrive)].map((f) => f.toFixed(3)).join(' / ')}
+            />
+            {t.frontAxleRatio !== undefined && <Spec label="Front axle ratio" value={`${t.frontAxleRatio.toFixed(3)} (reference; fed through the front coupling)`} />}
             {t.torqueConverter && (
               <Spec label="Torque converter" value={`Stall ≈ ${fmt(t.torqueConverter.stallRpm)} rpm, ${t.torqueConverter.stallTorqueRatio}:1, lock-up from ${ordinalGear(t.torqueConverter.lockupMinGear)}`} />
             )}

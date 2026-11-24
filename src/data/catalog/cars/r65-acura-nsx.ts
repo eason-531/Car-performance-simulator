@@ -78,12 +78,12 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "Motor outputs and battery limits",
-    "9-speed DCT ratios",
     "Front-axle torque-vectoring split",
     "Drag coefficient"
   ],
   notes: [
-    "A MotorTrend comparison recorded 3.1 s and 11.3 s."
+    "A MotorTrend comparison recorded 3.1 s and 11.3 s.",
+    "Acura power-unit press kit: 9DCT 3.838/2.433/1.778/1.428/1.211/1.038/0.881/0.747/0.634, rear axle 3.583; the front Twin Motor Unit is described separately."
   ],
   unsupportedReason: "Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet."
 };

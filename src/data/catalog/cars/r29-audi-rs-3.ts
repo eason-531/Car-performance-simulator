@@ -57,26 +57,16 @@ export const entry: CatalogEntry = {
       publisher: "Yahoo Autos (syndicated)",
       url: "https://autos.yahoo.com/2022-audi-rs3-focused-track-140000020.html",
       kind: "road-test"
+    },
+    {
+      id: "src-audi-eu",
+      title: "RS 3 Sedan TFSI technical data (pre-facelift)",
+      publisher: "Audi",
+      url: "https://www.audi.com/system/production/car_motorizations/468/file_en/1d135b0858d0dbde3c70b0690ae8652197730017/eTD-Audi-RS3-Sedan-TFSI_231027.pdf?1698933729=&disposition=attachment",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
-    {
-      id: "synd-test",
-      sourceId: "src3",
-      publication: "Instrumented test syndicated on Yahoo Autos (outlet not named; likely Car and Driver)",
-      timing: "unconfirmed",
-      timingNote: "Timing procedure of this publication is not confirmed.",
-      results: {
-        zeroTo60MphS: 3.3
-      },
-      conditions: {
-        testMass: "3,639 lb as tested",
-        launchControl: "Launch control"
-      },
-      match: "exact",
-      verification: "Syndicated copy of the article (original page not reachable from this environment). Quarter-mile time and trap speed were not in the reachable text.",
-      date: "2022"
-    },
     {
       id: "motor1",
       sourceId: "src2",
@@ -90,15 +80,36 @@ export const entry: CatalogEntry = {
       match: "exact",
       verification: "Search-result summary of the article (page itself not reachable from this environment). Single first-drive run, not a full instrumented test.",
       date: "2022"
+    },
+    {
+      id: "cd",
+      sourceId: "test",
+      publication: "Car and Driver",
+      timing: "rollout-1ft",
+      timingNote: "Car and Driver results since late 2019 subtract a 1-ft rollout.",
+      results: {
+        zeroTo60MphS: 3.3,
+        quarterMileS: 11.8,
+        quarterMileTrapMph: 117,
+        rolloutS: 0.3
+      },
+      conditions: {
+        testMass: "3,639 lb"
+      },
+      match: "exact",
+      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; original test; it lists the wheel and tire options.",
+      date: "2022"
     }
   ],
   dataGaps: [
-    "7-speed DQ500 gear ratios and final drive",
+    "Gearbox code and per-gear output-ratio assignment",
     "Power/torque rpm bands",
-    "Quarter-mile time and trap speed",
-    "Tire size",
-    "Drag coefficient",
+    "US tire size",
     "Front/rear weight distribution"
   ],
-  unsupportedReason: "Awaiting spec sheet: 7-speed S tronic (DQ500) gear ratios and final drive for the 8Y RS 3 not found in any reachable source, so the car is not routed through the physics model."
+  unsupportedReason: "Awaiting the S tronic shaft assignment: Audi publishes the forward ratios and two output ratios (4.059 and 3.45) but not which gears use which in this US gearbox, so the car is not routed through the physics model.",
+  notes: [
+    "Forward ratios 3.560/2.530/1.680/1.020/0.790/0.760/0.630 (Audi, agreeing with the 2022 US listing to rounding). Output ratios 4.059 (EU table) and 3.45 (US database) suggest two output shafts; the TT RS mapping is not assumed.",
+    "Audi EU aero: Cd 0.32, 2.22 m². The EU power rating is kept separate from the US 401 hp."
+  ]
 };

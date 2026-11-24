@@ -4,19 +4,14 @@
 Every value the simulator could not confirm from a reachable source. A spec sheet (gear ratios,
 final drive, rated output with rpm, curb mass, tire size, Cd) for any car below lets it be
 confirmed or made playable. Sources already consulted are linked for each car.
+Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (25) — need data before they can run
-
-### 1997 Acura Integra Type R
-
-- Why: Awaiting spec sheet: no reachable source gave the US car’s output, gearing or mass (only recalled figures), so it is not routed through the physics model.
-- Missing: Rated output (US B18C5); 5-speed gear ratios and final drive; Curb mass; Car and Driver 1997 test results; Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15141504/1997-acura-integra-type-r-archived-test-review/) · [Parkers](https://parkers.co.uk/honda/integra-type-r/coupe-1997/specs)
+## Catalog-only cars (18) — need data before they can run
 
 ### 2022 Honda Civic Sport Touring 1.5T
 
 - Why: Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet.
-- Missing: MotorTrend first test (roster source); CVT ratio range and final drive; Torque figure; Tire size; Drag coefficient
+- Missing: MotorTrend first test (roster source); Torque figure; Tire size; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2022-honda-civic-sport-touring-hatchback-cvt-automatic-first-test-review) · [Edmunds](https://www.edmunds.com/car-news/tested-2022-honda-civic-hatchback-loses-speed-but-wins-our-hearts.html)
 
 ### 2023 Toyota Prius Limited AWD
@@ -27,14 +22,14 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2022 Audi RS 3
 
-- Why: Awaiting spec sheet: 7-speed S tronic (DQ500) gear ratios and final drive for the 8Y RS 3 not found in any reachable source, so the car is not routed through the physics model.
-- Missing: 7-speed DQ500 gear ratios and final drive; Power/torque rpm bands; Quarter-mile time and trap speed; Tire size; Drag coefficient; Front/rear weight distribution
+- Why: Awaiting the S tronic shaft assignment: Audi publishes the forward ratios and two output ratios (4.059 and 3.45) but not which gears use which in this US gearbox, so the car is not routed through the physics model.
+- Missing: Gearbox code and per-gear output-ratio assignment; Power/torque rpm bands; US tire size; Front/rear weight distribution
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40157829/2022-audi-rs3-sedan-us-drive/) · [Motor1](https://www.motor1.com/reviews/634277/2022-audi-rs3-review/) · [Yahoo Autos (syndicated)](https://autos.yahoo.com/2022-audi-rs3-focused-track-140000020.html)
 
 ### 2018 Mercedes-AMG E 63 S Wagon 4MATIC+
 
 - Why: AMG MCT (wet start-off clutch with a 9-speed planetary) needs its own launch and shift model; not modeled yet.
-- Missing: Car and Driver 2018 E 63 S wagon test (roster source); 9-speed MCT ratios and final drive; Curb mass; Tire size; Drag coefficient
+- Missing: Car and Driver 2018 E 63 S wagon test (roster source); Curb mass; Tire size; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a19056498/2018-mercedes-amg-e63-s-wagon-test-review/) · [Autoblog](https://www.autoblog.com/2018/06/29/2018-mercedes-amg-e-63-s-wagon-review-quick-spin/) · [Mercedes-Benz USA](https://media.mbusa.com/releases/amg-e-class-wagon-an-american-tradition)
 
 ### 2020 Volvo V60 T8 Polestar Engineered
@@ -49,64 +44,28 @@ confirmed or made playable. Sources already consulted are linked for each car.
 - Missing: Car and Driver original page; Hybrid system power split and battery limits; 8-speed ratios and final drive; Tire size; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a69239467/2025-bmw-m5-touring-test/) · [FastestLaps (quoting the Car and Driver spec box)](https://fastestlaps.com/models/bmw-m5-touring-g99) · [Motor1](https://www.motor1.com/reviews/769433/2025-bmw-m5-touring-review/)
 
-### 2018 Audi TT RS Coupe
-
-- Why: Awaiting spec sheet: the 8S TT RS 1st–3rd gear ratios (only 4th–7th and a 3.45 final drive were found, from a dealer listing) not found in any reachable source, so the car is not routed through the physics model.
-- Missing: 7-speed DQ500 gear ratios 1st–3rd (4th–7th and final drive weakly sourced); Car and Driver 2018 test results (0–60, ¼ mile, trap); Curb mass; Power/torque rpm bands; Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a14516384/2018-audi-tt-rs-test-review/) · [Audi MediaCenter](https://uploads.audi-mediacenter.com/system/production/car_motorizations/837/file_en/ab1a688414eda4f444a9a7fad976f57fbe0061a8/eTD_Audi_TTRS_Coupe_TFSI_221102.pdf) · [Audi MediaCenter](https://www.audi-mediacenter.com/en/the-audi-tt-rs-2924/drivetrain-2940)
-
-### 2018 Alpine A110 Première Édition
-
-- Why: Awaiting spec sheet: the 7-speed DCT ratios and the Quattroruote measured figures (the reachable text of the test table is garbled) not found in any reachable source, so the car is not routed through the physics model.
-- Missing: Quattroruote measured 0–100 km/h, 0–400 m and 0–1000 m; 7-speed DCT (Getrag 7DCT300) gear ratios and final drive; Curb mass (DIN/EU); Torque figure and rpm bands; Tire size; Drag coefficient
-- Consulted: [Quattroruote](https://www.quattroruote.it/prove/2018/alpine_a110_la_prova_della_premiere_edition/_jcr_content/summaryParsys/article_attachment/file.res/Centro-Prove-Alpine-A110.pdf) · [Alpine](https://www.auto-brochures.com/makes/alpine/Alpine_int%20A110_2018-2.pdf)
-
-### 2021 Porsche 911 Turbo S Turbo S coupe
-
-- Why: Awaiting spec sheet: 8-speed PDK gear ratios and final drive for the 992 Turbo S not found in any reachable source, so the car is not routed through the physics model.
-- Missing: 8-speed PDK gear ratios and final drive; Curb mass of the Car and Driver test car; Power/torque rpm bands; Tire size; Drag coefficient; Front-axle torque split range
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a34359564/2021-porsche-911-turbo-s-testing-zero-to-60/) · [Car and Driver (syndicated on Yahoo)](https://sports.yahoo.com/640-hp-2021-porsche-911-164900225.html) · [Rennlist](https://rennlist.com/articles/this-just-in-2021-porsche-911-turbo-s-is-crazy-crazy-fast)
-
-### 2020 Ford Mustang Shelby GT500 Carbon Fiber Track Package
-
-- Why: Awaiting spec sheet: TR-9070 7-speed DCT gear ratios and final drive not found in any reachable source, so the car is not routed through the physics model.
-- Missing: TR-9070 7-speed DCT gear ratios and final drive; CFTP curb mass; Car and Driver original test page (conflicting citations); MotorTrend test; Tire size; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2020-ford-mustang-shelby-gt500-first-test) · [Edmunds](https://edmunds.com/ford/shelby-gt500/2020/review) · [CJ Pony Parts](https://www.cjponyparts.com/resources/news/2020-shelby-gt500)
-
 ### 2021 Porsche Macan GTS
 
-- Why: Awaiting spec sheet: 7-speed PDK gear ratios and final drive for the 2021 Macan GTS not found in any reachable source, so the car is not routed through the physics model.
-- Missing: 7-speed PDK gear ratios and final drive; Torque figure (sources give 405 and 406 lb-ft); MotorTrend original page; Weight distribution; Tire size; Drag coefficient
+- Why: Awaiting the US axle ratio: Porsche EU lists 4.67 and a US MY2021 specification database 4.13, so the car is not routed through the physics model until the conflict is resolved.
+- Missing: US axle ratio (4.67 EU vs 4.13 US listing); Tire size; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-porsche-macan-gts-first-test-review) · [ccstartup.com (MotorTrend repost)](https://ccstartup.com/blog/2021/02/15/2021-porsche-macan-gts-first-test-porsches-compact-cannon/) · [Porsche Newsroom](https://download.newsroom.porsche.com/dam/jcr:2d37daf0-4a15-4a3b-810b-f3c4b4a72c76/PAG_MacanGTS_TD_EN.pdf)
 
 ### 2021 Ford F-150 Raptor SuperCrew 37 Performance Package
 
 - Why: Transfer-case 4WD test mode (4A/4H) not modeled yet.
-- Missing: Car and Driver 37 Performance Package results (roster source); Curb mass; 10-speed ratios and axle ratio; 4WD torque split; Drag coefficient
+- Missing: 4WD torque split; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40059355/2021-ford-f-150-raptor-37-performance-package-by-the-numbers/) · [Motor1](https://www.motor1.com/reviews/529834/2021-ford-raptor-first-drive/) · [Edmunds (via Carscoops)](https://www.carscoops.com/2022/05/want-a-fast-ford-f-150-buy-the-hybrid-not-the-raptor/)
 
 ### 2012 Lexus LFA
 
 - Why: Single-clutch automated manual (ASG) launch and shift model not added yet.
-- Missing: Car and Driver instrumented test page (roster source); Curb mass (sources span 3,263–3,559 lb); ASG ratios and final drive; Drag coefficient
+- Missing: Drag coefficient; Where the 1.259 counter gear acts in the ASG driveline
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [PakWheels forum (Car and Driver reprint)](https://www.pakwheels.com/forums/t/lexus-fan-club/119439?page=8) · [ClubLexus forum (quote)](https://clublexus.com/forums/lfa-model-2012/533844-hell-has-frozen-over-c-and-d-comparo-lexus-lfa-vs-ferrari-599-hgte-spoiler-2.html)
-
-### 2018 McLaren 720S Coupe
-
-- Why: Awaiting spec sheet: 7-speed SSG gear ratios and final drive not found in any reachable source, so the car is not routed through the physics model.
-- Missing: 7-speed SSG gear ratios and final drive; Car and Driver original test page; Curb mass (sources span 3,128–3,158 lb); Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a19862504/2018-mclaren-720s-instrumented-test-review/) · [0-60specs](https://www.0-60specs.com/mclaren/720s-0-60-times) · [Motor1](https://www.motor1.com/reviews/225841/2018-mclaren-720s/)
-
-### 2018 Lamborghini Huracán Performante LP 640-4
-
-- Why: Awaiting spec sheet: 7-speed LDF dual-clutch gear ratios and final drive not found in any reachable source, so the car is not routed through the physics model.
-- Missing: 7-speed LDF gear ratios and final drive; Power/torque rpm; AWD split range; Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)
 
 ### 2017 Acura NSX
 
 - Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: Motor outputs and battery limits; 9-speed DCT ratios; Front-axle torque-vectoring split; Drag coefficient
+- Missing: Motor outputs and battery limits; Front-axle torque-vectoring split; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15098793/2017-acura-nsx-supercar-full-test-review/) · [Autoblog](https://www.autoblog.com/buy/2017-Acura-NSX/review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2017-acura-nsx-203000488.html)
 
 ### 2021 Ferrari SF90 Stradale Assetto Fiorano
@@ -157,24 +116,23 @@ confirmed or made playable. Sources already consulted are linked for each car.
 - Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
 
-## Playable cars (48) — running on estimates to confirm
+## Playable cars (55) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
-- Unconfirmed inputs: Tire size (using 265/30 R19)
-- Also missing: Car and Driver test results; Weight distribution; Drag coefficient; Launch benchmark for grip calibration
+- Also missing: Car and Driver test results; Drag coefficient; Launch benchmark for grip calibration
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a41952459/2023-honda-civic-type-r-by-the-numbers/) · [Honda](https://hondanews.com/en-US/honda-automobiles/releases/2023-honda-civic-type-r-specifications-features) · [FastestLaps (citing Sport Auto)](https://fastestlaps.com/models/honda-civic-type-r-n-a)
 
 ### 2024 Acura Integra Type S
 
-- Unconfirmed inputs: Peak power (using 320 hp @ 6,500); Peak torque (using 310 lb-ft @ 2,600–4,000 rpm); Gear ratios (using 3.62/…/0.73 (Civic Type R set)); Final drive (using 3.84); Tire size (using 265/30 R19)
-- Also missing: Instrumented test results; Gear ratios and final drive (assumed shared with Civic Type R); Power/torque rpm; Weight distribution; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a44212736/2024-acura-integra-type-s-drive/) · [Autoblog](https://autoblog.com/buy/2024-Acura-Integra/review/)
+- Unconfirmed inputs: Tire size (using 265/30 R19)
+- Also missing: Instrumented test results; Weight distribution; Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a44212736/2024-acura-integra-type-s-drive/) · [Autoblog](https://autoblog.com/buy/2024-Acura-Integra/review/) · [Acura](https://acuranews.com/en-US/releases/release-13f25e90cfe47cd58453f1f7100d2209-2024-acura-integra-integra-type-s-specifications-features?selectedTabId=release-13f25e90cfe47cd58453f1f7100d2209-photos)
 
 ### 2023 Toyota GR Corolla Circuit Edition
 
-- Unconfirmed inputs: Power / torque rpm (using 6,500 / 3,000–5,500 rpm); Gear ratios (using 3.538/2.238/1.535/1.162/1.081/0.902); Final drive (using 3.941 (1st–4th) / 3.350 (5th–6th)); Tire size (using 235/40 R18)
-- Also missing: Gear ratios and final drive; Power/torque rpm; AWD split range; Weight distribution; Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 6,500 / 3,000–5,500 rpm); Gear ratios (using 3.538/2.238/1.535/1.162/1.081/0.902); Tire size (using 235/40 R18)
+- Also missing: Power/torque rpm; AWD split range; Weight distribution; Drag coefficient; Gear ratios (GR Yaris set assumed; Toyota GB release has the table)
 - Consulted: [MotorTrend](https://www.motortrend.com/features/2023-toyota-gr-corolla-circuit-edition-first-test-review) · [Car and Driver (syndicated on AOL)](https://www.aol.com/tested-toyota-gr-corolla-quicker-153000033.html) · [Carscoops (citing MotorTrend)](https://www.carscoops.com/2022/09/2023-gr-corolla-clocks-0-60-time-of-5-4-sec-in-first-test-comes-up-short-on-toyotas-claims/)
 
 ### 2021 Toyota GR Yaris Circuit Pack
@@ -200,6 +158,12 @@ confirmed or made playable. Sources already consulted are linked for each car.
 - Unconfirmed inputs: Power / torque rpm (using 6,000 / 1,450–4,700 rpm); Curb mass (using ≈3,106 lb (1,409 kg)); Tire size (using 235/35 R19)
 - Also missing: Instrumented test results (Car and Driver 2019 manual); Curb mass; Final drive (conflicting sources); Power/torque rpm; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a28270052/2019-hyundai-veloster-n-reliability-maintenance/) · [Motor1](https://www.motor1.com/reviews/348290/2019-hyundai-veloster-n-review/) · [Carspecs](https://www.carspecs.us/cars/2019/hyundai/veloster/81921)
+
+### 1997 Acura Integra Type R
+
+- Unconfirmed inputs: Dimensions (using 4,380 × 1,710 × 1,335 mm, WB 2,570 mm)
+- Also missing: Factory curb mass (2,560 lb is Car and Driver’s scale weight); Drag coefficient; Weight distribution; Dimensions
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15141504/1997-acura-integra-type-r-archived-test-review/) · [Parkers](https://parkers.co.uk/honda/integra-type-r/coupe-1997/specs) · [Acura (brochure archive)](https://www.auto-brochures.com/makes/acura/integra/Acura_US%20Integra-R_1997.pdf)
 
 ### 2018 Honda Accord Touring 2.0T
 
@@ -239,8 +203,8 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2019 Subaru WRX STI S209
 
-- Unconfirmed inputs: Power / torque rpm (using 6,400 / 3,600 rpm); Gear ratios (using 3.636/2.375/1.761/1.346/0.971/0.756 (STI six-speed)); Final drive (using 3.900); Tire size (using 265/35 R19)
-- Also missing: MotorTrend first test (roster source) figures; Gear ratios and final drive; Power/torque rpm; AWD split range; Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 6,400 / 3,600 rpm); Tire size (using 265/35 R19)
+- Also missing: MotorTrend first test (roster source) figures; Power/torque rpm; AWD split range; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2019-subaru-wrx-sti-s209-first-test-makes-special) · [Autoblog](https://www.autoblog.com/buy/2019-Subaru-STI+S209/review/) · [0-60specs](https://www.0-60specs.com/subaru/wrx-0-60-times)
 
 ### 2015 Mitsubishi Lancer Evolution Final Edition
@@ -251,14 +215,14 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2016 Lexus GS 350 F Sport RWD
 
-- Unconfirmed inputs: Gear ratios (using 4.596/2.724/1.863/1.464/1.231/1.000/0.824/0.685); Drag coefficient (using Cd 0.27); Dimensions (using 4,880 × 1,840 × 1,455 mm, WB 2,850 mm)
-- Also missing: Car and Driver page itself (results only via forum/aggregator); 8-speed gear ratios (AA80E family set used); Redline; Drag coefficient; Weight distribution
+- Unconfirmed inputs: Dimensions (using 4,880 × 1,840 × 1,455 mm, WB 2,850 mm)
+- Also missing: Car and Driver page itself (results only via forum/aggregator); Redline; Weight distribution
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15104392/2016-lexus-gs350-f-sport-test-review/) · [Lexus](https://www.lexus.com/content/dam/lexus/documents/brochures/models/2016/MY16-Lexus-GS-and-Lexus-GS-Hybrid-Brochure.pdf) · [Lexus (via Club Lexus)](https://clublexus.com/forums/attachments/gs-4th-gen-2013-2020/371825d1444954104-finally-refresh-2016-gs-pics-2016_lexus_gs_200t_and_gs_350_product_information.pdf)
 
 ### 2016 Lexus GS F
 
-- Unconfirmed inputs: Gear ratios (using 4.596/…/0.685 (AA80E family)); Final drive (using 2.937); Tire size (using 255/35 R19 F, 275/35 R19 R)
-- Also missing: Car and Driver page itself; 8-speed ratios and final drive for the GS F; Tire size; Drag coefficient
+- Unconfirmed inputs: Tire size (using 255/35 R19 F, 275/35 R19 R)
+- Also missing: Car and Driver page itself; Tire size; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15102088/2016-lexus-gs-f-test-review/) · [0-60specs](https://www.0-60specs.com/lexus/gs-f-0-60-times) · [Club Lexus](https://www.clublexus.com/forums/gs-f-2016-present/807172-motor-trend-gsf-review.html)
 
 ### 2022 Lexus IS 500 F Sport Performance Premium
@@ -271,7 +235,7 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 - Unconfirmed inputs: Dimensions (using 4,830 × 1,870 × 1,400 mm, WB 2,905 mm)
 - Also missing: Exact trim of the Car and Driver test car (GT vs GT2); Curb mass of the 2018 car (2022 GT2 figure used); Drag coefficient; AWD torque-split limits
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15078969/2018-kia-stinger-gt-33t-awd-test-review/) · [Kia Media (US)](https://kiamedia.com/us/es/models/stinger/2020/specifications) · [Car and Driver (Yahoo syndication)](https://autos.yahoo.com/2018-kia-stinger-gt-3-180500168.html)
+- Consulted: [Kia Media (US)](https://kiamedia.com/us/es/models/stinger/2020/specifications) · [Car and Driver (Yahoo syndication)](https://autos.yahoo.com/2018-kia-stinger-gt-3-180500168.html) · [MotorWeek](https://motorweek.org/reviews/road_tests/2018-kia-stinger-gt)
 
 ### 2022 Genesis G70 3.3T AWD
 
@@ -311,20 +275,20 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2017 Alfa Romeo Giulia Quadrifoglio
 
-- Unconfirmed inputs: Power / torque rpm (using 6,500 / 2,500–5,500 rpm); Gear ratios (using 5.000/3.200/2.143/1.720/1.313/1.000/0.823/0.640 (ZF 8HP)); Final drive (using 3.09)
-- Also missing: Car and Driver trap speed and test weight; 8-speed ratios and final drive; Power/torque rpm; Tire size; Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 6,500 / 2,500–5,500 rpm); Gear ratios (using 5.000/3.200/2.143/1.720/1.313/1.000/0.823/0.640 (ZF 8HP))
+- Also missing: Car and Driver trap speed and test weight; Power/torque rpm; Tire size
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15098913/2017-alfa-romeo-giulia-quadrifoglio-test-review/) · [0-60specs](https://www.0-60specs.com/alfa-romeo/giulia-0-60-times) · [Car and Driver (Yahoo syndication)](https://autos.yahoo.com/2017-alfa-romeo-giulia-quadrifoglio-223000324.html)
 
 ### 2024 Acura TLX Type S
 
-- Unconfirmed inputs: Power / torque rpm (using 5,500 / 1,400–5,000 rpm); Gear ratios (using Honda 10-speed family (Accord set)); Final drive (using 3.39); Tire size (using 255/35 R20)
-- Also missing: Car and Driver 2024 test page; 10-speed ratios and final drive for the TLX; Power/torque rpm; Tire size; Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 5,500 / 1,400–5,000 rpm); Tire size (using 255/35 R20)
+- Also missing: Car and Driver 2024 test page; Power/torque rpm; Tire size; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a46362532/2024-acura-tlx-type-s-drive/) · [Acura](https://acuranews.com/en-US/releases/2024-acura-tlx-tlx-type-s-specifications-features) · [0-60specs](https://www.0-60specs.com/acura-tlx-0-60-times)
 
 ### 2021 Škoda Octavia Combi RS 2.0 TSI DSG
 
 - Unconfirmed inputs: Power / torque bands (using 5,000–6,500 / 1,600–4,300 rpm); Gear ratios (using 3.188/2.190/1.517/1.057/0.738/0.557/0.433); Dimensions (using 4,689 × 1,829 × 1,457 mm, WB 2,686 mm)
-- Also missing: Auto Zeitung intermediate splits and conditions; DSG gear ratios and final drives (DQ381 family set used); Power/torque rpm bands; Tire size (225/40 R18 assumed); Drag coefficient (Škoda publishes one; not reachable)
+- Also missing: Auto Zeitung intermediate splits and conditions; DSG gear ratios and final drives (DQ381 family set used); Power/torque rpm bands; Tire size (225/40 R18 assumed); Drag coefficient (Škoda publishes one; not reachable); DSG shaft assignment for the 4.167 / 3.125 axle ratios
 - Consulted: [Auto Zeitung](https://www.autozeitung.de/skoda-octavia-combi-rs-test-199702.html) · [ADAC Autokatalog](https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/skoda/octavia/4generation/315157) · [Arteon Forums](https://www.arteonforums.com/threads/vw-arteon-dsg381-transmission-specs-usa-builds.1510/)
 
 ### 2021 Audi RS 6 Avant
@@ -347,26 +311,26 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2022 Toyota GR86 Premium
 
-- Unconfirmed inputs: Peak power (using 228 hp @ 7,000); Peak torque (using 184 lb-ft @ 3,700 rpm); Gear ratios (using 3.626/2.188/1.541/1.213/1.000/0.767); Final drive (using 4.300); Tire size (using 215/40 R18)
-- Also missing: Gear ratios and final drive; Car and Driver original test (¼-mile figures unclear); Power/torque rpm; Drag coefficient
+- Unconfirmed inputs: Peak power (using 228 hp @ 7,000); Peak torque (using 184 lb-ft @ 3,700 rpm); Tire size (using 215/40 R18)
+- Also missing: Car and Driver original test (¼-mile figures unclear); Power/torque rpm; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a37322814/2022-toyota-gr86-drive/) · [Motor1](https://www.motor1.com/reviews/597481/2022-toyota-gr86-review/) · [Edmunds](https://www.edmunds.com/toyota/gr86/2022/review/)
 
 ### 2022 Subaru BRZ Limited 6AT
 
 - Unconfirmed inputs: Dimensions (using 4,265 × 1,775 × 1,310 mm, WB 2,576 mm)
-- Also missing: MotorTrend automatic test results (linked page unreachable); Car and Driver automatic test numbers (syndicated page found, figures not in summary); Final drive (4.10 vs 3.91 conflict; 4.10 used); Tire size and model (215/40 R18 Michelin Pilot Sport 4 assumed for Limited); Drag coefficient
+- Also missing: MotorTrend automatic test results (linked page unreachable); Car and Driver automatic test numbers (syndicated page found, figures not in summary); Tire size and model (215/40 R18 Michelin Pilot Sport 4 assumed for Limited); Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2022-subaru-brz-manual-automatic-first-test-review) · [auto123](https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879) · [Motor1](https://www.motor1.com/reviews/582197/2022-subaru-brz-review/)
 
 ### 2016 Mazda MX-5 Miata Club
 
-- Unconfirmed inputs: Peak power (using 155 hp @ 6,000); Peak torque (using 148 lb-ft @ 4,600 rpm); Gear ratios (using 5.087/2.991/2.035/1.594/1.286/1.000); Final drive (using 2.866); Tire size (using 205/45 R17)
-- Also missing: Gear ratios and final drive; Power/torque rpm; Drag coefficient
+- Unconfirmed inputs: Peak power (using 155 hp @ 6,000); Peak torque (using 148 lb-ft @ 4,600 rpm); Tire size (using 205/45 R17)
+- Also missing: Power/torque rpm; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15105840/2016-mazda-mx-5-miata-club-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2016-mazda-mx-5-miata-205000131.html) · [MotorWeek](https://motorweek.org/road_tests/2016-mazda-mx-51)
 
 ### 2024 Mazda MX-5 Miata RF Club
 
-- Unconfirmed inputs: Power / torque rpm (using 7,000 / 4,000 rpm); Gear ratios (using 5.087/2.991/2.035/1.594/1.286/1.000); Final drive (using 2.866); Tire size (using 205/45 R17)
-- Also missing: MotorTrend first test (roster source); Gear ratios and final drive (Mazda spec deck not reachable); Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 7,000 / 4,000 rpm); Tire size (using 205/45 R17)
+- Also missing: MotorTrend first test (roster source); Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2024-mazda-mx-5-miata-rf-club-first-test-review) · [Motor1](https://www.motor1.com/reviews/722936/2024-mazda-miata-rf-review/) · [Edmunds](https://www.edmunds.com/car-news/2024-mazda-mx-5-miata-rf-club-track-tested.html)
 
 ### 2000 Honda S2000
@@ -377,15 +341,27 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2023 Nissan Z Performance 9AT
 
-- Unconfirmed inputs: Power / torque rpm (using 6,400 / 1,600–5,200 rpm); Gear ratios (using 5.425/3.263/2.250/1.649/1.221/1.000/0.865/0.717/0.601); Final drive (using 3.133); Tire size (using 255/40 R19 F, 275/35 R19 R)
-- Also missing: MotorTrend first-test results (linked page unreachable; no independent instrumented automatic test found); 9-speed ratios and final drive; Power/torque rpm; Tire size; Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 6,400 / 1,600–5,200 rpm); Tire size (using 255/40 R19 F, 275/35 R19 R)
+- Also missing: MotorTrend first-test results (linked page unreachable; no independent instrumented automatic test found); Power/torque rpm; Tire size; Drag coefficient; MotorTrend Performance 9AT test results (roster source)
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review) · [Autoblog](https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/) · [The Detroit Bureau](https://thedetroitbureau.com/reviews/a-week-with-2023-nissan-z-performance-a-t/)
 
 ### 2018 Nissan GT-R Track Edition
 
-- Unconfirmed inputs: Power / torque rpm (using 6,800 / 3,300–5,800 rpm); Gear ratios (using 4.056/2.301/1.595/1.248/1.001/0.796 (GR6)); Final drive (using 3.700); Drag coefficient (using Cd 0.26); Launch rpm (using ≈4,500 rpm)
-- Also missing: Car and Driver page itself (trap speed, test weight); GR6 ratios and final drive; Power/torque rpm; Tire size
+- Unconfirmed inputs: Power / torque rpm (using 6,800 / 3,300–5,800 rpm); Drag coefficient (using Cd 0.26); Launch rpm (using ≈4,500 rpm)
+- Also missing: Car and Driver page itself (trap speed, test weight); Power/torque rpm; Tire size
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a23405694/2018-nissan-gt-r-by-the-numbers/) · [0-60specs](https://www.0-60specs.com/nissan/gt-r-0-60-times) · [Motor Matchup](https://www.motormatchup.com/catalog/Nissan/GT_R/2018/Track-Edition-2DR-AWD-Coupe)
+
+### 2018 Audi TT RS Coupe
+
+- Unconfirmed inputs: Tire size (using 255/35 R19); Dimensions (using 4,191 × 1,832 × 1,344 mm, WB 2,505 mm)
+- Also missing: US tire size (assumed); Power rpm band for the US rating; Haldex split range; Weight distribution
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a14516384/2018-audi-tt-rs-test-review/) · [Audi MediaCenter](https://uploads.audi-mediacenter.com/system/production/car_motorizations/837/file_en/ab1a688414eda4f444a9a7fad976f57fbe0061a8/eTD_Audi_TTRS_Coupe_TFSI_221102.pdf) · [Audi MediaCenter](https://www.audi-mediacenter.com/en/the-audi-tt-rs-2924/drivetrain-2940)
+
+### 2018 Alpine A110 Première Édition
+
+- Unconfirmed inputs: Torque band (using 2,000–5,000 rpm); Dimensions (using 4,180 × 1,798 × 1,252 mm, WB 2,420 mm)
+- Also missing: Individual 7DCT gear ratios and final drive (effective reductions derived); Torque rpm band; Launch-control rpm
+- Consulted: [Quattroruote](https://www.quattroruote.it/prove/2018/alpine_a110_la_prova_della_premiere_edition/_jcr_content/summaryParsys/article_attachment/file.res/Centro-Prove-Alpine-A110.pdf) · [Alpine](https://www.auto-brochures.com/makes/alpine/Alpine_int%20A110_2018-2.pdf) · [Alpine](https://www.renaultownersclub.com/wp-content/uploads/vehicles/Alpine%20A110%20-%202017%20Launch.pdf)
 
 ### 2023 BMW M2 Carbon Package 6MT
 
@@ -396,14 +372,20 @@ confirmed or made playable. Sources already consulted are linked for each car.
 ### 2022 Porsche 718 Cayman GT4 RS
 
 - Unconfirmed inputs: Power / torque rpm (using 8,400 / 6,750 rpm); Tire compound (using Track semi-slick class)
-- Also missing: 1st–6th PDK ratios (GT3 set per forum report); Tire model; Drag coefficient
+- Also missing: Tire model; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/news/a39725088/2022-porsche-718-cayman-gt4-rs-tested/) · [MotorWeek](https://motorweek.org/road_tests/2022-porsche-cayman-gt4-rs) · [Porsche](https://download.newsroom.porsche.com/dam/jcr:c84793f0-4df0-4f82-830b-24f76f543988/718%20Cayman%20GT4%20RS%20Technical%20Data.pdf)
 
 ### 2022 Porsche 911 GT3 GT3 PDK
 
 - Unconfirmed inputs: Power / torque rpm (using 8,400 / 6,100 rpm); Curb mass (using ≈3,164 lb (1,435 kg)); Tire size (using 255/35 R20 F, 315/30 R21 R)
-- Also missing: Final drive (4.19 / 4.54 / 3.97 conflict); Curb mass; Car and Driver quarter-mile result; Tire size and model; Drag coefficient
+- Also missing: Curb mass; Car and Driver quarter-mile result; Tire size and model; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a36164987/2022-porsche-911-gt3-drive/) · [Porsche](https://newsroom.porsche.com/dam/jcr:ca1882c7-1588-4a2e-995c-fe19ef1281fc/pag-911-gt3-pdk-en.pdf) · [Car and Driver (Yahoo syndication)](https://autos.yahoo.com/2022-porsche-911-gt3-leaves-220100613.html)
+
+### 2021 Porsche 911 Turbo S Turbo S coupe
+
+- Unconfirmed inputs: Dimensions (using 4,535 × 1,900 × 1,303 mm, WB 2,450 mm)
+- Also missing: PTM front/rear split map (variable; a range is assumed); Drag coefficient; Weight distribution; Launch-control rpm
+- Consulted: [Car and Driver](https://www.caranddriver.com/news/a34359564/2021-porsche-911-turbo-s-testing-zero-to-60/) · [Car and Driver (syndicated on Yahoo)](https://sports.yahoo.com/640-hp-2021-porsche-911-164900225.html) · [Rennlist](https://rennlist.com/articles/this-just-in-2021-porsche-911-turbo-s-is-crazy-crazy-fast)
 
 ### 2020 Chevrolet Corvette Stingray Z51 (FE4)
 
@@ -413,9 +395,15 @@ confirmed or made playable. Sources already consulted are linked for each car.
 
 ### 2023 Chevrolet Corvette Z06 Z07 + Carbon Fiber Aero
 
-- Unconfirmed inputs: Gear ratios (using 2.91/…/0.33 (Stingray TR-9080 set)); Final drive (using 5.56); Curb mass (using ≈1,580 kg (3,480 lb)); Tire size (using 275/30 R20 F · 345/25 R21 R (Z07)); Tire compound (using Track semi-slick class)
-- Also missing: Z06 final drive ratio; Z06 gear ratios (assumed shared with Stingray); Curb mass; Carbon Fiber Aero effect on mass; Tire size; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-chevrolet-corvette-z06-coupe-z07-package-0-60-mph-time-quarter-mile) · [Car and Driver (syndicated on Yahoo)](https://news.yahoo.com/2023-c8-corvette-z06-does-163800005.html)
+- Unconfirmed inputs: Gear ratios (using 2.91/…/0.33 (Stingray TR-9080 set)); Curb mass (using ≈1,580 kg (3,480 lb)); Tire size (using 275/30 R20 F · 345/25 R21 R (Z07)); Tire compound (using Track semi-slick class)
+- Also missing: Z06 gear ratios (assumed shared with Stingray); Curb mass; Carbon Fiber Aero effect on mass; Tire size; Drag coefficient; MotorTrend Z07 coupe test (package-specific; linked in the follow-up)
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-chevrolet-corvette-z06-coupe-z07-package-0-60-mph-time-quarter-mile) · [Car and Driver (syndicated on Yahoo)](https://news.yahoo.com/2023-c8-corvette-z06-does-163800005.html) · [Chevrolet](https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2023/chevrolet_2023_corvette.pdf)
+
+### 2020 Ford Mustang Shelby GT500 Carbon Fiber Track Package
+
+- Unconfirmed inputs: Tire size (using 305/30 R20 F · 315/30 R20 R); Tire compound (using Track semi-slick class); Dimensions (using 4,818 × 1,916 × 1,383 mm, WB 2,720 mm)
+- Also missing: CFTP factory curb mass (4,054 lb is MotorTrend’s scale weight); Tire size and compound for the CFTP; Car and Driver original test page (conflicting citations); Drag coefficient; Power/torque rpm detail
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2020-ford-mustang-shelby-gt500-first-test) · [Edmunds](https://edmunds.com/ford/shelby-gt500/2020/review) · [CJ Pony Parts](https://www.cjponyparts.com/resources/news/2020-shelby-gt500)
 
 ### 2018 Chevrolet Camaro ZL1 1LE
 
@@ -432,17 +420,29 @@ confirmed or made playable. Sources already consulted are linked for each car.
 ### 2022 Hyundai Kona N
 
 - Unconfirmed inputs: Gear ratios 3rd–7th (using 2.460/1.913/1.063/0.827/0.900)
-- Also missing: N DCT gear ratios 3rd–7th; Weight distribution; Drag coefficient; Car and Driver 0–60 (only a second-hand citation)
+- Also missing: N DCT gear ratios 3rd–7th; Weight distribution; Drag coefficient; Car and Driver 0–60 (only a second-hand citation); US gearbox code (to confirm the Hyundai Europe N DCT table applies)
 - Consulted: [MotorTrend](https://www.motortrend.com/features/2022-hyundai-kona-n-0-60-mph-first-test-review) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/tested-2022-hyundai-kona-n-110000366.html) · [Hyundai Motor Europe](https://cdn.uc.assets.prezly.com/de277550-9cc4-4278-9e71-b237625a0554/-/inline/no/KonaN-TechSpecs_ENG.pdf)
 
 ### 2018 Jeep Grand Cherokee Trackhawk
 
-- Unconfirmed inputs: Power / torque rpm (using 6,000 / 4,800 rpm); Gear ratios (using 4.71/…/0.67 (8HP95)); Final drive (using 3.70); AWD split (using Front share 0.30–0.50); Tire size (using 295/45 R20)
-- Also missing: Car and Driver 0–60 (only a second-hand citation); Final drive; 8HP95 ratios; Power/torque rpm; AWD split range; Tire size; Drag coefficient
+- Unconfirmed inputs: Power / torque rpm (using 6,000 / 4,800 rpm); Gear ratios (using 4.71/…/0.67 (8HP95)); AWD split (using Front share 0.30–0.50); Tire size (using 295/45 R20)
+- Also missing: Car and Driver 0–60 (only a second-hand citation); 8HP95 ratios; Power/torque rpm; AWD split range; Tire size; Mode-specific torque splits (in the FCA sheet; not transcribed)
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15078588/2018-jeep-grand-cherokee-trackhawk-full-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-jeep-grand-cherokee-trackhawk-194500054.html) · [The Drive](https://www.thedrive.com/new-cars/24360/2018-jeep-grand-cherokee-trackhawk-new-dad-review-family-hauler-and-drag-strip-monster-all-in-one)
 
 ### 2018 Alfa Romeo Stelvio Quadrifoglio
 
-- Unconfirmed inputs: Power / torque rpm (using 6,500 / 2,500–5,500 rpm); Gear ratios (using 5.000/…/0.640 (ZF 8HP)); Final drive (using 3.09); Tire size (using 255/45 R20 F · 285/40 R20 R)
-- Also missing: Final drive; 8HP ratios for this application; Power/torque rpm; Tire size; Drag coefficient; Original test pages
+- Unconfirmed inputs: Power / torque rpm (using 6,500 / 2,500–5,500 rpm); Tire size (using 255/45 R20 F · 285/40 R20 R)
+- Also missing: Power/torque rpm; Tire size; Drag coefficient; Original test pages
 - Consulted: [MotorTrend](https://www.motortrend.com/news/alfa-romeo-stelvio-quadrifoglio-2018-best-drivers-car-contender) · [Autoblog](https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/) · [Yahoo Autos (syndicated; outlet inferred)](https://autos.yahoo.com/2018-alfa-romeo-stelvio-quadrifoglio-204500570.html)
+
+### 2018 McLaren 720S Coupe
+
+- Unconfirmed inputs: Tire size (using 245/35 R19 F · 305/30 R20 R); Dimensions (using 4,543 × 1,930 × 1,196 mm, WB 2,670 mm)
+- Also missing: Drag coefficient; Tire sizes; Weight distribution; Power/torque rpm detail
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a19862504/2018-mclaren-720s-instrumented-test-review/) · [0-60specs](https://www.0-60specs.com/mclaren/720s-0-60-times) · [Motor1](https://www.motor1.com/reviews/225841/2018-mclaren-720s/)
+
+### 2018 Lamborghini Huracán Performante LP 640-4
+
+- Unconfirmed inputs: Dimensions (using 4,506 × 1,924 × 1,165 mm, WB 2,620 mm)
+- Also missing: Factory confirmation of the LDF gear ratios and final drive (secondary listing only); AWD control map; Drag coefficient; Launch-control rpm
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)

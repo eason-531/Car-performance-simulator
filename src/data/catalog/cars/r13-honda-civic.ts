@@ -29,7 +29,7 @@ export const entry: CatalogEntry = {
   modelPath: "CVT",
   factory: {
     power: "180 hp @ 6,000 rpm",
-    curbMass: "3,102 lb (Motor Matchup)",
+    curbMass: "3,102 lb (Honda)",
     sourceId: "src2"
   },
   sources: [
@@ -68,10 +68,12 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "MotorTrend first test (roster source)",
-    "CVT ratio range and final drive",
     "Torque figure",
     "Tire size",
     "Drag coefficient"
   ],
-  unsupportedReason: "Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet."
+  unsupportedReason: "Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet.",
+  notes: [
+    "Honda US specifications: CVT ratio range 2.645–0.405, final drive 4.81, weight distribution 60.2/39.8."
+  ]
 };

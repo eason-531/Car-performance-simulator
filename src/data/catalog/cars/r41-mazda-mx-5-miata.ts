@@ -64,6 +64,13 @@ export const entry: CatalogEntry = {
       publisher: "Autoblog",
       url: "https://www.autoblog.com/buy/2016-Mazda-MX_5+Miata/review/",
       kind: "reference"
+    },
+    {
+      id: "src-mazda",
+      title: "MX-5 spec deck",
+      publisher: "Mazda USA",
+      url: "https://news.mazdausa.com/download/2016-Mazda-MX-5-Spec-Deck.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -107,7 +114,6 @@ export const entry: CatalogEntry = {
     }
   ],
   dataGaps: [
-    "Gear ratios and final drive",
     "Power/torque rpm",
     "Drag coefficient"
   ],
@@ -129,12 +135,12 @@ export const entry: CatalogEntry = {
     tires: { sizes: [square('r17', '205/45 R17', 205, 45, 17, 'Bridgestone Potenza S001 (Club, assumed)')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Gear ratios', value: '5.087/2.991/2.035/1.594/1.286/1.000', status: 'verified', source: 'Mazda US spec deck (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://news.mazdausa.com/download/2016-Mazda-MX-5-Spec-Deck.pdf' },
+      { parameter: 'Final drive', value: '2.866 (6MT)', status: 'verified', source: 'Mazda US spec deck (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://news.mazdausa.com/download/2016-Mazda-MX-5-Spec-Deck.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Fit toward the Car and Driver 0–60 mph 5.8 s stopped at the bound (sim ≈6.4 s); residual shown' },
       { parameter: 'Drivetrain efficiency', value: '88 %', status: 'estimated', source: 'Default for a rear-drive manual; a trap fit asked for 92 %, above the manual bound' },
       { parameter: 'Peak power', value: '155 hp @ 6,000', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Peak torque', value: '148 lb-ft @ 4,600 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Gear ratios', value: '5.087/2.991/2.035/1.594/1.286/1.000', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '2.866', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '2,324 lb (1,054 kg) as tested', status: 'reported', source: 'Car and Driver test (syndicated)', url: 'https://autos.yahoo.com/2016-mazda-mx-5-miata-205000131.html' },
       { parameter: 'Tire size', value: '205/45 R17', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
     ],

@@ -59,6 +59,13 @@ export const entry: CatalogEntry = {
       publisher: "Car and Driver (Yahoo syndication)",
       url: "https://autos.yahoo.com/2017-alfa-romeo-giulia-quadrifoglio-223000324.html",
       kind: "road-test"
+    },
+    {
+      id: "src-nhtsa",
+      title: "Giulia technical submission",
+      publisher: "Alfa Romeo (NHTSA archive)",
+      url: "https://downloads.regulations.gov/NHTSA-2018-0067-12500/attachment_3.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -80,10 +87,8 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "Car and Driver trap speed and test weight",
-    "8-speed ratios and final drive",
     "Power/torque rpm",
-    "Tire size",
-    "Drag coefficient"
+    "Tire size"
   ],
   sim: buildSpec({
   id: "2017-alfa-romeo-giulia-quadrifoglio-us-sedan-rwd-8at",
@@ -99,17 +104,18 @@ export const entry: CatalogEntry = {
     transmission: { type: 'torque-converter-automatic', name: '8-speed automatic (ZF 8HP)', gearRatios: [5.0, 3.2, 2.143, 1.72, 1.313, 1.0, 0.823, 0.64], finalDrive: 3.09, upshiftTimeS: 0.18, downshiftTimeS: 0.28, shiftTorqueDip: 0.3, torqueConverter: { stallRpm: 2500 } },
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive with torque-vectoring differential' },
     chassis: { curbMassKg: 1734, frontWeightFraction: 0.5, wheelbaseM: 2.82, lengthMm: 4639, widthMm: 1873, heightMm: 1426 },
-    aero: {},
+    aero: { dragCoefficient: 0.32 },
     tires: { sizes: [staggered('r19', '245/35 R19 F · 285/30 R19 R', { widthMm: 245, aspectPct: 35, rimIn: 19 }, { widthMm: 285, aspectPct: 30, rimIn: 19 }, 'Pirelli P Zero Corsa (assumed)')], compound: 'uhp', gripScale: 1.18 },
     speedLimiterKmh: 307,
     factory: { zeroTo60MphS: 3.8 },
     provenance: [
+      { parameter: 'Final drive', value: '3.09', status: 'verified', source: 'Alfa Romeo US technical submission (NHTSA archive) (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://downloads.regulations.gov/NHTSA-2018-0067-12500/attachment_3.pdf' },
+      { parameter: 'Drag coefficient', value: 'Cd 0.32', status: 'verified', source: 'Alfa Romeo US technical submission (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://downloads.regulations.gov/NHTSA-2018-0067-12500/attachment_3.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.18', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 3.7 s' },
       { parameter: 'Peak power', value: '505 hp', status: 'reported', source: 'Alfa Romeo rating (reviews)', url: 'https://autos.yahoo.com/2017-alfa-romeo-giulia-quadrifoglio-164700328.html' },
       { parameter: 'Peak torque', value: '443 lb-ft', status: 'reported', source: 'Alfa Romeo rating (reviews)', url: 'https://autos.yahoo.com/2017-alfa-romeo-giulia-quadrifoglio-164700328.html' },
       { parameter: 'Power / torque rpm', value: '6,500 / 2,500–5,500 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Gear ratios', value: '5.000/3.200/2.143/1.720/1.313/1.000/0.823/0.640 (ZF 8HP)', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '3.09', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '3,822 lb (1,734 kg)', status: 'reported', source: 'Specification listing (not tied to the test)' },
       { parameter: 'Top speed', value: '307 km/h (191 mph)', status: 'estimated', source: 'Alfa Romeo claim as commonly cited' },
     ],

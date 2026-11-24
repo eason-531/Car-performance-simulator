@@ -64,6 +64,13 @@ export const entry: CatalogEntry = {
       publisher: "Edmunds",
       url: "https://edmunds.com/car-news/2024-hyundai-elantra-n-track-tested.html",
       kind: "road-test"
+    },
+    {
+      id: "src-mt",
+      title: "2025 Hyundai Elantra N DCT first test",
+      publisher: "MotorTrend",
+      url: "https://www.motortrend.com/reviews/2025-hyundai-elantra-n-dct-first-test-review",
+      kind: "road-test"
     }
   ],
   benchmarks: [
@@ -83,6 +90,27 @@ export const entry: CatalogEntry = {
       verification: "Search-result summary of the article (page itself not reachable from this environment).",
       date: "2024",
       deviation: "2024 car (pre-facelift styling, same 276 hp powertrain and 8-speed DCT); independent replacement for the unreachable MotorTrend test."
+    },
+    {
+      id: "mt",
+      sourceId: "src-mt",
+      publication: "MotorTrend",
+      timing: "rollout-1ft",
+      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
+      results: {
+        zeroTo60MphS: 4.7,
+        quarterMileS: 13.3,
+        quarterMileTrapMph: 106.7
+      },
+      conditions: {
+        testMass: "3,334 lb (64/36)",
+        other: [
+          "Overboost (N Grin Shift) use matters when comparing runs; not stated here"
+        ]
+      },
+      match: "exact",
+      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; exact model-year DCT test.",
+      date: "2024"
     }
   ],
   dataGaps: [
@@ -115,14 +143,15 @@ export const entry: CatalogEntry = {
       gearRatios: [3.714, 2.6, 1.95, 1.48, 1.12, 0.85, 0.65, 0.498], finalDrive: 3.8,
       launchClutch: { launchRpm: 3300, brakeHoldRpmLimit: 3300 },
     },
-    drivetrain: { layout: 'FWD', efficiency: 0.86, description: 'Front-wheel drive with electronic limited-slip differential (e-LSD)' },
-    chassis: { curbMassKg: 1495, wheelbaseM: 2.72, lengthMm: 4676, widthMm: 1826, heightMm: 1415 },
+    drivetrain: { layout: 'FWD', efficiency: 0.9, description: 'Front-wheel drive with electronic limited-slip differential (e-LSD)' },
+    chassis: { frontWeightFraction: 0.64, curbMassKg: 1495, wheelbaseM: 2.72, lengthMm: 4676, widthMm: 1826, heightMm: 1415 },
     aero: {},
-    tires: { sizes: [square('r19', '245/35 R19', 245, 35, 19, 'N fitment')], compound: 'uhp', gripScale: 1.15 },
+    tires: { sizes: [square('r19', '245/35 R19', 245, 35, 19, 'N fitment')], compound: 'uhp', gripScale: 1.24 },
     speedLimiterKmh: null,
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.15', status: 'estimated', source: 'Fitted to the Edmunds 0–60 mph 5.4 s with efficiency held at 86 %' },
-      { parameter: 'Drivetrain efficiency', value: '86 %', status: 'estimated', source: 'Trap-speed fit asked for 80 %, outside plausible FWD DCT losses; 86 % kept and the trap residual (≈+2 mph) left visible' },
+      { parameter: 'Tire grip calibration', value: '×1.24', status: 'estimated', source: 'Fitted to the MotorTrend 0–60 mph 4.7 s with efficiency held at the bound (the follow-up names this as the DCT test)' },
+      { parameter: 'Drivetrain efficiency', value: '90 %', status: 'estimated', source: 'A fit to the MotorTrend trap 106.7 mph asked for 91.7 %, above the 90 % front-drive DCT bound; capped. Edmunds’ 2024 test (101.9 mph) disagrees, likely through overboost use' },
+      { parameter: 'Weight distribution', value: '64/36 front/rear (as tested)', status: 'reported', source: 'MotorTrend DCT test (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://www.motortrend.com/reviews/2025-hyundai-elantra-n-dct-first-test-review' },
       { parameter: 'Peak power', value: '276 hp @ 5,500–6,000 rpm', status: 'reported', source: 'Hyundai Canada specifications', url: 'https://www.hyundaicanada.com/en/showroom/elantra-n' },
       { parameter: 'Peak torque', value: '289 lb-ft @ 2,100–4,700 rpm', status: 'reported', source: 'Hyundai Canada specifications', url: 'https://www.hyundaicanada.com/en/showroom/elantra-n' },
       { parameter: 'Gear ratios', value: '3.714 / … / 0.498 (2nd–7th interpolated)', status: 'estimated', source: '1st and 8th from Motor Matchup; intermediate ratios not published in a reachable source — awaiting spec sheet', url: 'https://www.motormatchup.com/catalog/Hyundai/Elantra/2022/N-DCT' },

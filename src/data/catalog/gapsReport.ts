@@ -29,6 +29,7 @@ export function buildGapsReport(): string {
     'Every value the simulator could not confirm from a reachable source. A spec sheet (gear ratios,',
     'final drive, rated output with rpm, curb mass, tire size, Cd) for any car below lets it be',
     'confirmed or made playable. Sources already consulted are linked for each car.',
+    'Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).',
     '',
   ];
   const catalogOnly = CATALOG.filter((e) => readinessOf(e) === 'catalog');

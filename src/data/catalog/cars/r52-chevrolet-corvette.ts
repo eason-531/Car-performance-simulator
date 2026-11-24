@@ -96,6 +96,9 @@ export const entry: CatalogEntry = {
     "Drag coefficient",
     "Launch-control rpm"
   ],
+  notes: [
+    "Chevrolet’s MY2023 brochure lists the Z51 axle as 5.20; the 5.17 used here is SAE’s figure (3.55 ring and pinion × 1.46 transfer ≈ 5.18), so both are roundings of the same ratio."
+  ],
   sim: buildSpec({
   id: "2020-chevrolet-corvette-stingray-z51-fe4-us-coupe-rwd-8dct",
   make: "Chevrolet",

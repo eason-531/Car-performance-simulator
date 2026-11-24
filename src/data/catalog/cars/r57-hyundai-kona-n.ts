@@ -71,6 +71,13 @@ export const entry: CatalogEntry = {
       publisher: "KSL Cars",
       url: "https://cars.ksl.com/resources/car-review/2022-hyundai-kona-n-test-drive-review",
       kind: "reference"
+    },
+    {
+      id: "src-hyundai-eu",
+      title: "Kona N technical specifications",
+      publisher: "Hyundai Motor Europe",
+      url: "https://www.hyundai.news/newsroom/dam/eu/models/20210715_kona_n_driving_experience/hyundai-kona-n-technical-specifications-0721.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -123,7 +130,11 @@ export const entry: CatalogEntry = {
     "N DCT gear ratios 3rd–7th",
     "Weight distribution",
     "Drag coefficient",
-    "Car and Driver 0–60 (only a second-hand citation)"
+    "Car and Driver 0–60 (only a second-hand citation)",
+    "US gearbox code (to confirm the Hyundai Europe N DCT table applies)"
+  ],
+  notes: [
+    "Hyundai Europe’s factory N DCT table gives 3.714/2.261/2.174/1.621/0.927/0.767/0.878/0.698 with 3.933 on 1st, 2nd, 5th, 6th and reverse and 2.810 on 3rd, 4th, 7th and 8th. Per the spec-sheet follow-up it is not applied until the US gearbox code is confirmed, so 3rd–7th remain interpolated here."
   ],
   sim: buildSpec({
   id: "2022-hyundai-kona-n-us-cuv-fwd-8dct",
@@ -137,15 +148,15 @@ export const entry: CatalogEntry = {
 }, {
     engine: { code: 'Smartstream G2.0 T-GDi', description: '2.0 L turbo I4, flat power', displacementCc: 1998, aspiration: 'turbo', idleRpm: 750, redlineRpm: 6750, revLimitRpm: 6850, power: { value: 276, unit: 'hp', rpm: [5500, 6000] }, torque: { value: 289, unit: 'lb-ft', rpm: [2100, 4700] }, peakBoostBar: 1.4 },
     transmission: { type: 'dual-clutch', name: '8-speed wet N DCT', gearRatios: [3.71, 2.26, 2.46, 1.913, 1.063, 0.827, 0.9, 0.7], finalDrive: [3.933, 3.933, 2.81, 2.81, 3.933, 3.933, 2.81, 2.81], launchClutch: { launchRpm: 3300, brakeHoldRpmLimit: 3300 } },
-    drivetrain: { layout: 'FWD', efficiency: 0.86, description: 'Front-wheel drive with electronic limited-slip differential (e-LSD)' },
+    drivetrain: { layout: 'FWD', efficiency: 0.9, description: 'Front-wheel drive with electronic limited-slip differential (e-LSD)' },
     chassis: { curbMassKg: 1515, frontWeightFraction: 0.61, wheelbaseM: 2.6, lengthMm: 4215, widthMm: 1800, heightMm: 1565 },
     aero: {},
-    tires: { sizes: [square('r19', '235/40 R19', 235, 40, 19, 'N fitment')], compound: 'uhp', gripScale: 1.15 },
+    tires: { sizes: [square('r19', '235/40 R19', 235, 40, 19, 'N fitment')], compound: 'uhp', gripScale: 1.24 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 5.2 },
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.15', status: 'estimated', source: 'Transferred from the Elantra N fit (same engine, N DCT and tire class); only a second-hand 0–60 is available for the Kona' },
-      { parameter: 'Drivetrain efficiency', value: '86 %', status: 'estimated', source: 'Same value as the Elantra N; a trap fit asked for 92 %, above plausible FWD DCT losses' },
+      { parameter: 'Tire grip calibration', value: '×1.24', status: 'estimated', source: 'Transferred from the Elantra N fit (same engine, N DCT and tire class)' },
+      { parameter: 'Drivetrain efficiency', value: '90 %', status: 'estimated', source: 'Transferred from the Elantra N fit' },
       { parameter: 'Peak power', value: '276 hp @ 5,500–6,000 rpm (286 hp on overboost, not modelled)', status: 'reported', source: 'Hyundai rating (multiple reviews)', url: 'https://www.motor1.com/reviews/576275/2022-hyundai-kona-n-first-drive/' },
       { parameter: 'Peak torque', value: '289 lb-ft @ 2,100–4,700 rpm', status: 'reported', source: 'Hyundai rating (multiple reviews)', url: 'https://www.motor1.com/reviews/576275/2022-hyundai-kona-n-first-drive/' },
       { parameter: 'Final drives', value: '3.933 (1st, 2nd, 5th, 6th) / 2.810 (3rd, 4th, 7th, 8th)', status: 'reported', source: 'Hyundai Motor Europe technical specifications', url: 'https://cdn.uc.assets.prezly.com/de277550-9cc4-4278-9e71-b237625a0554/-/inline/no/KonaN-TechSpecs_ENG.pdf' },

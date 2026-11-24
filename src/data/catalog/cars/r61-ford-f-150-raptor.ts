@@ -96,17 +96,34 @@ export const entry: CatalogEntry = {
       match: "exact",
       verification: "Magazine excerpt.",
       date: "2021"
+    },
+    {
+      id: "cd",
+      sourceId: "test",
+      publication: "Car and Driver",
+      timing: "rollout-1ft",
+      timingNote: "Car and Driver results since late 2019 subtract a 1-ft rollout.",
+      results: {
+        zeroTo60MphS: 5.2
+      },
+      conditions: {
+        testMass: "5,971 lb",
+        tires: "37-inch tires",
+        other: [
+          "Transfer-case mode as stated in the test (not transcribed)"
+        ]
+      },
+      match: "exact",
+      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; exact 37 Performance Package truck.",
+      date: "2021"
     }
   ],
   dataGaps: [
-    "Car and Driver 37 Performance Package results (roster source)",
-    "Curb mass",
-    "10-speed ratios and axle ratio",
     "4WD torque split",
     "Drag coefficient"
   ],
   notes: [
-    "Car and Driver tested the 37 Performance Package truck, but only its 35-inch-tire results (5.2 s, 13.9 s) were reachable, so they are not transcribed."
+    "Ford confirms 4.10 front and rear axle ratios."
   ],
   unsupportedReason: "Transfer-case 4WD test mode (4A/4H) not modeled yet."
 };
