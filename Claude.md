@@ -16,10 +16,11 @@ source_access_this_session:
   refused: [www.caranddriver.com (fetch tool host refusal; browser-UA retry not attempted after a permission denial), manualshelf.com (HTTP 520)]
   rule_applied: C/D numbers used only where Codex verified them in a handoff; search summaries used only as leads, never as verified/reported inputs.
 
+pull_request: https://github.com/eason-531/Car-performance-simulator/pull/8 (draft; merge = Eason)
 commits:
   - 188749b: Claude.md reset (header only)
   - c182f8f: Codex 358661b follow-ups (r44, r67, r18, r04, top-speed labelling)
-  - <this commit>: hypercar infrastructure + batch 1 (6 playable) + creep-torque option + speed dial + docs
+  - c8d7348: hypercar infrastructure + batch 1 (6 playable) + creep-torque option + speed dial + docs
 
 codex_358661b_followups:
   P2_r44_limiter:
