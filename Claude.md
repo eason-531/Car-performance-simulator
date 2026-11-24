@@ -4,6 +4,34 @@
 # Rule 3 (Claude): Clear this file upon creating a new branch. Exclude changes from other branches.
 # Rule 4 (Both): Preserve this header block when clearing the file.
 
+## round=2 · branch=claude/determined-planck-qhjicj · base=6e4726a (Codex handoff of d6e2b40, result=changes_requested_before_merge) · impl=a6da8c5 · PR=#7 (draft)
+
+### P1 · src/data/catalog/cars/r44-nissan-z.ts
+- removed bm `cd` (sourceId src-cd → sports.yahoo Mach 1 comparison; that Z = 6MT 4.5/13.0@111; 4.0/12.3@116 unsupported) + source src-cd.
+- added source `src-cd-at` = https://www.caranddriver.com/reviews/a43987884/2023-nissan-z-automatic-by-the-numbers/ (road-test); bm `cd-at` exact, timing rollout-1ft, results {zeroTo60MphS 4.3, quarterMileS 12.7, quarterMileTrapMph 115, rolloutS 0.3}, conditions {testMass "3,592 lb as tested", fuel "91 AKI"}, date 2023; verification cites Codex review + replaced-row reason.
+- gaps: removed "…no independent instrumented automatic test found" and "MotorTrend Performance 9AT test (roster source)"; added "MotorTrend Performance 9AT first-test figures (roster source; not transcribed)".
+- calibration: free fit → eff ≥0.92 (fitter ceiling, trap still 114.2) → eff held 0.88 (automatic bound), grip 1.30→1.22. residual (rollout basis): 0–60 4.31 vs 4.3; ET 12.66 vs 12.7; trap 112.61 vs 115 (−2.4, visible, provenance explains VR30 underrating).
+- stock: A 55.1→A 53.3; BR 0–100 4.657→4.851; BR ET 12.823→12.986. no other car changed (diff of stockStats.generated.ts). SLC-4 unchanged; boundary-margin test passes. owners byte-identical.
+
+### P2 · picker focus under StrictMode
+- src/Root.tsx (new): <StrictMode><AppProvider store?><App/></AppProvider></StrictMode>; src/main.tsx renders <Root/> (same tree as before).
+- src/components/catalog/CarPicker.tsx: effect setup focuses first input (fallback first enabled button) when document.activeElement ∉ panel → reclaims focus after StrictMode replay cleanup (which restores opener). backdrop: onPointerDown records pressedBackdrop=(target===currentTarget); onClick closes iff pressedBackdrop && target===currentTarget. root cause of browser-only bug: closing on pointerdown removed the dialog before the browser's mousedown default → blur to BODY + click-through to element under the backdrop.
+- src/__tests__/CarPicker.focus.test.tsx: describe.each over ['without StrictMode' (AppProvider+App), 'through the StrictMode Root' (Root)] × 7 cases: open→search focused + Escape→opener; focus stays inside across re-renders; Close→opener; backdrop pointerDown+blur+click→opener; press inside dialog + click on backdrop → stays open; select GR86→opener; Tab/Shift+Tab wrap. 14/14 pass; with pre-fix CarPicker: 2 StrictMode cases fail (reproduces Codex finding).
+- browser (Chromium 1180×820, hasTouch; dev server = StrictMode, preview = production): Enter-open→Search; typing goes to search; Escape→Lane B; tap-open→Search; mouse click on backdrop → closed, focus Lane B, view unchanged (no click-through); touch tap on backdrop → same; Shift+Tab stays inside; 0 console errors in both modes. WebKit NOT available (only chromium in /opt/pw-browsers) → native iPad Safari still unverified.
+
+### P3 · original sources (verification = "checked in the Codex inspection of d6e2b40")
+- r18 Evo FE: bm cd-agg→`cd`, sourceId src-agg(0-60specs)→`test` (C/D a15102392), publication "Car and Driver", conditions testMass "3,517 lb as tested"; timing stays unconfirmed (CD_PRE note); src-agg removed. values unchanged (4.4/13.3@104) → calibration unchanged.
+- r66 SF90 AF: bm mt-agg→`mt`, sourceId→`test` (MotorTrend AF first test), conditions testMass "3,839 lb as tested", other ["Assetto Fiorano package"]; src-agg removed; C/D-via-Carscoops row stays equivalent (AF unconfirmed). catalog-only.
+- r67 Taycan Turbo S: bm `cd` verification → original C/D page; timing stays unconfirmed. catalog-only.
+- r04 GR Yaris: source `src-autocar` = https://www.em.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024; bm autocar sourceId test(cloudfront mirror)→src-autocar; launchControl "None" (confirmed); timing basis + Circuit Pack stay unconfirmed (match=equivalent); gap text updated.
+
+### VERIFICATION
+- npm run generate:stats ✓, npm run generate:gaps ✓, npm run check ✓ (824 tests / 21 files; typecheck, lint, build; chunk warning ~749 kB min unchanged).
+- CI/Vercel for pushed head: see PR #7 body.
+
+### STILL OPEN (unchanged from Codex "remaining")
+- second-hand rows not yet checked against originals (all rows whose verification says syndicated/aggregator/forum/search summary); BRZ converter parameters; Z07/GT500 package aero; Turbo S AWD approximation + 0–130 mph primary source; GR Yaris timing basis/Circuit Pack; Hyundai US N DCT doc + Kona N gearbox code; Octavia/RS 3 axle assignment; Macan GTS axle conflict; no benchmark: CT4-V, ZL1 1LE, E 63 wagon; native iPad Safari check.
+
 ## branch=claude/determined-planck-qhjicj · base=origin/main@1d6734e + merge(origin/claude/determined-planck-qhjicj@234198e, Codex.md=branch copy, no other content) · impl=d401274 · handoff=Codex.md "Initial inspection and engineering handoff" (reviewed e4eecd8)
 
 ### SCOPE
