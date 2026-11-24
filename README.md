@@ -115,8 +115,8 @@ factory claims, sources, measured benchmarks and the data gaps still open.
   redline maximum), a 0.3 s clutch engagement and 0.3 s shifts with the drive
   interrupted.
 - **Stock classes D, C, B, A, S and S+** come from one standardized stock run
-  per car (formula SLC-3: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
-  km/h). They ignore your tuning. The thresholds (20/39.4/46.5/64/78) sit in wide
+  per car (formula SLC-4: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
+  km/h). They ignore your tuning. The thresholds (20/36.4/46.5/64/78) sit in wide
   gaps of the score distribution and are checked against slow, middle and
   fast reference fixtures. The table is generated offline into
   `stockStats.generated.ts` (`npm run generate:stats`), and a test fails if it

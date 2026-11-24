@@ -134,7 +134,11 @@ export const entry: CatalogEntry = {
     "US gearbox code (to confirm the Hyundai Europe N DCT table applies)"
   ],
   notes: [
-    "Hyundai Europe’s factory N DCT table gives 3.714/2.261/2.174/1.621/0.927/0.767/0.878/0.698 with 3.933 on 1st, 2nd, 5th, 6th and reverse and 2.810 on 3rd, 4th, 7th and 8th. Per the spec-sheet follow-up it is not applied until the US gearbox code is confirmed, so 3rd–7th remain interpolated here."
+    "Hyundai Europe’s factory N DCT table gives 3.714/2.261/2.174/1.621/0.927/0.767/0.878/0.698 with 3.933 on 1st, 2nd, 5th, 6th and reverse and 2.810 on 3rd, 4th, 7th and 8th. Per the spec-sheet follow-up it is not applied until the US gearbox code is confirmed, so 3rd–7th remain interpolated here.",
+    "The Elantra N DCT uses the same eight ratios as this Hyundai Europe table (with 3.800/2.714 final drives), which supports — but does not confirm — that the US Kona N shares the gear set."
+  ],
+  simCaveats: [
+    "Provisional gearing: 3rd–7th are interpolated until the US gearbox code confirms the Hyundai Europe N DCT table."
   ],
   sim: buildSpec({
   id: "2022-hyundai-kona-n-us-cuv-fwd-8dct",
@@ -151,11 +155,11 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'FWD', efficiency: 0.9, description: 'Front-wheel drive with electronic limited-slip differential (e-LSD)' },
     chassis: { curbMassKg: 1515, frontWeightFraction: 0.61, wheelbaseM: 2.6, lengthMm: 4215, widthMm: 1800, heightMm: 1565 },
     aero: {},
-    tires: { sizes: [square('r19', '235/40 R19', 235, 40, 19, 'N fitment')], compound: 'uhp', gripScale: 1.24 },
+    tires: { sizes: [square('r19', '235/40 R19', 235, 40, 19, 'N fitment')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 5.2 },
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.24', status: 'estimated', source: 'Transferred from the Elantra N fit (same engine, N DCT and tire class)' },
+      { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Transferred from the Elantra N fit (same engine, N DCT family and tire class)' },
       { parameter: 'Drivetrain efficiency', value: '90 %', status: 'estimated', source: 'Transferred from the Elantra N fit' },
       { parameter: 'Peak power', value: '276 hp @ 5,500–6,000 rpm (286 hp on overboost, not modelled)', status: 'reported', source: 'Hyundai rating (multiple reviews)', url: 'https://www.motor1.com/reviews/576275/2022-hyundai-kona-n-first-drive/' },
       { parameter: 'Peak torque', value: '289 lb-ft @ 2,100–4,700 rpm', status: 'reported', source: 'Hyundai rating (multiple reviews)', url: 'https://www.motor1.com/reviews/576275/2022-hyundai-kona-n-first-drive/' },

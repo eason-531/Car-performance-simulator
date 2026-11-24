@@ -98,6 +98,9 @@ export const entry: CatalogEntry = {
   notes: [
     "Škoda publishes 3.400/2.750/1.767/0.925/0.705/0.755/0.635 with two axle ratios, 4.167 and 3.125. Monotonic overall ratios force 4th and 5th onto 4.167 and 6th and 7th onto 3.125; a smooth progression suggests 1st on 4.167 and 2nd and 3rd on 3.125. Per the spec-sheet follow-up this is not applied until the shaft assignment is confirmed, so the older single-ratio DQ381 set remains."
   ],
+  simCaveats: [
+    "Provisional gearing: an older single-ratio DQ381 set is used until the shaft assignment of Škoda’s published ratios is confirmed."
+  ],
   sim: buildSpec({
   id: "2021-skoda-octavia-combi-rs-2-0-tsi-dsg-de-wagon-fwd-7dct",
   make: "Škoda",

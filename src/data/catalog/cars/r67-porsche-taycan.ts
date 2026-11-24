@@ -49,9 +49,25 @@ export const entry: CatalogEntry = {
       kind: "road-test"
     }
   ],
-  benchmarks: [],
+  benchmarks: [
+    {
+      id: "cd",
+      sourceId: "test",
+      publication: "Car and Driver",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      results: {
+        zeroTo60MphS: 2.4,
+        quarterMileS: 10.5,
+        quarterMileTrapMph: 130
+      },
+      conditions: {},
+      match: "exact",
+      verification: "Original Car and Driver test, checked in the Codex inspection of d6e2b40 (2026-11-24). Timing basis not stated in the checked material, so both simulator bases are shown.",
+      date: "2019"
+    }
+  ],
   dataGaps: [
-    "Car and Driver acceleration test (roster source)",
     "Motor ratings and battery limits",
     "Two-speed rear gear ratios",
     "Drag coefficient"

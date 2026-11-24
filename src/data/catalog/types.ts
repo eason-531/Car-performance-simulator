@@ -196,6 +196,11 @@ export interface CatalogEntry {
   sim?: VehicleSpec;
   /** Visible reason the car cannot run yet (when `sim` is absent). */
   unsupportedReason?: string;
+  /**
+   * Known approximations in a playable model (provisional gearing, display-only
+   * axle ratios, generic AWD splits…). Shown beside readiness and residuals.
+   */
+  simCaveats?: readonly string[];
   /** Fields that could not be confirmed from a reachable source (for spec-sheet follow-up). */
   dataGaps: readonly string[];
   notes?: readonly string[];

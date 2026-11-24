@@ -80,13 +80,6 @@ export const entry: CatalogEntry = {
       publisher: "Ford",
       url: "https://www.fordservicecontent.com/Ford_Content/Catalog/owner_information/2020-Ford-Mustang-Shelby-GT500-Supplement-version-2_su_EN-US_03_2020.pdf",
       kind: "manufacturer"
-    },
-    {
-      id: "src-mt",
-      title: "2020 Ford Mustang Shelby GT500 first test",
-      publisher: "MotorTrend",
-      url: "https://www.motortrend.com/reviews/2020-ford-mustang-shelby-gt500-first-test",
-      kind: "road-test"
     }
   ],
   benchmarks: [
@@ -131,7 +124,7 @@ export const entry: CatalogEntry = {
     },
     {
       id: "mt",
-      sourceId: "src-mt",
+      sourceId: "test",
       publication: "MotorTrend",
       timing: "rollout-1ft",
       timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",

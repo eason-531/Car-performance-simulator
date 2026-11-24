@@ -66,13 +66,6 @@ export const entry: CatalogEntry = {
       kind: "manufacturer"
     },
     {
-      id: "src-cd",
-      title: "2018 Lamborghini Huracán Performante test",
-      publisher: "Car and Driver",
-      url: "https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/",
-      kind: "road-test"
-    },
-    {
       id: "src-mm",
       title: "Huracán Performante specifications",
       publisher: "Motor Matchup (secondary)",
@@ -83,7 +76,7 @@ export const entry: CatalogEntry = {
   benchmarks: [
     {
       id: "cd",
-      sourceId: "src-cd",
+      sourceId: "test",
       publication: "Car and Driver",
       timing: "unconfirmed",
       timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
@@ -126,6 +119,9 @@ export const entry: CatalogEntry = {
     "AWD control map",
     "Drag coefficient",
     "Launch-control rpm"
+  ],
+  simCaveats: [
+    "Gearing from a secondary listing only; the AWD control map is unknown, so a generic 0–50 % front-share range is used."
   ],
   sim: buildSpec({
   id: "2018-lamborghini-huracan-performante-lp-640-4-us-coupe-awd-7dct",

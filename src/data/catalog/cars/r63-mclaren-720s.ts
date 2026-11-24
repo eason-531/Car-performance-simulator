@@ -63,19 +63,12 @@ export const entry: CatalogEntry = {
       publisher: "McLaren",
       url: "https://mclaren-web.s3.eu-west-2.amazonaws.com/files/Owner%20Manual%20-%20Super%20Series%20-%20US%20-%20English.pdf",
       kind: "manufacturer"
-    },
-    {
-      id: "src-cd",
-      title: "2018 McLaren 720S instrumented test",
-      publisher: "Car and Driver",
-      url: "https://www.caranddriver.com/reviews/a19862504/2018-mclaren-720s-instrumented-test-review/",
-      kind: "road-test"
     }
   ],
   benchmarks: [
     {
       id: "cd",
-      sourceId: "src-cd",
+      sourceId: "test",
       publication: "Car and Driver",
       timing: "unconfirmed",
       timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",

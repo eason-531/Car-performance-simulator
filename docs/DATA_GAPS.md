@@ -71,13 +71,13 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2021 Ferrari SF90 Stradale Assetto Fiorano
 
 - Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: MotorTrend first test results (roster source); Hybrid system power split; 8-speed DCT ratios; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922)
+- Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
 
 ### 2020 Porsche Taycan Turbo S
 
 - Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver acceleration test (roster source); Motor ratings and battery limits; Two-speed rear gear ratios; Drag coefficient
+- Missing: Motor ratings and battery limits; Two-speed rear gear ratios; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/) · [Autocar](https://autocar.co.uk/node/99423)
 
 ### 2025 Hyundai Ioniq 5 N
@@ -126,19 +126,19 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2024 Acura Integra Type S
 
 - Unconfirmed inputs: Tire size (using 265/30 R19)
-- Also missing: Instrumented test results; Weight distribution; Drag coefficient
+- Also missing: Weight distribution; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a44212736/2024-acura-integra-type-s-drive/) · [Autoblog](https://autoblog.com/buy/2024-Acura-Integra/review/) · [Acura](https://acuranews.com/en-US/releases/release-13f25e90cfe47cd58453f1f7100d2209-2024-acura-integra-integra-type-s-specifications-features?selectedTabId=release-13f25e90cfe47cd58453f1f7100d2209-photos)
 
 ### 2023 Toyota GR Corolla Circuit Edition
 
-- Unconfirmed inputs: Power / torque rpm (using 6,500 / 3,000–5,500 rpm); Gear ratios (using 3.538/2.238/1.535/1.162/1.081/0.902); Tire size (using 235/40 R18)
-- Also missing: Power/torque rpm; AWD split range; Weight distribution; Drag coefficient; Gear ratios (GR Yaris set assumed; Toyota GB release has the table)
-- Consulted: [MotorTrend](https://www.motortrend.com/features/2023-toyota-gr-corolla-circuit-edition-first-test-review) · [Car and Driver (syndicated on AOL)](https://www.aol.com/tested-toyota-gr-corolla-quicker-153000033.html) · [Carscoops (citing MotorTrend)](https://www.carscoops.com/2022/09/2023-gr-corolla-clocks-0-60-time-of-5-4-sec-in-first-test-comes-up-short-on-toyotas-claims/)
+- Unconfirmed inputs: Power / torque rpm (using 6,500 / 3,000–5,500 rpm); Tire size (using 235/40 R18)
+- Also missing: Power/torque rpm; Power and torque rpm bands; Production-car (with rear wing) instrumented test
+- Consulted: [MotorTrend](https://www.motortrend.com/features/2023-toyota-gr-corolla-circuit-edition-first-test-review) · [Car and Driver (syndicated on AOL)](https://www.aol.com/tested-toyota-gr-corolla-quicker-153000033.html) · [carwhere (citing MotorWeek)](https://www.carwhere.com/0-60-times/toyota/gr-corolla)
 
 ### 2021 Toyota GR Yaris Circuit Pack
 
 - Unconfirmed inputs: Peak torque (using 360 Nm @ 3,000–4,600 rpm); Gear ratios (using 3.538/2.238/1.535/1.162/1.081/0.902); Tire size (using 225/40 R18)
-- Also missing: Gear ratios; Torque rpm band; A UK-market instrumented test; AWD split range; Drag coefficient
+- Also missing: Gear ratios; Torque rpm band; AWD split range; Drag coefficient; Pre-facelift Toyota GB release: gear table, final drives and the 360 Nm band; Autocar timing basis and Circuit Pack fitment (not stated on the original page)
 - Consulted: [Autocar](https://d2km96w3x5blkf.cloudfront.net/car-review/toyota/gr-yaris-2020-2024) · [Toyota GB](https://media.toyota.co.uk/wp-content/uploads/sites/5/2021/03/1605890847201029MGRYarisFullRelease.pdf) · [Toyota Ireland](https://www.toyota.ie/discover-toyota/toyota-gazoo-racing/gr-yaris/specifications)
 
 ### 2022 Volkswagen Golf R
@@ -191,8 +191,8 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2025 Hyundai Elantra N DCT
 
-- Unconfirmed inputs: Gear ratios (using 3.714 / … / 0.498 (2nd–7th interpolated)); Dimensions (using 4,676 × 1,826 × 1,415 mm, WB 2,720 mm)
-- Also missing: MotorTrend first-test results; DCT 2nd–7th gear ratios (interpolated between published 1st 3.714 and 8th 0.498); DCT final drive (3.8 per one listing, conflicting); 2025 curb mass (2022 figure used); Drag coefficient; Weight distribution
+- Unconfirmed inputs: Dimensions (using 4,676 × 1,826 × 1,415 mm, WB 2,720 mm)
+- Also missing: Hyundai US confirmation of the N DCT ratios and final-drive split (two listings and the i30 N sheet agree); 2025 factory curb mass (2022 figure used); Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2025-hyundai-elantra-n-dct-first-test-review) · [Hyundai Canada](https://www.hyundaicanada.com/en/showroom/elantra-n) · [Motor Matchup](https://www.motormatchup.com/catalog/Hyundai/Elantra/2022/N-DCT)
 
 ### 2022 Subaru WRX Limited
@@ -210,7 +210,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2015 Mitsubishi Lancer Evolution Final Edition
 
 - Unconfirmed inputs: Power / torque rpm (using 6,500 / 4,000 rpm); Tire size (using 245/40 R18)
-- Also missing: Car and Driver test results (roster source); Final drive (single source); Power/torque rpm; AWD split range; Drag coefficient
+- Also missing: Final drive (single source); Power/torque rpm; AWD split range; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15102392/2015-mitsubishi-lancer-evolution-final-edition-test-review/) · [Mitsubishi Motors](https://media.mitsubishicars.com/en-US/releases/2015-mitsubishi-lancer-evolution-final-edition-most-powerful-mass-production-evolution-ever) · [Motor Matchup](https://www.motormatchup.com/catalog/Mitsubishi/Lancer-Evolution/2015/Final-Edition-4DR-Sedan)
 
 ### 2016 Lexus GS 350 F Sport RWD
@@ -305,9 +305,9 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2023 Toyota GR Supra A91-MT Edition
 
-- Unconfirmed inputs: Gear ratios (using 4.110/2.315/1.542/1.179/1.000/0.846); Tire size (using 255/35 R19 F · 275/35 R19 R)
-- Also missing: Manual gear ratios (unpublished); Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a41096194/2023-toyota-gr-supra-manual-drive/) · [Toyota USA](https://pressroom.toyota.com/toyota-gr-supra-adds-manual-transmission-and-enhanced-drive-dynamics-for-2023/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2023-toyota-gr-supra-3-110000407.html)
+- Unconfirmed inputs: Gear ratios (using 4.110/2.315/1.542/1.179/1.000/0.846)
+- Also missing: Manual gear ratios (unpublished by Toyota US); Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a41096194/2023-toyota-gr-supra-manual-drive/) · [Toyota USA](https://pressroom.toyota.com/toyota-gr-supra-adds-manual-transmission-and-enhanced-drive-dynamics-for-2023/) · [Toyota Pressroom](https://pressroom.toyota.com/?p=78597)
 
 ### 2022 Toyota GR86 Premium
 
@@ -318,7 +318,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2022 Subaru BRZ Limited 6AT
 
 - Unconfirmed inputs: Dimensions (using 4,265 × 1,775 × 1,310 mm, WB 2,576 mm)
-- Also missing: MotorTrend automatic test results (linked page unreachable); Car and Driver automatic test numbers (syndicated page found, figures not in summary); Tire size and model (215/40 R18 Michelin Pilot Sport 4 assumed for Limited); Drag coefficient
+- Also missing: Car and Driver Premium automatic numbers (different trim and tires; equivalent only); Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2022-subaru-brz-manual-automatic-first-test-review) · [auto123](https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879) · [Motor1](https://www.motor1.com/reviews/582197/2022-subaru-brz-review/)
 
 ### 2016 Mazda MX-5 Miata Club
@@ -342,7 +342,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2023 Nissan Z Performance 9AT
 
 - Unconfirmed inputs: Power / torque rpm (using 6,400 / 1,600–5,200 rpm); Tire size (using 255/40 R19 F, 275/35 R19 R)
-- Also missing: MotorTrend first-test results (linked page unreachable; no independent instrumented automatic test found); Power/torque rpm; Tire size; Drag coefficient; MotorTrend Performance 9AT test results (roster source)
+- Also missing: Power/torque rpm; Tire size; Drag coefficient; MotorTrend Performance 9AT first-test figures (roster source; not transcribed)
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review) · [Autoblog](https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/) · [The Detroit Bureau](https://thedetroitbureau.com/reviews/a-week-with-2023-nissan-z-performance-a-t/)
 
 ### 2018 Nissan GT-R Track Edition
@@ -366,7 +366,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2023 BMW M2 Carbon Package 6MT
 
 - Unconfirmed inputs: Peak power (using 453 hp @ 6,250); Peak torque (using 406 lb-ft @ 2,650–5,870 rpm (modelled to 5,850 rpm so the curve stays within the 453 hp rating)); Tire size (using 275/35 R19 F · 285/30 R20 R)
-- Also missing: Instrumented test of a 2023 manual M2; Power/torque rpm; Tire size; Drag coefficient
+- Also missing: Power/torque rpm; Tire size; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a43452901/2023-bmw-m2-drive/) · [The Drive](https://thedrive.com/car-reviews/2023-bmw-m2-review) · [TrueCar](https://www.truecar.com/bmw/m2/specs/)
 
 ### 2022 Porsche 718 Cayman GT4 RS
@@ -395,8 +395,8 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2023 Chevrolet Corvette Z06 Z07 + Carbon Fiber Aero
 
-- Unconfirmed inputs: Gear ratios (using 2.91/…/0.33 (Stingray TR-9080 set)); Curb mass (using ≈1,580 kg (3,480 lb)); Tire size (using 275/30 R20 F · 345/25 R21 R (Z07)); Tire compound (using Track semi-slick class)
-- Also missing: Z06 gear ratios (assumed shared with Stingray); Curb mass; Carbon Fiber Aero effect on mass; Tire size; Drag coefficient; MotorTrend Z07 coupe test (package-specific; linked in the follow-up)
+- Unconfirmed inputs: Curb mass (using ≈1,580 kg (3,480 lb))
+- Also missing: Z07 Carbon Fiber Aero Cd / CdA; Curb mass (factory, Z07 + carbon wheels); Weight distribution
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-chevrolet-corvette-z06-coupe-z07-package-0-60-mph-time-quarter-mile) · [Car and Driver (syndicated on Yahoo)](https://news.yahoo.com/2023-c8-corvette-z06-does-163800005.html) · [Chevrolet](https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2023/chevrolet_2023_corvette.pdf)
 
 ### 2020 Ford Mustang Shelby GT500 Carbon Fiber Track Package

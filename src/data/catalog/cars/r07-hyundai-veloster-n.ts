@@ -62,15 +62,43 @@ export const entry: CatalogEntry = {
       publisher: "DoubleClutch.ca",
       url: "https://doubleclutch.ca/?p=60189",
       kind: "reference"
+    },
+    {
+      id: "src-mw",
+      title: "2019 Hyundai Veloster N road test",
+      publisher: "MotorWeek",
+      url: "https://motorweek.org/road_tests/2019-hyundai-veloster-n-2",
+      kind: "road-test"
     }
   ],
-  benchmarks: [],
+  benchmarks: [
+    {
+      id: "motorweek",
+      sourceId: "src-mw",
+      publication: "MotorWeek",
+      timing: "unconfirmed",
+      timingNote: "Timing procedure of this publication is not confirmed.",
+      results: {
+        zeroTo60MphS: 5.2,
+        quarterMileS: 13.9,
+        quarterMileTrapMph: 102
+      },
+      conditions: {},
+      match: "equivalent",
+      verification: "Search-result summary of the article (page itself not reachable from this environment).",
+      date: "2019",
+      deviation: "Performance Package not confirmed in the reachable text."
+    }
+  ],
   dataGaps: [
     "Instrumented test results (Car and Driver 2019 manual)",
     "Curb mass",
     "Final drive (conflicting sources)",
     "Power/torque rpm",
     "Drag coefficient"
+  ],
+  notes: [
+    "Car and Driver’s long-term car ended its 40,000-mile test at 13.7 s @ 104 mph; its configuration at the original test is not confirmed, so it is not transcribed."
   ],
   sim: buildSpec({
   id: "2019-hyundai-veloster-n-performance-package-us-hatch-fwd-6mt",

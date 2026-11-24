@@ -90,6 +90,9 @@ export const entry: CatalogEntry = {
     "Power/torque rpm",
     "Tire size"
   ],
+  simCaveats: [
+    "The 2.937 front axle ratio is display-only; physics ties engine speed to the 3.700 rear axle with a generic 0–50 % front-share range."
+  ],
   sim: buildSpec({
   id: "2018-nissan-gt-r-track-edition-us-coupe-awd-6dct",
   make: "Nissan",

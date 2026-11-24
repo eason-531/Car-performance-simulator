@@ -209,6 +209,14 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
         }
       >
         {e.owner && <p className="help">{e.owner.note}</p>}
+        {spec && e.simCaveats && e.simCaveats.length > 0 && (
+          <div className="callout callout--warning" role="note">
+            <Icon name="info" size={18} />
+            <span>
+              <strong>Provisional model.</strong> {e.simCaveats.join(' ')}
+            </span>
+          </div>
+        )}
         {!spec && e.unsupportedReason && (
           <div className="callout callout--warning" role="note">
             <Icon name="info" size={18} />
@@ -235,6 +243,9 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
       </Panel>
 
       <Panel title="Reference tests" subtitle="Published measurements beside the simulator’s stock run on the matching timing basis">
+        {spec && e.simCaveats && e.simCaveats.length > 0 && e.benchmarks.length > 0 && (
+          <p className="help">Residuals below include the provisional-model approximations noted above.</p>
+        )}
         {e.benchmarks.length === 0 ? (
           <p className="help">Measured results not transcribed yet — see the linked source below.</p>
         ) : (

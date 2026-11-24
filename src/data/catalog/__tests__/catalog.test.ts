@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  measuredResult,
+  sortNote,
   CATALOG,
   EMPTY_FILTERS,
   FACETS,
@@ -116,5 +118,39 @@ describe('local series colours', () => {
     ]);
     expect(s.get('stock')!.color).toBe(s.get('tuned')!.color);
     expect(s.get('stock')!.dash).not.toBe(s.get('tuned')!.dash);
+  });
+});
+
+describe('catalog source integrity', () => {
+  it.each(CATALOG.map((e) => [e.id, e] as const))('%s has unique, resolvable sources', (_id, e) => {
+    const ids = e.sources.map((s) => s.id);
+    expect(new Set(ids).size, 'duplicate source id').toBe(ids.length);
+    const urls = e.sources.map((s) => s.url).filter((u): u is string => !!u);
+    expect(new Set(urls).size, 'same URL listed under two source ids').toBe(urls.length);
+    const benchIds = e.benchmarks.map((b) => b.id);
+    expect(new Set(benchIds).size, 'duplicate benchmark id').toBe(benchIds.length);
+    for (const b of e.benchmarks) expect(ids, `benchmark ${b.id} cites a missing source`).toContain(b.sourceId);
+    if (e.factory.sourceId) expect(ids, 'factory cites a missing source').toContain(e.factory.sourceId);
+  });
+});
+
+describe('measured sorting transparency', () => {
+  const find = (fragment: string) => CATALOG.find((e) => e.id.includes(fragment))!;
+  it('prefers exact-configuration tests over equivalents such as drag-strip passes', () => {
+    const redeye = find('redeye');
+    const r = measuredResult(redeye, 'quarterMileS')!;
+    expect(r.benchmark.match).toBe('exact');
+    expect(r.value).toBeGreaterThan(10.8); // the Cars.com drag-strip 10.8 s is an equivalent
+  });
+  it('falls back to equivalent tests only when no exact test exists, and says so', () => {
+    const yaris = find('gr-yaris');
+    expect(measuredResult(yaris, 'zeroTo100KmhS')!.benchmark.match).toBe('equivalent');
+    expect(sortNote(yaris, 'meas-0-100')).toMatch(/equivalent configuration/);
+  });
+  it('names the publication and timing basis of the value used', () => {
+    const note = sortNote(find('gr-corolla'), 'meas-quarter')!;
+    expect(note).toContain('Car and Driver');
+    expect(note).toContain('1-ft rollout');
+    expect(sortNote(find('gr-corolla'), 'name')).toBeNull();
   });
 });

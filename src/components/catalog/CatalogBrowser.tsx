@@ -9,6 +9,7 @@ import {
   matchesQuery,
   readinessOf,
   sortEntries,
+  sortNote,
   stockClass,
   type CatalogFilters,
   type SortKey,
@@ -181,6 +182,7 @@ export function CatalogBrowser({
               onToggleFavorite={() => app.toggleFavorite(e.id)}
               onSelect={() => onSelect(e.id)}
               actionLabel={actionLabel}
+              note={sortNote(e, sort)}
             />
           ))}
         </ul>
@@ -208,7 +210,17 @@ export function ClassBadge({ id }: { id: string }) {
 
 export function ReadinessBadge({ entry }: { entry: CatalogEntry }) {
   const r = readinessOf(entry);
-  return <Badge tone={r === 'catalog' ? 'neutral' : r === 'sim' ? 'reported' : 'verified'}>{READINESS_LABEL[r]}</Badge>;
+  const caveats = entry.sim ? (entry.simCaveats ?? []) : [];
+  return (
+    <>
+      <Badge tone={r === 'catalog' ? 'neutral' : r === 'sim' ? 'reported' : 'verified'}>{READINESS_LABEL[r]}</Badge>
+      {caveats.length > 0 && (
+        <span className="badge-wrap" title={caveats.join(' ')}>
+          <Badge tone="warning">Provisional model</Badge>
+        </span>
+      )}
+    </>
+  );
 }
 
 export function Monogram({ entry }: { entry: CatalogEntry }) {
@@ -234,6 +246,7 @@ function CarRow({
   onToggleFavorite,
   onSelect,
   actionLabel,
+  note,
 }: {
   entry: CatalogEntry;
   selected: boolean;
@@ -242,6 +255,8 @@ function CarRow({
   onToggleFavorite: () => void;
   onSelect: () => void;
   actionLabel: string;
+  /** Value the list is currently sorted by, with its provenance. */
+  note: string | null;
 }) {
   return (
     <li className={`car-row ${selected ? 'is-selected' : ''} ${disabled ? 'is-disabled' : ''}`}>
@@ -261,6 +276,7 @@ function CarRow({
           <span className="car-row__meta">
             {e.trim} · {e.market} · {e.transmissionLabel} · {e.drive}
           </span>
+          {note && <span className="car-row__sortnote">{note}</span>}
           {disabled && e.unsupportedReason && <span className="car-row__reason">{e.unsupportedReason}</span>}
         </span>
         <span className="car-row__badges">

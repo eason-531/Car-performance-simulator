@@ -34,7 +34,7 @@ export const entry: CatalogEntry = {
     power: "261 PS",
     torque: "360 Nm",
     curbMass: "1,280 kg",
-    sourceId: "src2"
+    sourceId: "src-toy-ie"
   },
   sources: [
     {
@@ -52,7 +52,7 @@ export const entry: CatalogEntry = {
       kind: "manufacturer"
     },
     {
-      id: "src2",
+      id: "src-toy-ie",
       title: "GR Yaris specifications",
       publisher: "Toyota Ireland",
       url: "https://www.toyota.ie/discover-toyota/toyota-gazoo-racing/gr-yaris/specifications",
@@ -77,6 +77,13 @@ export const entry: CatalogEntry = {
       title: "Toyota GR Yaris review",
       publisher: "WhichCar (AU)",
       url: "https://www.whichcar.com.au/?p=524752",
+      kind: "road-test"
+    },
+    {
+      id: "src-autocar",
+      title: "Toyota GR Yaris 2020–2024 review",
+      publisher: "Autocar",
+      url: "https://www.em.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024",
       kind: "road-test"
     }
   ],
@@ -109,14 +116,35 @@ export const entry: CatalogEntry = {
       match: "equivalent",
       verification: "Search-result summary of the article (page itself not reachable from this environment).",
       deviation: "Australian-market car (200 kW / 370 Nm rating), stronger than the UK 261 PS car; best run."
+    },
+    {
+      id: "autocar",
+      sourceId: "src-autocar",
+      publication: "Autocar",
+      timing: "unconfirmed",
+      timingNote: "Timing procedure of this publication is not confirmed.",
+      results: {
+        zeroTo60MphS: 5.2
+      },
+      conditions: {
+        testMass: "1,283 kg as tested (kerb with fuel)",
+        occupants: "Two",
+        fuel: "Full tank",
+        launchControl: "None"
+      },
+      match: "equivalent",
+      verification: "Original Autocar road test, checked in the Codex inspection of d6e2b40 (2026-11-24): 5.2 s with two occupants, a full tank, 1,283 kg and no launch control. The page does not verify the timing basis or Circuit Pack fitment, so both stay unconfirmed.",
+      date: "2020",
+      deviation: "UK car; Circuit Pack fitment is not confirmed in the reachable text."
     }
   ],
   dataGaps: [
     "Gear ratios",
     "Torque rpm band",
-    "A UK-market instrumented test",
     "AWD split range",
-    "Drag coefficient"
+    "Drag coefficient",
+    "Pre-facelift Toyota GB release: gear table, final drives and the 360 Nm band",
+    "Autocar timing basis and Circuit Pack fitment (not stated on the original page)"
   ],
   notes: [
     "Market ratings differ (UK/IE 261 PS; other markets up to 272 PS); only the UK identity is modelled here."
@@ -139,12 +167,12 @@ export const entry: CatalogEntry = {
     tires: { sizes: [square('r18', '225/40 R18', 225, 40, 18, 'Michelin Pilot Sport 4S (Circuit Pack)')], compound: 'uhp', gripScale: 1.0 },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Final drive', value: '3.941 (1st–4th) / 3.350 (5th–6th)', status: 'estimated', source: 'From a 2024 (facelift-era) Toyota UK document; the pre-facelift Toyota GB release has not been checked', url: 'https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/240704-GR-Yaris-Tech-Specs.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.00', status: 'estimated', source: 'Transferred from the GR Corolla fit (same engine, gearbox, AWD system and tire class)' },
       { parameter: 'Drivetrain efficiency', value: '87.3 %', status: 'estimated', source: 'Transferred from the GR Corolla fit' },
       { parameter: 'Peak power', value: '261 PS (DIN)', status: 'reported', source: 'Toyota Ireland specifications', url: 'https://www.toyota.ie/discover-toyota/toyota-gazoo-racing/gr-yaris/specifications' },
       { parameter: 'Peak torque', value: '360 Nm @ 3,000–4,600 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Gear ratios', value: '3.538/2.238/1.535/1.162/1.081/0.902', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '3.941 (1st–4th) / 3.350 (5th–6th)', status: 'reported', source: 'Toyota UK technical specifications (2024 document)', url: 'https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/240704-GR-Yaris-Tech-Specs.pdf' },
       { parameter: 'Curb mass', value: '1,280 kg', status: 'reported', source: 'Toyota Ireland specifications', url: 'https://www.toyota.ie/discover-toyota/toyota-gazoo-racing/gr-yaris/specifications' },
       { parameter: 'AWD split', value: 'Front share 0.30–0.60', status: 'estimated', source: 'Published GR-Four mode splits (recalled)' },
       { parameter: 'Tire size', value: '225/40 R18', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
