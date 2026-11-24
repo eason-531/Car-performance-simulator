@@ -63,13 +63,19 @@ export const entry: CatalogEntry = {
       publisher: "Car and Driver (Yahoo syndication)",
       url: "https://news.yahoo.com/tested-2022-subaru-brz-automatic-210100923.html",
       kind: "road-test"
+    },
+    {
+      id: "src-sub22",
+      title: "MY2022 BRZ specifications",
+      publisher: "Subaru of America",
+      url: "https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/22MY_BRZ_-_Specs_-FINAL.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [],
   dataGaps: [
     "MotorTrend automatic test results (linked page unreachable)",
     "Car and Driver automatic test numbers (syndicated page found, figures not in summary)",
-    "Final drive (4.10 vs 3.91 conflict; 4.10 used)",
     "Tire size and model (215/40 R18 Michelin Pilot Sport 4 assumed for Limited)",
     "Drag coefficient"
   ],
@@ -92,21 +98,22 @@ export const entry: CatalogEntry = {
     },
     transmission: {
       type: 'torque-converter-automatic', name: '6-speed automatic (Aisin)',
-      gearRatios: [3.538, 2.06, 1.404, 1.0, 0.713, 0.582], finalDrive: 4.1,
+      gearRatios: [3.538, 2.06, 1.405, 1.0, 0.713, 0.582], finalDrive: 3.909,
       upshiftTimeS: 0.32, torqueConverter: { stallRpm: 2300 },
     },
     drivetrain: { layout: 'RWD', description: 'Rear-wheel drive with Torsen limited-slip differential' },
-    chassis: { curbMassKg: 1299, frontWeightFraction: 0.54, cgHeightM: 0.46, wheelbaseM: 2.576, lengthMm: 4265, widthMm: 1775, heightMm: 1310 },
+    chassis: { curbMassKg: 1299, frontWeightFraction: 0.54, cgHeightM: 0.456, wheelbaseM: 2.576, lengthMm: 4265, widthMm: 1775, heightMm: 1310 },
     aero: {},
     tires: { sizes: [square('r18', '215/40 R18', 215, 40, 18, 'Limited fitment (assumed)'), square('r17', '215/45 R17', 215, 45, 17, 'Premium fitment')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 6.5 },
     provenance: [
+      { parameter: 'Gear ratios', value: '3.538/2.060/1.405/1.000/0.713/0.582 (6AT)', status: 'verified', source: 'Subaru US MY2022 engineering sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/22MY_BRZ_-_Specs_-FINAL.pdf' },
+      { parameter: 'Final drive', value: '3.909 (6AT; 4.100 is the 6MT)', status: 'verified', source: 'Subaru US MY2022 engineering sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/22MY_BRZ_-_Specs_-FINAL.pdf' },
+      { parameter: 'CG height', value: '17.95 in (0.456 m)', status: 'verified', source: 'Subaru US MY2022 engineering sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/22MY_BRZ_-_Specs_-FINAL.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'No defensible launch benchmark for this car (no benchmark): median of the fitted rear-drive cars (1.30, which is also the fit bound)' },
       { parameter: 'Peak power', value: '228 hp @ 7,000 rpm', status: 'reported', source: 'Subaru US rating', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },
       { parameter: 'Peak torque', value: '184 lb-ft @ 3,700 rpm', status: 'reported', source: 'Subaru US rating', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },
-      { parameter: 'Gear ratios', value: '3.538/2.060/1.404/1.000/0.713/0.582', status: 'reported', source: 'Specification listings (1st, 2nd, 3rd, 6th confirmed; 5th recalled)', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },
-      { parameter: 'Final drive', value: '4.10', status: 'reported', source: 'One listing gives 4.10, another 3.91', url: 'https://www.auto123.com/en/specs/subaru/brz/subaru-brz-2022-auto-424879' },
       { parameter: 'Curb mass', value: '≈2,864 lb (1,299 kg)', status: 'reported', source: 'Specification listings and comparison test (2,863 lb)' },
       { parameter: 'Tire compound', value: 'Ultra-high-performance class', status: 'estimated', source: 'Limited ships on Michelin Pilot Sport 4 (not confirmed in a reachable source)' },
       { parameter: 'Dimensions', value: '4,265 × 1,775 × 1,310 mm, WB 2,576 mm', status: 'estimated', source: 'Recalled Subaru figures; not verified' },

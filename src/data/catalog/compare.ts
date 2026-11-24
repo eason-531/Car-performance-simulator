@@ -58,7 +58,10 @@ export const METRICS: readonly MetricDef[] = [
   { key: 'quarterMileS', label: '¼ mile ET', unit: 's', sim: (t) => t.quarterMileS },
   { key: 'quarterMileTrapMph', label: '¼ mile trap', unit: 'mph', sim: (t) => (t.quarterMileTrapKmh === null ? null : t.quarterMileTrapKmh / 1.609344) },
   { key: 'quarterMileTrapKmh', label: '¼ mile trap', unit: 'km/h', sim: (t) => t.quarterMileTrapKmh },
+  { key: 'metres400S', label: '400 m', unit: 's', sim: (t) => t.metres400S },
+  { key: 'metres400TrapKmh', label: '400 m speed', unit: 'km/h', sim: (t) => t.metres400TrapKmh },
   { key: 'kilometerS', label: '1 km', unit: 's', sim: (t) => t.kilometerS },
+  { key: 'kilometerTrapKmh', label: '1 km speed', unit: 'km/h', sim: (t) => t.kilometerTrapKmh },
 ];
 
 export interface ResidualRow {

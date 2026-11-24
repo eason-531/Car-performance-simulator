@@ -64,6 +64,13 @@ export const entry: CatalogEntry = {
       publisher: "Mazda USA",
       url: "https://news.mazdausa.com/download/2024+MX-5+Spec+Deck.pdf",
       kind: "manufacturer"
+    },
+    {
+      id: "src-mazda",
+      title: "MX-5 spec deck",
+      publisher: "Mazda USA",
+      url: "https://filecache.mediaroom.com/mr5mr_mazdausa2/223524/download/2024%20MX-5%20Spec%20Deck.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -86,7 +93,6 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "MotorTrend first test (roster source)",
-    "Gear ratios and final drive (Mazda spec deck not reachable)",
     "Drag coefficient"
   ],
   notes: [
@@ -110,13 +116,13 @@ export const entry: CatalogEntry = {
     tires: { sizes: [square('r17', '205/45 R17', 205, 45, 17, 'Bridgestone Potenza S007A (Club, assumed)')], compound: 'uhp', gripScale: 1.3 },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Gear ratios', value: '5.087/2.991/2.035/1.594/1.286/1.000', status: 'verified', source: 'Mazda US spec deck (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://filecache.mediaroom.com/mr5mr_mazdausa2/223524/download/2024%20MX-5%20Spec%20Deck.pdf' },
+      { parameter: 'Final drive', value: '2.866 (6MT)', status: 'verified', source: 'Mazda US spec deck (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://filecache.mediaroom.com/mr5mr_mazdausa2/223524/download/2024%20MX-5%20Spec%20Deck.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Fit toward the Edmunds 0–60 mph 6.4 s stopped at the bound (sim 6.61 s)' },
       { parameter: 'Drivetrain efficiency', value: '85.4 %', status: 'estimated', source: 'Fitted to the Edmunds ¼-mile trap 92.9 mph' },
       { parameter: 'Peak power', value: '181 hp', status: 'reported', source: 'Mazda rating (Motor1)', url: 'https://www.motor1.com/reviews/722936/2024-mazda-miata-rf-review/' },
       { parameter: 'Peak torque', value: '151 lb-ft', status: 'reported', source: 'Mazda rating (Motor1)', url: 'https://www.motor1.com/reviews/722936/2024-mazda-miata-rf-review/' },
       { parameter: 'Power / torque rpm', value: '7,000 / 4,000 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Gear ratios', value: '5.087/2.991/2.035/1.594/1.286/1.000', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '2.866', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '2,452 lb (1,112 kg)', status: 'reported', source: 'Motor1 listing', url: 'https://www.motor1.com/reviews/722936/2024-mazda-miata-rf-review/' },
       { parameter: 'Tire size', value: '205/45 R17', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
     ],

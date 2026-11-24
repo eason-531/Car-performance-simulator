@@ -57,6 +57,13 @@ export const entry: CatalogEntry = {
       publisher: "Club Lexus",
       url: "https://www.clublexus.com/forums/gs-f-2016-present/807172-motor-trend-gsf-review.html",
       kind: "road-test"
+    },
+    {
+      id: "src-lexus",
+      title: "2016 Lexus product information",
+      publisher: "Lexus (mirror)",
+      url: "https://www.clublexus.com/wp-content/uploads/2015/10/2016-Lexus-GS-F-Product-Info.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -95,7 +102,6 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "Car and Driver page itself",
-    "8-speed ratios and final drive for the GS F",
     "Tire size",
     "Drag coefficient"
   ],
@@ -118,12 +124,12 @@ export const entry: CatalogEntry = {
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 4.5 },
     provenance: [
+      { parameter: 'Gear ratios', value: '4.596/2.724/1.863/1.464/1.231/1.000/0.824/0.685', status: 'verified', source: 'Lexus US technical sheet (AA80E/AA81E share forward ratios) (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://www.clublexus.com/wp-content/uploads/2015/10/2016-Lexus-GS-F-Product-Info.pdf' },
+      { parameter: 'Final drive', value: '2.937', status: 'verified', source: 'Lexus US technical sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://www.clublexus.com/wp-content/uploads/2015/10/2016-Lexus-GS-F-Product-Info.pdf' },
       { parameter: 'Tire grip calibration', value: '×1.12', status: 'estimated', source: 'Fitted to Car and Driver 0–60 mph 4.4 s (aggregator-listed)' },
       { parameter: 'Drivetrain efficiency', value: '82.3 %', status: 'estimated', source: 'Fitted to the 113 mph trap; held-out ET 12.80 s vs 12.9 s' },
       { parameter: 'Peak power', value: '467 hp @ 7,100 rpm', status: 'reported', source: 'Lexus rating (multiple reviews)', url: 'https://www.edmunds.com/lexus/gs-f/2016/review' },
       { parameter: 'Peak torque', value: '389 lb-ft @ 4,800–5,600 rpm', status: 'reported', source: 'Lexus rating (multiple reviews)', url: 'https://www.edmunds.com/lexus/gs-f/2016/review' },
-      { parameter: 'Gear ratios', value: '4.596/…/0.685 (AA80E family)', status: 'estimated', source: 'AA80E family set (verified on the IS); GS F application not confirmed — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '2.937', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '4,034 lb (1,830 kg) as tested', status: 'reported', source: 'Aggregator listing of the Car and Driver test car', url: 'https://www.0-60specs.com/lexus/gs-f-0-60-times' },
       { parameter: 'Tire size', value: '255/35 R19 F, 275/35 R19 R', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
     ],

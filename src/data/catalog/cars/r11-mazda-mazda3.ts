@@ -71,6 +71,13 @@ export const entry: CatalogEntry = {
       publisher: "Motorway America",
       url: "https://www.motorwayamerica.com/editorial/2021-mazda3-25-t-awd-hatch-%E2%80%94-lots-missing-feel-alive-charm",
       kind: "road-test"
+    },
+    {
+      id: "src-mt",
+      title: "2021 Mazda3 Turbo first test (hatchback)",
+      publisher: "MotorTrend",
+      url: "https://www.motortrend.com/reviews/2021-mazda3-turbo-first-test",
+      kind: "road-test"
     }
   ],
   benchmarks: [
@@ -87,7 +94,7 @@ export const entry: CatalogEntry = {
       match: "equivalent",
       verification: "Search-result summary of the article (page itself not reachable from this environment).",
       date: "2020",
-      deviation: "Figure quoted second-hand by Hagerty; body style and trim of the Car and Driver test car not confirmed."
+      deviation: "Car and Driver tested the sedan; this roster car is the hatchback."
     },
     {
       id: "mwa",
@@ -104,6 +111,28 @@ export const entry: CatalogEntry = {
       verification: "Search-result summary of the article (page itself not reachable from this environment).",
       date: "2021",
       deviation: "Independent replacement for the unreachable Car and Driver page; AWD hatchback."
+    },
+    {
+      id: "mt-hatch",
+      sourceId: "src-mt",
+      publication: "MotorTrend",
+      timing: "rollout-1ft",
+      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
+      results: {
+        zeroTo60MphS: 5.9,
+        quarterMileS: 14.5,
+        quarterMileTrapMph: 95.5
+      },
+      conditions: {
+        testMass: "3,374 lb (62/38)",
+        other: [
+          "Premium Plus hatchback",
+          "Rated 250 hp on 93 octane, 227 hp on 87; fuel used not stated here"
+        ]
+      },
+      match: "exact",
+      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; exact hatchback comparison.",
+      date: "2020"
     }
   ],
   dataGaps: [
@@ -136,11 +165,12 @@ export const entry: CatalogEntry = {
       torqueConverter: { stallRpm: 2600, lockupMinGear: 2 },
     },
     drivetrain: { layout: 'AWD', description: 'i-Activ AWD (on-demand, front-biased)', frontShareRange: [0.5, 1] },
-    chassis: { curbMassKg: 1530, wheelbaseM: 2.725, lengthMm: 4460, widthMm: 1795, heightMm: 1435 },
+    chassis: { frontWeightFraction: 0.62, curbMassKg: 1530, wheelbaseM: 2.725, lengthMm: 4460, widthMm: 1795, heightMm: 1435 },
     aero: {},
     tires: { sizes: [square('r18', '215/45 R18', 215, 45, 18, 'Premium Plus fitment (assumed)')], compound: 'oe-performance' },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Weight distribution', value: '62/38 front/rear (as tested)', status: 'reported', source: 'MotorTrend hatchback test (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://www.motortrend.com/reviews/2021-mazda3-turbo-first-test' },
       { parameter: 'Peak power', value: '250 hp @ 5,000 rpm (93 octane)', status: 'reported', source: 'Mazda press kit; Motor Matchup', url: 'https://filecache.mediaroom.com/mr5mr_mazdausa2/219459/download/2021%20Mazda3%202.5%20Turbo%20Press%20Kit%5B2%5D.pdf' },
       { parameter: 'Peak torque', value: '320 lb-ft @ 2,500 rpm (93 octane)', status: 'reported', source: 'Mazda press kit', url: 'https://filecache.mediaroom.com/mr5mr_mazdausa2/219459/download/2021%20Mazda3%202.5%20Turbo%20Press%20Kit%5B2%5D.pdf' },
       { parameter: 'Fuel', value: '93 octane rating modelled', status: 'reported', source: 'Mazda rates 227 hp / 310 lb-ft on 87 octane', url: 'https://filecache.mediaroom.com/mr5mr_mazdausa2/219459/download/2021%20Mazda3%202.5%20Turbo%20Press%20Kit%5B2%5D.pdf' },

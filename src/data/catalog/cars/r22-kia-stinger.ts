@@ -37,13 +37,6 @@ export const entry: CatalogEntry = {
   },
   sources: [
     {
-      id: "test",
-      title: "2018 Kia Stinger GT 3.3T AWD test",
-      publisher: "Car and Driver",
-      url: "https://www.caranddriver.com/reviews/a15078969/2018-kia-stinger-gt-33t-awd-test-review/",
-      kind: "road-test"
-    },
-    {
       id: "src2",
       title: "2020 Kia Stinger specifications",
       publisher: "Kia Media (US)",
@@ -70,6 +63,13 @@ export const entry: CatalogEntry = {
       publisher: "Cars.com",
       url: "https://www.cars.com/research/kia-stinger-2022/specs/419584",
       kind: "reference"
+    },
+    {
+      id: "test",
+      title: "2018 Kia Stinger GT 3.3T AWD test",
+      publisher: "Car and Driver",
+      url: "https://www.caranddriver.com/reviews/a15078969/2018-kia-stinger-gt-33t-awd-test-review/",
+      kind: "road-test"
     }
   ],
   benchmarks: [
@@ -87,11 +87,12 @@ export const entry: CatalogEntry = {
       },
       conditions: {
         other: [
-          "Rolling 5–60 mph: 5.3 s"
-        ]
+          "GT2 package confirmed in the test text"
+        ],
+        testMass: "4,157 lb"
       },
       match: "exact",
-      verification: "Search-result summary of the article (page itself not reachable from this environment).",
+      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; the test text confirms the GT2 package.",
       date: "2018"
     },
     {
@@ -139,13 +140,14 @@ export const entry: CatalogEntry = {
       gearRatios: [3.665, 2.396, 1.61, 1.19, 1.0, 0.826, 0.643, 0.556], finalDrive: 3.538,
       torqueConverter: { stallRpm: 2300 },
     },
-    drivetrain: { layout: 'AWD', efficiency: 0.84, description: 'Rear-biased AWD with dynamic torque vectoring', frontShareRange: [0, 0.5] },
+    drivetrain: { layout: 'AWD', efficiency: 0.873, description: 'Rear-biased AWD with dynamic torque vectoring', frontShareRange: [0, 0.5] },
     chassis: { curbMassKg: 1825, frontWeightFraction: 0.53, wheelbaseM: 2.905, lengthMm: 4830, widthMm: 1870, heightMm: 1400 },
     aero: {},
-    tires: { sizes: [staggered('r19', '225/40 R19 F · 255/35 R19 R', { widthMm: 225, aspectPct: 40, rimIn: 19 }, { widthMm: 255, aspectPct: 35, rimIn: 19 }, 'GT fitment')], compound: 'oe-performance' },
+    tires: { sizes: [staggered('r19', '225/40 R19 F · 255/35 R19 R', { widthMm: 225, aspectPct: 40, rimIn: 19 }, { widthMm: 255, aspectPct: 35, rimIn: 19 }, 'GT fitment')], compound: 'oe-performance', gripScale: 1.0 },
     speedLimiterKmh: null,
     provenance: [
-      { parameter: 'Drivetrain efficiency', value: '84 %', status: 'estimated', source: 'Typical AWD automatic; a trap-speed fit (87 %) would make 0–60 and ET too quick, so the published trap residual (≈−2 mph) is left visible' },
+      { parameter: 'Tire grip calibration', value: '×1.00', status: 'estimated', source: 'A grip fit to the Car and Driver 0–60 mph 4.6 s needed no increase (the simulation is quicker at the start)' },
+      { parameter: 'Drivetrain efficiency', value: '87.3 %', status: 'estimated', source: 'Fitted to the Car and Driver ¼-mile trap 108 mph (GT2 package confirmed)' },
       { parameter: 'Peak power', value: '365 hp @ 6,000 rpm', status: 'reported', source: 'Kia US specifications', url: 'https://kiamedia.com/us/es/models/stinger/2020/specifications' },
       { parameter: 'Peak torque', value: '376 lb-ft @ 1,300–4,500 rpm', status: 'reported', source: 'Kia US specifications', url: 'https://kiamedia.com/us/es/models/stinger/2020/specifications' },
       { parameter: 'Gear ratios', value: '3.665/2.396/1.610/1.190/1.000/0.826/0.643/0.556', status: 'reported', source: 'Kia US spec sheet (1st, 7th, 8th); auto123 (2nd–6th, rounded)', url: 'https://kiamedia.com/us/es/models/stinger/2020/specifications' },

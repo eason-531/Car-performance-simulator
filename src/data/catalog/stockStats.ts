@@ -1,6 +1,6 @@
 import { computeDyno, topSpeedKmh } from '../../physics/dyno';
 import type { PerformanceMetrics, TimingBasis } from '../../physics/metrics';
-import { runAccelerationRun } from '../../physics/runners';
+import { runAccelerationRun, type TraceSample } from '../../physics/runners';
 import { buildSimVehicle } from '../../tuning/buildSimVehicle';
 import { defaultTuning } from '../../tuning/tuning';
 import type { VehicleSpec } from '../types';
@@ -12,7 +12,20 @@ export const STAT_SPLITS = ['30mph', '60mph', '100mph', '130mph', '150mph', '100
 
 const r3 = (x: number | null) => (x === null ? null : Math.round(x * 1000) / 1000);
 
-function times(m: PerformanceMetrics, splits: Record<string, number>): StockTimes {
+/** Brake-release time and speed at a distance, interpolated from the run trace. */
+function crossing(trace: readonly TraceSample[], distanceM: number): { t: number; kmh: number } | null {
+  for (let i = 1; i < trace.length; i++) {
+    const a = trace[i - 1];
+    const b = trace[i];
+    if (a.distanceM < distanceM && b.distanceM >= distanceM) {
+      const f = (distanceM - a.distanceM) / (b.distanceM - a.distanceM);
+      return { t: a.t + f * (b.t - a.t), kmh: a.speedKmh + f * (b.speedKmh - a.speedKmh) };
+    }
+  }
+  return null;
+}
+
+function times(m: PerformanceMetrics, splits: Record<string, number>, m400: { t: number; kmh: number } | null): StockTimes {
   const s: Record<string, number> = {};
   for (const k of STAT_SPLITS) if (splits[k] !== undefined) s[k] = r3(splits[k])!;
   return {
@@ -22,6 +35,9 @@ function times(m: PerformanceMetrics, splits: Record<string, number>): StockTime
     quarterMileS: r3(m.quarterMileS),
     quarterMileTrapKmh: r3(m.quarterMileTrapKmh),
     kilometerS: r3(m.kilometerS),
+    kilometerTrapKmh: r3(m.kilometerTrapKmh),
+    metres400S: r3(m400?.t ?? null),
+    metres400TrapKmh: r3(m400?.kmh ?? null),
     splits: s,
   };
 }
@@ -31,9 +47,17 @@ export function computeStockStats(spec: VehicleSpec): StockStats {
   const v = buildSimVehicle(spec, defaultTuning(spec));
   const run = runAccelerationRun(v, { launch: 'brake-boost', targetSpeedKmh: 250, targetDistanceM: 1000, maxTimeS: 90 });
   const br = run.metrics;
+  // The rollout basis restarts the clock after one foot: same offset at every distance.
+  const m400 = crossing(run.trace, 400);
+  const rolloutOffset =
+    br.quarterMileS !== null && run.metricsRollout.quarterMileS !== null ? br.quarterMileS - run.metricsRollout.quarterMileS : null;
   const bases: Record<TimingBasis, StockTimes> = {
-    'brake-release': times(br, run.splits['brake-release']),
-    'rollout-1ft': times(run.metricsRollout, run.splits['rollout-1ft']),
+    'brake-release': times(br, run.splits['brake-release'], m400),
+    'rollout-1ft': times(
+      run.metricsRollout,
+      run.splits['rollout-1ft'],
+      m400 && rolloutOffset !== null ? { t: m400.t - rolloutOffset, kmh: m400.kmh } : null,
+    ),
   };
   const dyno = computeDyno(v);
   const ok = br.quarterMileS !== null && br.quarterMileTrapKmh !== null && br.zeroTo100KmhS !== null;

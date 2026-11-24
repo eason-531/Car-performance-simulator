@@ -93,6 +93,12 @@ export interface TransmissionSpec {
   gearRatios: readonly number[];
   /** Final drive per gear (dual-clutch boxes can have two output shafts). Same length as gearRatios. */
   finalDrive: readonly number[];
+  /**
+   * Front-axle ratio where it differs from the rear (AWD with a slip-controlled
+   * front coupling). Recorded for reference only: the physics ties engine speed
+   * to the rear axle and feeds the front through the coupling.
+   */
+  frontAxleRatio?: number;
   /** Time for a full-throttle upshift (torque phase + inertia phase), s. */
   upshiftTimeS: number;
   downshiftTimeS: number;

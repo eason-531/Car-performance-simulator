@@ -100,6 +100,10 @@ export interface PublishedResults {
   quarterMileTrapMph?: number;
   quarterMileTrapKmh?: number;
   kilometerS?: number;
+  kilometerTrapKmh?: number;
+  /** Standing 400 m (European tests), kept separate from the quarter mile (402.3 m). */
+  metres400S?: number;
+  metres400TrapKmh?: number;
   topSpeedMph?: number;
   topSpeedKmh?: number;
   /** Rollout time reported separately by the publication, s. */

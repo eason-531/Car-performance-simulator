@@ -60,6 +60,13 @@ export const entry: CatalogEntry = {
       publisher: "Arteon Forums",
       url: "https://www.arteonforums.com/threads/vw-arteon-dsg381-transmission-specs-usa-builds.1510/",
       kind: "reference"
+    },
+    {
+      id: "src-skoda",
+      title: "Octavia Combi RS technical data",
+      publisher: "Škoda",
+      url: "https://cdn.skoda-storyboard.com/2020/07/TD-OCTAVIA-COMBI-RS-en.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -85,7 +92,11 @@ export const entry: CatalogEntry = {
     "DSG gear ratios and final drives (DQ381 family set used)",
     "Power/torque rpm bands",
     "Tire size (225/40 R18 assumed)",
-    "Drag coefficient (Škoda publishes one; not reachable)"
+    "Drag coefficient (Škoda publishes one; not reachable)",
+    "DSG shaft assignment for the 4.167 / 3.125 axle ratios"
+  ],
+  notes: [
+    "Škoda publishes 3.400/2.750/1.767/0.925/0.705/0.755/0.635 with two axle ratios, 4.167 and 3.125. Monotonic overall ratios force 4th and 5th onto 4.167 and 6th and 7th onto 3.125; a smooth progression suggests 1st on 4.167 and 2nd and 3rd on 3.125. Per the spec-sheet follow-up this is not applied until the shaft assignment is confirmed, so the older single-ratio DQ381 set remains."
   ],
   sim: buildSpec({
   id: "2021-skoda-octavia-combi-rs-2-0-tsi-dsg-de-wagon-fwd-7dct",

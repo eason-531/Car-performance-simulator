@@ -77,6 +77,13 @@ export const entry: CatalogEntry = {
       publisher: "0-60specs",
       url: "https://www.0-60specs.com/lexus/gs-350-0-60-times",
       kind: "reference"
+    },
+    {
+      id: "src-lexus",
+      title: "2016 Lexus product information",
+      publisher: "Lexus (mirror)",
+      url: "https://lexusenthusiast.com/images/weblog/15-08-13-2016-GS-200t-GS-350-product-info.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -117,9 +124,7 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "Car and Driver page itself (results only via forum/aggregator)",
-    "8-speed gear ratios (AA80E family set used)",
     "Redline",
-    "Drag coefficient",
     "Weight distribution"
   ],
   sim: buildSpec({
@@ -150,14 +155,14 @@ export const entry: CatalogEntry = {
     tires: { sizes: [staggered('fsport', '235/40 R19 F · 265/35 R19 R', { widthMm: 235, aspectPct: 40, rimIn: 19 }, { widthMm: 265, aspectPct: 35, rimIn: 19 }, 'F Sport fitment')], compound: 'oe-performance' },
     speedLimiterKmh: null,
     provenance: [
+      { parameter: 'Gear ratios', value: '4.596/2.724/1.863/1.464/1.231/1.000/0.824/0.685', status: 'verified', source: 'Lexus US technical sheet (AA80E/AA81E share forward ratios) (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://lexusenthusiast.com/images/weblog/15-08-13-2016-GS-200t-GS-350-product-info.pdf' },
+      { parameter: 'Final drive', value: '2.937', status: 'verified', source: 'Lexus US technical sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://lexusenthusiast.com/images/weblog/15-08-13-2016-GS-200t-GS-350-product-info.pdf' },
+      { parameter: 'Drag coefficient', value: 'Cd 0.27', status: 'verified', source: 'Lexus US GS 350 technical sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://lexusenthusiast.com/images/weblog/15-08-13-2016-GS-200t-GS-350-product-info.pdf' },
       { parameter: 'Drivetrain efficiency', value: '83.8 %', status: 'estimated', source: 'Fitted to the quoted ¼-mile trap 101 mph; 0–60 (5.70 vs 5.8 s) and ET (14.30 vs 14.3 s) held out' },
       { parameter: 'Peak power', value: '311 hp @ 6,400 rpm', status: 'reported', source: 'TrueCar, Edmunds', url: 'https://www.truecar.com/lexus/gs/2018/gs-350-f-sport-rwd/specs/' },
       { parameter: 'Peak torque', value: '280 lb-ft @ 4,800 rpm', status: 'reported', source: 'TrueCar, Edmunds', url: 'https://www.truecar.com/lexus/gs/2018/gs-350-f-sport-rwd/specs/' },
-      { parameter: 'Gear ratios', value: '4.596/2.724/1.863/1.464/1.231/1.000/0.824/0.685', status: 'estimated', source: 'AA80E family ratios (verified on the IS); GS 350 application not confirmed — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '2.937', status: 'reported', source: 'Motor Matchup lists 2.94', url: 'https://www.motormatchup.com/catalog/Lexus/GS-350/2016/F-Sport-4DR-RWD-Sedan' },
       { parameter: 'Curb mass', value: '3,726 lb (1,690 kg)', status: 'verified', source: 'Lexus 2016 GS product information (GVWR 4,830 lb)', url: 'https://clublexus.com/forums/attachments/gs-4th-gen-2013-2020/371825d1444954104-finally-refresh-2016-gs-pics-2016_lexus_gs_200t_and_gs_350_product_information.pdf' },
       { parameter: 'Tire size', value: '235/40 R19 F, 265/35 R19 R', status: 'verified', source: 'Lexus 2016 GS product information', url: 'https://clublexus.com/forums/attachments/gs-4th-gen-2013-2020/371825d1444954104-finally-refresh-2016-gs-pics-2016_lexus_gs_200t_and_gs_350_product_information.pdf' },
-      { parameter: 'Drag coefficient', value: 'Cd 0.27', status: 'estimated', source: 'Lexus has quoted ≈0.27 for this body; not verified' },
       { parameter: 'Dimensions', value: '4,880 × 1,840 × 1,455 mm, WB 2,850 mm', status: 'estimated', source: 'Recalled Lexus figures; not verified' },
     ],
   }),

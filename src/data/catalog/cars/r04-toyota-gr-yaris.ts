@@ -133,14 +133,14 @@ export const entry: CatalogEntry = {
 }, {
     engine: { code: 'G16E-GTS', description: '1.6 L turbo I3', displacementCc: 1618, aspiration: 'turbo', idleRpm: 800, redlineRpm: 7000, revLimitRpm: 7200, power: { value: 261, unit: 'PS', rpm: [6500, 6500] }, torque: { value: 360, unit: 'Nm', rpm: [3000, 4600] }, peakBoostBar: 1.3 },
     transmission: { type: 'manual', name: '6-speed manual', gearRatios: [3.538, 2.238, 1.535, 1.162, 1.081, 0.902], finalDrive: [3.941, 3.941, 3.941, 3.941, 3.35, 3.35] },
-    drivetrain: { layout: 'AWD', efficiency: 0.865, description: 'GR-Four coupling AWD with front and rear Torsen LSDs (Circuit Pack)', frontShareRange: [0.3, 0.6] },
+    drivetrain: { layout: 'AWD', efficiency: 0.873, description: 'GR-Four coupling AWD with front and rear Torsen LSDs (Circuit Pack)', frontShareRange: [0.3, 0.6] },
     chassis: { curbMassKg: 1280, frontWeightFraction: 0.61, wheelbaseM: 2.56, lengthMm: 3995, widthMm: 1805, heightMm: 1455 },
     aero: {},
-    tires: { sizes: [square('r18', '225/40 R18', 225, 40, 18, 'Michelin Pilot Sport 4S (Circuit Pack)')], compound: 'uhp', gripScale: 1.3 },
+    tires: { sizes: [square('r18', '225/40 R18', 225, 40, 18, 'Michelin Pilot Sport 4S (Circuit Pack)')], compound: 'uhp', gripScale: 1.0 },
     speedLimiterKmh: null,
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'Transferred from the GR Corolla fit (same engine, gearbox, AWD system and tire class); only other-market tests exist for the Yaris' },
-      { parameter: 'Drivetrain efficiency', value: '86.5 %', status: 'estimated', source: 'Transferred from the GR Corolla fit' },
+      { parameter: 'Tire grip calibration', value: '×1.00', status: 'estimated', source: 'Transferred from the GR Corolla fit (same engine, gearbox, AWD system and tire class)' },
+      { parameter: 'Drivetrain efficiency', value: '87.3 %', status: 'estimated', source: 'Transferred from the GR Corolla fit' },
       { parameter: 'Peak power', value: '261 PS (DIN)', status: 'reported', source: 'Toyota Ireland specifications', url: 'https://www.toyota.ie/discover-toyota/toyota-gazoo-racing/gr-yaris/specifications' },
       { parameter: 'Peak torque', value: '360 Nm @ 3,000–4,600 rpm', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
       { parameter: 'Gear ratios', value: '3.538/2.238/1.535/1.162/1.081/0.902', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },

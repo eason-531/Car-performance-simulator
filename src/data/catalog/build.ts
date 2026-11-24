@@ -150,6 +150,8 @@ export interface SimInput {
     gearRatios: readonly number[];
     /** Single final drive or one per gear (multi-output DCTs). */
     finalDrive: number | readonly number[];
+    /** Front-axle ratio where it differs from the rear (reference only). */
+    frontAxleRatio?: number;
     upshiftTimeS?: number;
     downshiftTimeS?: number;
     shiftTorqueDip?: number;
@@ -358,6 +360,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       name: t.name,
       gearRatios: t.gearRatios,
       finalDrive,
+      ...(t.frontAxleRatio !== undefined ? { frontAxleRatio: t.frontAxleRatio } : {}),
       upshiftTimeS: up,
       downshiftTimeS: down,
       shiftTorqueDip: dip,

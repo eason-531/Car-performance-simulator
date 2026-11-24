@@ -64,6 +64,13 @@ export const entry: CatalogEntry = {
       publisher: "The Drive",
       url: "https://www.thedrive.com/new-cars/20871/2018-alfa-romeo-stelvio-quadrifoglio-review-a-sport-sedan-in-suv-disguise",
       kind: "reference"
+    },
+    {
+      id: "src-fca",
+      title: "2018 Alfa Romeo Stelvio specifications",
+      publisher: "FCA US",
+      url: "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2018_AR_Stelvio_SPs4e0t1a1glmeh9duojsn5vpl26.pdf",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -101,8 +108,6 @@ export const entry: CatalogEntry = {
     }
   ],
   dataGaps: [
-    "Final drive",
-    "8HP ratios for this application",
     "Power/torque rpm",
     "Tire size",
     "Drag coefficient",
@@ -122,21 +127,21 @@ export const entry: CatalogEntry = {
   shortName: "Alfa Romeo Stelvio Quadrifoglio"
 }, {
     engine: { code: '690T', description: '2.9 L twin-turbo V6', displacementCc: 2891, aspiration: 'twin-turbo', idleRpm: 700, redlineRpm: 7000, revLimitRpm: 7200, power: { value: 505, unit: 'hp', rpm: [6500, 6500] }, torque: { value: 443, unit: 'lb-ft', rpm: [2500, 5500] }, peakBoostBar: 1.4 },
-    transmission: { type: 'torque-converter-automatic', name: '8-speed automatic (ZF 8HP)', gearRatios: [5.0, 3.2, 2.143, 1.72, 1.313, 1.0, 0.823, 0.64], finalDrive: 3.09, upshiftTimeS: 0.18, downshiftTimeS: 0.28, shiftTorqueDip: 0.3, torqueConverter: { stallRpm: 2500 } },
-    drivetrain: { layout: 'AWD', efficiency: 0.861, description: 'Q4 rear-biased AWD (up to 50 % front)', frontShareRange: [0, 0.5] },
+    transmission: { type: 'torque-converter-automatic', name: '8-speed automatic (ZF 8HP75)', gearRatios: [5.0, 3.2, 2.143, 1.72, 1.314, 1.0, 0.822, 0.64], finalDrive: 3.73, upshiftTimeS: 0.18, downshiftTimeS: 0.28, shiftTorqueDip: 0.3, torqueConverter: { stallRpm: 2500 } },
+    drivetrain: { layout: 'AWD', efficiency: 0.843, description: 'Q4 rear-biased AWD (up to 50 % front)', frontShareRange: [0, 0.5] },
     chassis: { curbMassKg: 1978, frontWeightFraction: 0.5, wheelbaseM: 2.818, lengthMm: 4702, widthMm: 1955, heightMm: 1681 },
     aero: {},
-    tires: { sizes: [staggered('r20', '255/45 R20 F · 285/40 R20 R', { widthMm: 255, aspectPct: 45, rimIn: 20 }, { widthMm: 285, aspectPct: 40, rimIn: 20 }, 'Pirelli P Zero Corsa (assumed)')], compound: 'uhp', gripScale: 1.06 },
+    tires: { sizes: [staggered('r20', '255/45 R20 F · 285/40 R20 R', { widthMm: 255, aspectPct: 45, rimIn: 20 }, { widthMm: 285, aspectPct: 40, rimIn: 20 }, 'Pirelli P Zero Corsa (assumed)')], compound: 'uhp', gripScale: 1.08 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 3.6 },
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.06', status: 'estimated', source: 'Fitted to the 0–60 mph 3.4 s of the syndicated instrumented test' },
-      { parameter: 'Drivetrain efficiency', value: '86.1 %', status: 'estimated', source: 'Fitted to the ¼-mile trap 115 mph of the same test' },
+      { parameter: 'Tire grip calibration', value: '×1.08', status: 'estimated', source: 'Fitted to the 0–60 mph 3.4 s of the syndicated instrumented test with the corrected 3.73 axle' },
+      { parameter: 'Drivetrain efficiency', value: '84.3 %', status: 'estimated', source: 'Fitted to the ¼-mile trap 115 mph of the same test' },
+      { parameter: 'Gear ratios', value: '5.000/3.200/2.143/1.720/1.314/1.000/0.822/0.640 (8HP75)', status: 'verified', source: 'FCA US Stelvio technical sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2018_AR_Stelvio_SPs4e0t1a1glmeh9duojsn5vpl26.pdf' },
+      { parameter: 'Final drive', value: '3.73 (replaces the 3.09 assumed from the Giulia)', status: 'verified', source: 'FCA US Stelvio technical sheet (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2018_AR_Stelvio_SPs4e0t1a1glmeh9duojsn5vpl26.pdf' },
       { parameter: 'Peak power', value: '505 hp', status: 'reported', source: 'Alfa Romeo rating (Autoblog listing)', url: 'https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/' },
       { parameter: 'Peak torque', value: '443 lb-ft', status: 'reported', source: 'Alfa Romeo rating (Autoblog listing)', url: 'https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/' },
       { parameter: 'Power / torque rpm', value: '6,500 / 2,500–5,500 rpm', status: 'estimated', source: 'Same 690T rating as the Giulia Quadrifoglio — recalled, not verified' },
-      { parameter: 'Gear ratios', value: '5.000/…/0.640 (ZF 8HP)', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Final drive', value: '3.09', status: 'estimated', source: 'Assumed equal to the Giulia Quadrifoglio — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '4,360 lb (1,978 kg)', status: 'reported', source: 'Autoblog listing (matches the Alfa claim quoted by The Drive)', url: 'https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/' },
       { parameter: 'Tire size', value: '255/45 R20 F · 285/40 R20 R', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
     ],
