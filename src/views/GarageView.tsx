@@ -387,6 +387,7 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
   const spec = entry.sim!;
   const app = useApp();
   const stock = app.simVehicle(spec.id, 'stock');
+  const st = stockStats(entry.id);
   const e = spec.engine;
   const t = spec.transmission;
   const c = spec.chassis;
@@ -428,6 +429,12 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
             <Spec label="Aerodynamics" value={`Cd ${spec.aero.dragCoefficient} · A ${spec.aero.frontalAreaM2} m² · CdA ${(spec.aero.dragCoefficient * spec.aero.frontalAreaM2).toFixed(3)} m²`} />
             <Spec label="Tires (stock)" value={`${size.label} · ${getTireCompound(spec.tires.defaultCompoundId).label}`} />
             <Spec label="Speed limiter" value={spec.speedLimiterKmh ? `${spec.speedLimiterKmh} km/h` : 'None modelled'} />
+            {st && (
+              <Spec
+                label="Simulated top speed"
+                value={`${fmt(st.topSpeedKmh)} km/h · ${spec.speedLimiterKmh ? 'capped by the modelled limiter' : 'uncapped gearing/drag prediction, not a published or governed figure'}`}
+              />
+            )}
             <Spec label="Stage 1" value={spec.stage1 ? `≈ ${spec.stage1.claimedPowerPs} PS / ${spec.stage1.claimedTorqueNm} Nm (estimated)` : 'Not offered for this configuration'} />
           </div>
         </Panel>

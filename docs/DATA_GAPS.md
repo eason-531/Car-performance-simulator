@@ -78,7 +78,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 - Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
 - Missing: Motor ratings and battery limits; Two-speed rear gear ratios; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/) · [Autocar](https://autocar.co.uk/node/99423)
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/) · [Car and Driver](https://www.caranddriver.com/reviews/comparison-test/a30799498/2020-porsche-taycan-turbo-s-vs-2020-tesla-model-s-performance/) · [Autocar](https://autocar.co.uk/node/99423)
 
 ### 2025 Hyundai Ioniq 5 N
 
@@ -341,8 +341,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2023 Nissan Z Performance 9AT
 
-- Unconfirmed inputs: Power / torque rpm (using 6,400 / 1,600–5,200 rpm); Tire size (using 255/40 R19 F, 275/35 R19 R)
-- Also missing: Power/torque rpm; Tire size; Drag coefficient; MotorTrend Performance 9AT first-test figures (roster source; not transcribed)
+- Also missing: Drag coefficient; Production speed limiter (Car and Driver lists a governed 155 mph estimate; no Nissan US document confirms it, so none is modelled)
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review) · [Autoblog](https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/) · [The Detroit Bureau](https://thedetroitbureau.com/reviews/a-week-with-2023-nissan-z-performance-a-t/)
 
 ### 2018 Nissan GT-R Track Edition

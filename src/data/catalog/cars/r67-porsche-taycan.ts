@@ -42,6 +42,14 @@ export const entry: CatalogEntry = {
       kind: "road-test"
     },
     {
+      id: "src-cd-cmp",
+      title: "2020 Porsche Taycan Turbo S vs. 2020 Tesla Model S Performance (comparison test)",
+      publisher: "Car and Driver",
+      url: "https://www.caranddriver.com/reviews/comparison-test/a30799498/2020-porsche-taycan-turbo-s-vs-2020-tesla-model-s-performance/",
+      kind: "road-test",
+      date: "2020"
+    },
+    {
       id: "src2",
       title: "Porsche Taycan Turbo S review",
       publisher: "Autocar",
@@ -52,19 +60,20 @@ export const entry: CatalogEntry = {
   benchmarks: [
     {
       id: "cd",
-      sourceId: "test",
+      sourceId: "src-cd-cmp",
       publication: "Car and Driver",
-      timing: "unconfirmed",
-      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      timing: "rollout-1ft",
+      timingNote: "The original Car and Driver comparison table (2020) lists a 0.2 s one-foot rollout, subtracted from the published times (procedure in use since late 2019).",
       results: {
         zeroTo60MphS: 2.4,
         quarterMileS: 10.5,
-        quarterMileTrapMph: 130
+        quarterMileTrapMph: 130,
+        rolloutS: 0.2
       },
       conditions: {},
       match: "exact",
-      verification: "Original Car and Driver test, checked in the Codex inspection of d6e2b40 (2026-11-24). Timing basis not stated in the checked material, so both simulator bases are shown.",
-      date: "2019"
+      verification: "Elapsed times unchanged; source moved to the original comparison table, whose 0.2 s rollout entry sets the timing basis, per the Codex inspection of 358661b (2026-11-24). The January 2020 acceleration story remains listed as a reference.",
+      date: "2020"
     }
   ],
   dataGaps: [

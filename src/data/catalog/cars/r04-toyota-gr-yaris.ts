@@ -83,7 +83,7 @@ export const entry: CatalogEntry = {
       id: "src-autocar",
       title: "Toyota GR Yaris 2020–2024 review",
       publisher: "Autocar",
-      url: "https://www.em.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024",
+      url: "https://images.cdn.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024",
       kind: "road-test"
     }
   ],

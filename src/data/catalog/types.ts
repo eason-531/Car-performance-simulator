@@ -106,6 +106,12 @@ export interface PublishedResults {
   metres400TrapKmh?: number;
   topSpeedMph?: number;
   topSpeedKmh?: number;
+  /**
+   * What the published top speed is (e.g. "governed limit; Car and Driver
+   * estimate, not measured"), so a governed or claimed figure is never read as
+   * a measured or simulated one.
+   */
+  topSpeedNote?: string;
   /** Rollout time reported separately by the publication, s. */
   rolloutS?: number;
 }
