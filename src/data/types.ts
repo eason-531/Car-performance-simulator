@@ -80,6 +80,11 @@ export interface LaunchClutchSpec {
   /** Dual-clutch boxes creep at idle; a manual's clutch pedal stays down. Default true. */
   creep?: boolean;
   /**
+   * Clutch torque the TCU allows while creeping off the brake, Nm. Default 25
+   * (sized for ordinary cars); heavy, tall-geared cars need more to creep.
+   */
+  creepTorqueNm?: number;
+  /**
    * Manual only: time for the driver to bring the clutch from open to full
    * clamp at launch, s. Omit for instant TCU control (dual-clutch).
    */

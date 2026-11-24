@@ -120,6 +120,11 @@ export function CatalogBrowser({
         <ChipToggle on={filters.favoritesOnly} onClick={() => setFilters((f) => ({ ...f, favoritesOnly: !f.favoritesOnly }))}>
           ★ My garage
         </ChipToggle>
+        {FACETS.usage.includes('Hypercar') && (
+          <ChipToggle on={filters.usage.includes('Hypercar')} onClick={() => toggle('usage', 'Hypercar')}>
+            Hypercars
+          </ChipToggle>
+        )}
         {FACETS.classes.map((c) => (
           <ChipToggle key={c} on={filters.classes.includes(c)} onClick={() => toggle('classes', c)} ariaLabel={`Class ${c}`}>
             {c === 'Pending' ? 'Class pending' : c}

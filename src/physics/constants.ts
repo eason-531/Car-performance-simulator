@@ -16,3 +16,6 @@ export const DRIVER_MASS_KG = 75;
 export const TRACTION_CONTROL_EFFICIENCY = 0.95;
 /** Maximum braking deceleration the brake system can request, in g. */
 export const MAX_BRAKE_G = 1.1;
+
+/** Dual-clutch creep: clutch torque the TCU allows off the brake at idle, Nm. */
+export const DEFAULT_CREEP_TORQUE_NM = 25;

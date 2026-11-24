@@ -1,6 +1,6 @@
 import { getTireCompound } from '../data/tires';
 import type { TireDims, TireSizeOption, VehicleSpec } from '../data/types';
-import { DRIVER_MASS_KG } from '../physics/constants';
+import { DEFAULT_CREEP_TORQUE_NM, DRIVER_MASS_KG } from '../physics/constants';
 import { Curve } from '../physics/curve';
 import { computeWotUpshiftRpms } from '../physics/gearbox';
 import type { SimTransmission, SimVehicle } from '../physics/types';
@@ -81,6 +81,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
       brakeHoldRpmLimit: t.launchClutch.brakeHoldRpmLimit,
       maxClutchTorqueNm: t.launchClutch.maxClutchTorqueNm,
       creep: t.launchClutch.creep ?? t.type !== 'manual',
+      creepTorqueNm: t.launchClutch.creepTorqueNm ?? DEFAULT_CREEP_TORQUE_NM,
       driverEngageS: t.launchClutch.driverEngageS ?? 0,
     };
   }

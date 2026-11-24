@@ -4,75 +4,114 @@
 # Rule 3 (Codex): Clear all previous entries before writing a new handoff to keep the file clean. Exclude content from other branches.
 # Rule 4 (Both): Preserve this header block when clearing the file.
 
-## Active handoff — 20+ playable hypercars and the existing catalog backlog
 
-Start from current `main` and carry this handoff into a fresh Claude implementation branch. The baseline at `66112e2` has 55 playable and 18 catalog-only configurations in the original 73-car roster, plus the two playable My Garage cars. Current gaps and earlier research are in [DATA_GAPS.md](docs/DATA_GAPS.md) and [the spec-sheet follow-up](docs/spec-sheets/2026-11-follow-up.md). The [previous main handoff](https://github.com/eason-531/Car-performance-simulator/blob/66112e2815cb752392ebfc6baafa951bef88250d/Codex.md) remains the reference for outstanding review items.
-
-### Deliver in playable batches
-
-1. **First playable batch.** Prioritize Bugatti Veyron 16.4, Chiron and Chiron Super Sport, plus Koenigsegg CCX 6MT and Agera RS. Land each as soon as its evidence and tests are ready. Add other source-ready manuals and DCTs in the same batch, including the Porsche Carrera GT. Work through the existing data-only blockers alongside this batch.
-2. **Reach at least 20 additional playable hypercar configurations.** The roster below is an ordered pool. Keep the Veyron 16.4, base Chiron and Koenigsegg representation in the final roster. Count variants separately when they have meaningful, documented production differences in output, gearing, mass or aero. Count only cars that actually run through the app. Track-only cars and existing catalog promotions can ship alongside the roster without counting toward 20.
-3. **Finish the original 18 catalog-only configurations.** Ship each verified promotion while work continues on shared model paths. Track a per-ID blocker and exact missing inputs for any car still pending. Opening a PR or adding a catalog entry is an interim milestone. The target is zero remaining catalog-only entries from the original 18.
-
-### Candidate roster
-
-Match each source to the car's exact production configuration and market before choosing model year and stable ID. Optional gearbox and fuel configurations require an explicit choice.
-
-| Order | Configuration | Implementation and source |
-|---:|---|---|
-| 1 | Bugatti Veyron 16.4 coupé | AWD 7DCT. See gearing and test notes below. [Bugatti](https://newsroom.bugatti.com/en/press-releases/the-bugatti-veyron-on-the-track-of-the-targa-florio) |
-| 2 | Bugatti Chiron | AWD 7DCT. Use the base model's factory gear-speed and mode data. [Bugatti PDF](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) |
-| 3 | Koenigsegg CCX 6MT | RWD manual. Use the factory ratios below. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-ccx) |
-| 4 | Bugatti Chiron Super Sport | AWD 7DCT. Use production gearing and limiter. [Bugatti PDF](https://bugatti-newsroom.imgix.net/6673edce31d99cf64fc74087/211122_BU_Chiron%20Super%20Sport_ENG.pdf) |
-| 5 | Koenigsegg Agera RS | Confirm gearing from an exact-trim source, and distinguish the standard gasoline engine from the 1 MW option and record car. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-agera-rs) |
-| 6 | Porsche Carrera GT | RWD 6MT. Start from 3.20 / 1.87 / 1.36 / 1.07 / 0.90 / 0.75 with 4.44 final drive. [Porsche factory archive](https://newsroom.porsche.com/pdf/17da8703-0d52-4ab7-8630-6e98ff05c194?print=) · [Porsche MY05 gearbox table, mirrored](https://www.ausmotive.com/downloads/Porsche/Carrera-GT-specs.pdf) |
-| 7 | Koenigsegg CC8S | Source the exact manual gearbox and curb-weight basis. [Koenigsegg](https://www.koenigsegg.com/index.php/technical-specifications-cc8s) |
-| 8 | Koenigsegg CCR | Source manual gearing and keep the period top-speed run separate from the factory claim. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-ccr) |
-| 9 | Koenigsegg CCXR 6MT | Confirm the fuel grade and match the complete engine output set to that fuel. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-ccxr) |
-| 10 | Bugatti Chiron Sport | Use the Sport sheet and the exact C/D result below. [Bugatti PDF](https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf) |
-| 11 | Bugatti Chiron Pur Sport | Use its shorter gearing, aero and limiter. [Bugatti PDF](https://bugatti-newsroom.imgix.net/6673ed80bde16a1e5495301d/211122_BU_Chiron%20Pur%20Sport_ENG-1.pdf) · [Gearing changes](https://newsroom.bugatti.com/en/press-releases/the-technology-of-the-bugatti-chiron-pur-sport-in-detail) |
-| 12 | Bugatti Veyron Super Sport | Match the transmission code and use the production speed limit. Store the record as a separate run. [Bugatti](https://newsroom.bugatti.com/en/press-releases/bugatti-presents-veyron-16-4-super-sport-to-public) · [Record](https://newsroom.bugatti.com/en/press-releases/landspeed-worldrecord-with-the-bugatti-veyron-16-4-super-sport) |
-| 13 | Bugatti Veyron Grand Sport Vitesse | Get the Vitesse-specific gearing and retain the normal versus top-speed mode distinction. [Bugatti](https://newsroom.bugatti.com/en/press-releases/bugatti-grand-sport-vitesse-celebrates-world-premiere-in-geneva) |
-| 14 | Bugatti Divo | Use Divo-specific road limiter, tires and aero. [Bugatti PDF](https://bugatti-newsroom.imgix.net/6673ecfcbde16a1e54953019/211122_BU_Divo_ENG.pdf) |
-| 15 | Bugatti Chiron Super Sport 300+ | Use customer-car spec and record the 300 mph run separately with test-car deviations. [Bugatti PDF](https://bugatti-newsroom.imgix.net/6673ecaebde16a1e54953017/technical-specifications-bugatti-chiron-super-sport-300-plus-en.pdf) |
-| 16 | Bugatti EB110 Super Sport | Source SS-specific 6MT reductions and mass. [Bugatti](https://newsroom.bugatti.com/models/eb110) |
-| 17 | Koenigsegg Agera | Source its seven effective reductions and characterize its clutch behavior before selecting a model. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-agera) |
-| 18 | Koenigsegg Agera R | Match fuel, engine output, and gearing to the same configuration. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-agera-r) |
-| 19 | Koenigsegg One:1 | Confirm exact gearing and power on the selected fuel. Keep the factory kilogram-per-horsepower mass basis visible. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-one1) |
-| 20 | McLaren F1 road car | Use road-car gearing. Keep F1 LM, F1 GT and the record-run rev-limit configuration separate. [McLaren](https://www.mclaren.com/cars/gl_en/ultimate-models/mclaren-f1) · [Road-car spec sheet, mirrored](https://www.allcarcentral.com/McLaren_pdf/McLAREN_F1_ROADCAR-SPECIFICATION.pdf) |
-| 21 | Ferrari F40 | Choose exact market and model year for the production 5MT. [Ferrari](https://www.ferrari.com/en-EN/auto/f40) |
-| 22 | Ferrari F50 | Use the production 6MT and distinguish dry from ready-to-drive mass. [Ferrari technical dossier](https://cdn.ferrari.com/cms/network/media/pdf/CS_Ferrari_F50_Legacy_Tour_2025_gbr.pdf) |
-| 23 | Pagani Zonda F | Source the exact coupé 6MT drivetrain and specify standard versus Clubsport. [Pagani](https://www.pagani.com/zonda-f/) |
-| 24 | Pagani Utopia 7MT | Select the factory manual option and confirm the Xtrac ratio set. [Pagani technical PDF](https://www.pagani.com/app/uploads/2022/09/Pagani-Utopia_Dati-tecnici_ENG-2.pdf) |
-| 25 | Bugatti W16 Mistral | Source its own DCT reductions and separate customer road mode from the record run. [Bugatti technical PDF](https://bugatti-newsroom.imgix.net/687a1f84e4a10282f1c9db98/technical-specifications-w16-mistral-en.pdf) |
-
-If a candidate stalls, ship the next data-ready entry while its source hunt continues. For later substitutions or expansion, shortlist Ferrari Enzo and Pagani Huayra BC (AMT), Koenigsegg Jesko Attack/Absolut (Light Speed Transmission), Koenigsegg Regera (hybrid direct drive), Porsche 918 Spyder and McLaren P1 (hybrid), and Rimac Nevera (EV). Count any of these only once the applicable model passes the same checks. [Pagani Huayra BC](https://www.pagani.com/huayra-bc/) · [Koenigsegg Jesko Absolut](https://www.koenigsegg.com/technical-specifications-jesko-absolut) · [Koenigsegg Regera](https://www.koenigsegg.com/technical-specifications-regera) · [Rimac Nevera technical PDF](https://web-cdn.rimac-automobili.com/wp-content/uploads/2023/11/20171226/Nevera_Technical-specifications.pdf)
-
-### Verified figures and gearing leads for the first batch
-
-| Configuration and source | Evidence | How to use it |
-|---|---|---|
-| Veyron 16.4 coupé, Bugatti and period C/D | Bugatti gives 736 kW / 1,001 PS at 6,000 rpm, 1,250 Nm at 2,200–5,500 rpm and 7DCT AWD. C/D's instrumented 2008 coupé weighed 4,486 lb and ran 2.5 s to 60 mph and 10.1 s at 142 mph in the quarter. Its earlier 2.9 s and 10.8 s at 140 mph figures are explicitly estimates. | Use the 2008 instrumented results for the measured benchmark. Prefer the OEM's kW/PS basis for rated output. Confirm the period timing method before fitting launch grip. [OEM engine and chassis](https://newsroom.bugatti.com/en/press-releases/the-bugatti-veyron-on-the-track-of-the-targa-florio) · [OEM PS/kW rating](https://newsroom.bugatti.com/api/en/press-releases/pdf/final-bugatti-veyron-16-4-sold-to-a-customer-in-europe) · [Instrumented 2008 test](https://www.caranddriver.com/reviews/a15152105/bugatti-veyron-164-road-test/) · [2006 estimates](https://www.caranddriver.com/reviews/a18201251/2006-bugatti-veyron-164-road-test-review/) |
-| Veyron EPA filing, group EBGTV08.0V16 | Section 12 p. 2 shows AD71C001, forward ratios 3.176 / 2.263 / 1.667 / 1.290 / 1.057 / 0.878 / 0.795 and axle ratio 2.585. The separately published road-test spec table gives matching rounded forward ratios, a 3.64 final and 0.71 transfer ratio. Their product is about 2.584. | Verify vehicle/gearbox coverage for each year and trim. Cross-check the resulting wheel reductions against the speed-per-gear table and PAX rolling circumference before collapsing transfer and axle stages. Apply the effective reduction once. PAX fitment uses metric tire designations. [Manufacturer's EPA filing, mirrored](https://www.autonocion.com/wp-content/uploads/2015/10/Certificado-EPA-Bugatti-Veyron.pdf) · [Period test spec table scan](https://www.manualshelf.com/manual/bugatti/16-bugatti-veyron-4/user-manual.html) |
-| Base Chiron, Bugatti | 1,103 kW at 6,700 rpm, 1,600 Nm at 2,000–6,000 rpm, 1,995 kg DIN empty, front 285/30 ZR20 and rear 355/25 ZR21. Factory gear-speed table at 6,700 rpm lists 90 / 150 / 200 / 260 / 320 / 390 / 420 km/h. Road limits are 380 km/h in EB/Autobahn/Handling and 420 km/h in Top Speed. | Prefer exact ratios and axle reduction. When suitable, derive effective reduction from engine rpm × loaded tire circumference ÷ (60 × vehicle speed in m/s), recording speed rounding, rolling-radius assumptions and estimate status. Check each gear against a second rpm/speed point where available, especially seventh where the listed speed equals the limiter. Keep separately documented mode limits. [Bugatti PDF](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) |
-| Chiron Sport and Super Sport, C/D | Sport: 4,544 lb, 2.4 s to 60 mph, 9.4 s at 158 mph in the quarter. Super Sport: 4,587 lb, 2.2 s to 60 mph, 9.1 s at 161 mph. Both exclude 0.2 s of one-foot rollout. | Use separate benchmarks and use the corresponding factory spec for stock mass and gearing. Bugatti documents a taller seventh on the Super Sport. Separate the production speed limit and prototype record. [Sport test](https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/) · [Super Sport test](https://www.caranddriver.com/reviews/a39429194/2022-bugatti-chiron-super-sport-by-the-numbers/) · [Bugatti gearing release](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) |
-| CCX 6MT, Koenigsegg | 806 bhp at 7,000 rpm, 920 Nm at 5,500 rpm, manual ratios 2.875 / 1.773 / 1.267 / 1.000 / 0.833 / 0.711, final 3.364, Cd 0.32, frontal area 1.867 m², weight distribution 45:55. | Model the manual first and record mass and tire basis. Treat the numbers in the OEM performance section as factory claims. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-ccx) |
-| Agera RS, Koenigsegg | The engine block lists 865 kW at 7,800 rpm and 1,280 Nm at 4,100 rpm on the standard engine, while a different output appears in the page's Performance block. Factory curb and dry are 1,395 kg and 1,295 kg respectively. | Resolve the variant/fuel discrepancy against period RS documents. The OEM page identifies seven forward gears and active aero. Source ratios or derive a documented set of effective reductions from reliable gear/RPM/speed evidence before enabling. [Koenigsegg](https://www.koenigsegg.com/technical-specifications-agera-rs) |
-
-### Promote the existing catalog-only cars
-
-| Priority and track | Original roster IDs | Implementation |
-|---|---|---|
-| 1. Close exact gearing blockers | r29 Audi RS 3, r60 Porsche Macan GTS | Reuse DCT physics. Verify the RS 3 US gearbox code and per-gear output-shaft assignments against factory documentation or an exact-car gear/RPM/speed trace. Resolve the Macan's 4.67 EU vs 4.13 US axle conflict against US VIN/gearbox documentation or an exact US car trace. Record each configuration and evidence. |
-| 2. Add clutch-based transmission paths | r34 AMG E 63 S Wagon, r62 Lexus LFA | Model the MCT's wet launch clutch with its nine-speed planetary gearset and the ASG's single-clutch launch and torque interruption. For the LFA, resolve how the 1.259 counter gearing combines with the 3.417 final drive. Start from the manufacturer tables in the spec-sheet follow-up. Validate shifts and launch independently. |
-| 2. Add transfer-case and CVT paths | r61 F-150 Raptor 37, r13 Civic Sport Touring 1.5T | Validate the Raptor's exact benchmark drive mode and represent its transfer-case behavior and 4.10 axles. Use the Civic's published 2.645–0.405 ratio limits and 4.81 final with a converter, ratio control and lockup. |
-| 3. Add EV support and enable each exact trim | r67 Taycan Turbo S, r68 Ioniq 5 N, r69 Model S Plaid, r70 Lucid Air Sapphire, r71 Model 3 Performance, r72 EV6 GT, r73 Rivian R1T | Use shared motor torque/constant-power limits, battery power and axle reductions. Start with fixed-ratio examples with the best data. Handle Taycan's two-speed rear and single-speed front, and Ioniq's simulated shifts as a separate driver mode. Validate mode, state of charge, temperatures and applicable boosts. [Porsche Taycan powertrain](https://newsroom.porsche.com/en_US/products/taycan/powertrain-18555.html) |
-| 4. Add hybrid paths and enable each exact trim | r14 Prius Limited AWD, r35 V60 T8 Polestar Engineered, r36 BMW M5 Touring, r65 Acura NSX, r66 SF90 Assetto Fiorano | Share charge/power constraints and motor modeling where possible, with the correct vehicle architectures. Cover AWD power-split e-CVT, separate electric rear axle, motor integrated in a stepped gearbox, and front electric axle plus rear ICE/motor driveline as applicable. The SF90 Assetto Fiorano has an exact MotorTrend benchmark in `r66`. Keep its battery and e-axle power constraints explicit. |
-
-### Integration and acceptance
-
-- Check current catalog and generated readiness before editing. Keep original roster numbers and stable IDs. For the new entries, use the existing catalog registration and builder where the physics applies. Add a Hypercar usage tag and filter while preserving the stock performance class. Update the 73-car invariant to cover the original roster and its added IDs.
-- For each car, retain exact year/trim/market, fuel, transmission, rated power and torque with rpm, mass basis, driven axle/tires, reductions, limiter and aero mode. Distinguish verified inputs, reported values and documented engineering estimates. Keep factory claims, independently measured benchmarks and simulator results in their existing fields. Document comparable timing basis and test conditions. Keep residuals visible when a fit reaches existing bounds. Use an open-data row in the gaps report when a source is missing.
-- In a session with limited source access, use the verified figures in this handoff and the checked-in spec sheets with original URLs. For unresolved inputs, ask Codex to verify a short list of exact fields and source candidates, or move to the next ready car. Search summaries alone may identify leads.
-- A car counts as playable when stock selection works in Live Drive, Tests, Drag Race and Dyno with finite, physically coherent results. Exercise the applicable shift and launch controls, supported tuning controls, save/reload, and stock/tuned drag lanes. For EV and hybrid cars, adapt the UI to the modeled powertrain and its applicable controls.
-- For each batch run `npm run generate:stats`, `npm run generate:gaps` and `npm run check`. Review generated diffs and make sure both owner cars retain their IDs, defaults, calibration and saved-result compatibility. Include app smoke evidence for a Bugatti, a Koenigsegg and each new physics path shipped. Report exact playable hypercar count, original backlog IDs promoted, remaining blockers, and benchmark residuals for key cars in the branch's `Claude.md`.
+```json
+{
+  "schema": "codex-review-handoff/v1",
+  "branch": "claude/determined-planck-qhjicj",
+  "reviewed_head": "7571153e3a71b50e57af69e91b74dacb84d544b1",
+  "claude_md_blob": "d4c04bdc09e40952cb960f09fa6c0ed6d211d285",
+  "log_commit": "7571153e3a71b50e57af69e91b74dacb84d544b1",
+  "previous_observed_head": "f6d77a51c044f6fce5ba69612993ff589c6786fe",
+  "review_base": "62eca11d46fd273813a82f2504060a3836cb3604",
+  "implementation": "c8d734806e9ecdf2f41373b806117e99fc3564c5",
+  "related_implementation": "c182f8f8b5e7e09a960ed22e1ef175202f2d31ed",
+  "pull_request": "https://github.com/eason-531/Car-performance-simulator/pull/8",
+  "result": "changes_requested_before_merge",
+  "observations": [
+    "Claude-authored log and both implementation commits corroborate draft PR #8 (31 paths relative to its pinned base). The merge at 3da930f has the base tree; the log reset is header-only and excluded from the qualifying entry.",
+    "Six playable additions: Veyron 16.4, Chiron, CCX 6MT, Chiron Super Sport, Carrera GT, Chiron Sport. The Sport counts as a distinct production configuration under the documented mass criterion: Bugatti reports approximately −18 kg and a Sport chassis package. The simulator represents the mass difference and does not model its handling package.",
+    "Stock output changed only for r44 and the six additions; both owner's cars have identical generated rows, stable IDs, and defaults at the reviewed base and head. The optional DCT creep path defaults to the prior 25 Nm; the Bugattis use 40 Nm. Race/launch model remains DCT/manual; the live gauge scales with reachable speed.",
+    "Prior review: r44 C/D exact vs MotorTrend equivalent rows are separate; 155 mph governed publication figure vs 296 km/h uncapped simulation are distinct; unsupported VR30 causation removed. r67 Taycan dates/rollout, r18 Evo publication date and r04 Autocar publisher CDN were changed as requested in the code.",
+    "Bugatti Super Sport factory sheet confirms separate 380 and 440 km/h modes; limiter-off simulation is neither the production Top Speed mode nor the prototype record specification. W16 trap deltas remain visible (Veyron +2.9 mph, Sport +4.4, SS +4.1 on displayed benchmark rows)."
+  ],
+  "findings": [
+    {
+      "priority": "P2",
+      "path": "src/data/catalog/cars/r44-nissan-z.ts",
+      "lines": "152,164–169",
+      "impact": "The MY2023 model and its provenance extend rated torque through 5,600 rpm, while both cited US MY2023 factory sources specify 350 lb-ft at 1,600–5,200 rpm. This changes the simulated in-gear curve, residuals and stock score. The 2023 Nissan press kit also lists 6,800 rpm maximum engine speed versus the 7,000 rpm simulation hard cut.",
+      "request": "Restore the verified MY2023 1,600–5,200 rpm torque band. Evaluate 6,800 rpm as maximum engine speed versus any separately documented hard fuel cut; do not equate maximum speed with measured cut without evidence. Cite the brochure and 2023 press kit, preserve the C/D tire row (Potenza S007 B-Silent 255/40R19 and 275/35R19) and the separate equivalent MotorTrend run. Keep 155 mph as C/D-reported governed speed pending US factory confirmation, and avoid claiming measured or estimated status without explicit support.",
+      "acceptance": "Production torque plateau and provenance match MY2023, any remaining hard-cut assumption is explicit, generated r44 and residual differences are reported, exact C/D remains ahead of equivalent MotorTrend, owner rows remain identical.",
+      "sources": [
+        "https://www.nissanusa.com/content/dam/Nissan/us/vehicle-brochures/2023/2023-nissan-nissan-z-brochure-en.pdf",
+        "https://usa.nissannews.com/en-US/releases/2023-nissan-z-press-kit",
+        "https://www.caranddriver.com/reviews/a43987884/2023-nissan-z-automatic-by-the-numbers/"
+      ]
+    },
+    {
+      "priority": "P2",
+      "path": "src/data/catalog/cars/h10-bugatti-chiron-sport.ts",
+      "lines": "8–16,58–95,135–136; h02-bugatti-chiron.ts:64–107,143–144",
+      "impact": "The 2021 publication tested a 2018 base Chiron retrofitted to Sport specification. Treating it as exact production-MY2021 evidence incorrectly gives sim+benchmark readiness and production calibration certainty. The model identifier's year was inferred from publication rather than production evidence.",
+      "request": "Use C/D's full instrumented article. Mark this run equivalent for a production Sport and retain equivalent status for base Chiron, with the 2018 retrofit deviation, 2021 publication, 4,544 lb, Cup 2 BG 285/30ZR20 F and 355/25ZR21 R, launch control used, and 0.2 s rollout. Obtain exact production-year evidence for the catalog identity and follow saved-ID compatibility if any identity correction is needed. Label fits to this run as provisional.",
+      "acceptance": "Production Sport still counts on documented mass and playable behavior; no exact readiness based on the retrofit; both Chiron rows make the test context visible and keep 2.4 s / 9.4 s at 158 mph.",
+      "sources": [
+        "https://www.caranddriver.com/reviews/a35353692/2021-bugatti-chiron-sport-by-the-numbers/",
+        "https://newsroom.bugatti.com/en/press-releases/88th-geneva-international-motor-show-2018"
+      ]
+    },
+    {
+      "priority": "P2",
+      "path": "src/data/catalog/cars/h04-bugatti-chiron-super-sport.ts",
+      "lines": "78–104,120–121; src/data/catalog/build.ts:288–303",
+      "impact": "Built-in 3,000 rpm launch/hold defaults are 500 rpm above the approximately 2,500 rpm launch C/D describes. Launch fit and reported residuals currently use a different launch setting.",
+      "request": "Add published 2,500 rpm to the comparison conditions and use it for the benchmark launch or justify a separate stock setting with evidence. Record Cup 2 BG2 sizes 285/30ZR20 and 355/25ZR21; retain unknown drive mode if unconfirmed. Check the 3.6% seventh estimate separately from the 440 km/h limiter-bound table and preserve published mode/gear-shift distinctions.",
+      "acceptance": "Verified tire and launch conditions appear in the benchmark; rerun launch and report before/after 60 mph, ET and trap on the same rollout basis, with any grip-floor or efficiency-bound effects kept explicit.",
+      "sources": [
+        "https://www.caranddriver.com/reviews/a39429194/2022-bugatti-chiron-super-sport-by-the-numbers/",
+        "https://bugatti-newsroom.imgix.net/6673edce31d99cf64fc74087/211122_BU_Chiron%20Super%20Sport_ENG.pdf"
+      ]
+    },
+    {
+      "priority": "P3",
+      "path": "src/views/GarageView.tsx",
+      "lines": "431–437; src/physics/dyno.ts:90–94",
+      "impact": "Label is selected solely by presence of a limiter. Golf GTI is modeled at 249 km/h with a 250 cap; GT-R is modeled at 313 with a 315 cap. Both are incorrectly called limiter-capped.",
+      "request": "Distinguish an active speed cap from a configured cap above a force/gearing-limited top speed, using the actual binding constraint before display rounding. Preserve an explicitly uncapped label when no cap is modeled.",
+      "acceptance": "Cover binding cap (Chiron SS), configured but nonbinding cap (Golf GTI or GT-R) and no cap (Nissan Z); keep the separate limiter and factory/published speed rows."
+    },
+    {
+      "priority": "P3",
+      "path": "src/data/catalog/cars/h06-porsche-carrera-gt.ts",
+      "lines": "39–70,103",
+      "impact": "A verified instrumented comparison is available. The secondary 11.1 s at 133 mph lead does not match the original.",
+      "request": "Add the June 2004 C/D run as equivalent to the 2005 German specification unless exact agreement is established: 3.5 s to 60, 11.2 s at 132 mph, 3,146 lb tested, six-speed manual, 605 hp at 8,000 rpm as printed. Verify timing basis before fitting and preserve Porsche DIN stock mass independently.",
+      "acceptance": "Publisher original and configuration deviations are retained; timing stays unconfirmed pending proof and the factory claim never serves as a road-test residual.",
+      "sources": [
+        "https://www.caranddriver.com/reviews/a15132548/porsche-carrera-gt-road-test/"
+      ]
+    },
+    {
+      "priority": "P3",
+      "path": "src/data/catalog/cars/h01-bugatti-veyron-16-4.ts",
+      "lines": "94–112,128–149",
+      "impact": "The original C/D specifications corroborate wheelbase and plan dimensions currently estimated; the article does not specify rollout, and EPA N/V versus modeled wheel-speed mismatch remains ~4.7%.",
+      "request": "Record C/D as tested at 106.7 in WB, 175.7 in length, 78.7 in width, and height range 45.1–47.4 in; retain a model-height assumption for aero. Add PAX test fitment, retain unconfirmed timing and keep EPA/model validation open until an exact speed-by-gear, axle and rolling-circumference comparison resolves it.",
+      "acceptance": "Test dimensions and fitment are sourced separately from modeled values; no implied one-foot timing or blind fit across bases.",
+      "sources": [
+        "https://www.caranddriver.com/reviews/a15152105/bugatti-veyron-164-road-test/"
+      ]
+    }
+  ],
+  "unfinished": [
+    "14 more playable additions to reach 20. Agera RS exact gearbox reductions and standard vs 1 MW engine/fuel remain gating; keep blocked while proceeding with source-ready candidates.",
+    "Original 18 catalog-only entries remain 18/18 unpromoted: r29/r60 gearing; r34/r62 clutch paths; r61 transfer case; r13 CVT; r67–r73 EV; r14/r35/r36/r65/r66 hybrid. Keep each exact blocker and promote only with the corresponding simulation and tests.",
+    "CCX factory page confirms dry mass 1,280 kg, 70 L fuel capacity, dimensions and manual gearing; curb mass, wheelbase, rev limit, fuel grade and an instrumented 6MT run still need evidence. Keep the modeled ~7.5 s to 200 vs factory claim 9.8 s visible as provisional.",
+    "Chiron exact reductions, base rev limit, Veyron rev limit/weight distribution and exact Nissan Z US factory limiter remain open."
+  ],
+  "needs": {
+    "eason": "Merge decision after corrections; native iPad Safari touch/keyboard smoke and exact-market source documents if available. No decision is needed on counting the documented Chiron Sport variant.",
+    "claude": "Correct the source and binding-constraint findings, regenerate and attach the scoped diff and test evidence, then continue the 20-car target and original backlog. Keep exact vs equivalent test classifications and mass/timing bases explicit."
+  },
+  "verification": {
+    "local": "Pinned head installed with npm ci; npm run check passed (typecheck, lint, 906 tests across 21 files, production build). generate:stats and generate:gaps reproduced the checked-in files byte-for-byte. git diff --check clean.",
+    "ci": [
+      "https://github.com/eason-531/Car-performance-simulator/actions/runs/45377880919",
+      "https://github.com/eason-531/Car-performance-simulator/actions/runs/45377889011"
+    ],
+    "vercel": "https://vercel.com/eason531/car-performance-simulator/6xLtukfneaFT8mnm2C8iCHHTZBcv",
+    "limits": "Chromium iPad-sized smoke was reported by Claude for Garage, Live Drive, Tests, Dyno, Drag, tuning and reload; it was not independently repeated. Native iPad Safari/WebKit remains unverified. Original source verification targeted the listed fields and is not a complete audit of every input or previous catalog row."
+  }
+}
+```

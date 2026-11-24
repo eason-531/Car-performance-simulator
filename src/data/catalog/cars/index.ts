@@ -74,8 +74,17 @@ import { entry as r70 } from './r70-lucid-air';
 import { entry as r71 } from './r71-tesla-model-3';
 import { entry as r72 } from './r72-kia-ev6';
 import { entry as r73 } from './r73-rivian-r1t';
+import { entry as h01 } from './h01-bugatti-veyron-16-4';
+import { entry as h02 } from './h02-bugatti-chiron';
+import { entry as h03 } from './h03-koenigsegg-ccx';
+import { entry as h04 } from './h04-bugatti-chiron-super-sport';
+import { entry as h06 } from './h06-porsche-carrera-gt';
+import { entry as h10 } from './h10-bugatti-chiron-sport';
 
-/** Every catalog entry: the owner's two cars first, then the roster in order. */
+/**
+ * Every catalog entry: the owner's two cars first, then the 73-car roster in
+ * order, then the playable extension sets (hypercars) in handoff order.
+ */
 export const ENTRIES: readonly CatalogEntry[] = [
   ownerLexus,
   ownerSkoda,
@@ -152,4 +161,10 @@ export const ENTRIES: readonly CatalogEntry[] = [
   r71,
   r72,
   r73,
+  h01,
+  h02,
+  h03,
+  h04,
+  h06,
+  h10,
 ];

@@ -65,7 +65,7 @@ export const entry: CatalogEntry = {
       sourceId: "test",
       publication: "Car and Driver",
       timing: "unconfirmed",
-      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      timingNote: "Car and Driver test published in 2016 under its legacy (pre-late-2019) procedure, which the Codex inspection of 358661b describes as a 3 mph procedure. It is not a measured 1-ft rollout, so the basis is left unconfirmed and both simulator bases are shown.",
       results: {
         zeroTo60MphS: 4.4,
         quarterMileS: 13.3,
@@ -75,8 +75,8 @@ export const entry: CatalogEntry = {
         testMass: "3,517 lb as tested"
       },
       match: "exact",
-      verification: "Original Car and Driver Final Edition test, checked in the Codex inspection of d6e2b40 (2026-11-24). Timing basis not stated in the checked material (pre-2020 test), so both simulator bases are shown.",
-      date: "2015"
+      verification: "Original Car and Driver Final Edition test, checked in the Codex inspection of d6e2b40 (2026-11-24). Publication year corrected from the model year (2015) to the original 2016 publication per the Codex inspection of 358661b (2026-11-24); its legacy ~3 mph start is not treated as a 1-ft rollout, so both simulator bases are shown.",
+      date: "2016"
     }
   ],
   dataGaps: [

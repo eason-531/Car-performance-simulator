@@ -98,8 +98,9 @@ export function compareBenchmark(b: MeasuredBenchmark, stats: StockStats | undef
 /** Plain-text top speed etc. that the simulator does not compare. */
 export function uncomparedResults(r: PublishedResults): string[] {
   const out: string[] = [];
-  if (r.topSpeedMph) out.push(`Top speed ${r.topSpeedMph} mph`);
-  if (r.topSpeedKmh) out.push(`Top speed ${r.topSpeedKmh} km/h`);
+  const note = r.topSpeedNote ? ` (${r.topSpeedNote})` : '';
+  if (r.topSpeedMph) out.push(`Top speed ${r.topSpeedMph} mph${note}`);
+  if (r.topSpeedKmh) out.push(`Top speed ${r.topSpeedKmh} km/h${note}`);
   if (r.rolloutS) out.push(`Rollout time reported: ${r.rolloutS} s`);
   return out;
 }

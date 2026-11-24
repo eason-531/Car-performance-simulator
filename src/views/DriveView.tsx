@@ -9,12 +9,12 @@ import { Badge, Button, Segmented } from '../components/ui';
 import { useDriveSimulation } from '../hooks/useDriveSimulation';
 import { STATUS, seriesColor } from '../lib/colors';
 import { fmt, fmtSeconds } from '../lib/format';
-import { computeDyno } from '../physics/dyno';
+import { speedDial } from '../lib/speedDial';
+import { computeDyno, topSpeedKmh } from '../physics/dyno';
 import { kwToPs } from '../physics/units';
 import { useApp } from '../state/AppState';
 import { describeTuning } from '../tuning/tuning';
 
-const SPEED_MAX = 280;
 const BOOST_MIN = -1;
 
 export function DriveView() {
@@ -86,6 +86,7 @@ export function DriveView() {
   }, [setPedal, doShift, reset, app, mode]);
 
   const dyno = useMemo(() => computeDyno(vehicle), [vehicle]);
+  const dial = useMemo(() => speedDial(topSpeedKmh(vehicle)), [vehicle]);
   const e = vehicle.engine;
   const tachMax = Math.ceil((e.revLimitRpm + 300) / 1000);
   const tachZones = useMemo<GaugeZone[]>(() => [{ from: e.redlineRpm / 1000, to: tachMax, color: STATUS.critical }], [e.redlineRpm, tachMax]);
@@ -146,8 +147,8 @@ export function DriveView() {
           <ArcGauge
             value={s.speedKmh}
             min={0}
-            max={SPEED_MAX}
-            majorStep={40}
+            max={dial.max}
+            majorStep={dial.step}
             minorPerMajor={4}
             labelFormat={fmtSpeed}
             color={color}

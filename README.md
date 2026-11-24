@@ -3,7 +3,7 @@
 An interactive, physics-based performance simulator built with React,
 TypeScript and Vite. It centres on the owner's two cars (**My Garage**) and adds
 a researched catalog of 73 stock configurations, 55 of which can be driven,
-tested, raced and tuned. It runs entirely in the browser (no backend, no paid
+tested, raced and tuned, plus a growing set of playable hypercars (6 so far). It runs entirely in the browser (no backend, no paid
 APIs) and is designed for iPad Safari.
 
 *This project is held by Eason and built mainly with Claude and ChatGPT.*
@@ -88,12 +88,19 @@ and remain the default drag matchup on a fresh install.
 73 stock configurations (`src/data/catalog/cars/rNN-*.ts`, one file each) carry
 an identity (year, make, model, trim, market, body, drivetrain, gearbox),
 factory claims, sources, measured benchmarks and the data gaps still open.
+Playable hypercars added after the original roster live in
+`src/data/catalog/cars/hNN-*.ts`, numbered by their place in the hypercar
+handoff, and carry the **Hypercar** tag (a quick filter in the car browser).
 
 - **Playable (55).** Torque-converter automatics, dual-clutch and manual
   gearboxes, front, rear and all-wheel drive. Their physics input is built by
   `buildSpec()` from rated peaks (the curves never exceed the published power or
   torque), and every value that is not sourced is labelled *estimated* with a
   reason.
+- **Hypercars (6).** Bugatti Veyron 16.4, Chiron, Chiron Sport and Chiron
+  Super Sport, Koenigsegg CCX (6-speed manual) and Porsche Carrera GT, built
+  from Bugatti, Koenigsegg and Porsche technical data and the EPA filing, with
+  Car and Driver results where a test exists.
 - **Catalog-only (18).** CVTs, hybrids, EVs, the AMG MCT, the LFA's automated
   manual and the Raptor's 4WD wait for models of their own, so they are never
   routed through an incompatible one. Some conventional cars wait for gear
