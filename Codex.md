@@ -6,8 +6,8 @@
 
 ## Initial inspection and engineering handoff
 
-- Branch `main`.
-- Reviewed main head `f63d6650e5348d8a084d53b3d33d106c869fe0ce`. Its file tree matches the snapshot used for the tests, `e4eecd8cb48f28a9cf484dc61421ccfdf028eb0e`. Claude's latest implementation `e1a5fb520ec78d1b2fe766538904fd51c1448404`. Before follow-up `dc44f096cdf0c2d7b9ee3320009f76b6d7370927`.
+- Branch `claude/determined-planck-qhjicj`.
+- Reviewed head `e4eecd8cb48f28a9cf484dc61421ccfdf028eb0e`. Claude's latest implementation `e1a5fb520ec78d1b2fe766538904fd51c1448404`. Before follow-up `dc44f096cdf0c2d7b9ee3320009f76b6d7370927`.
 - `Claude.md` at the reviewed head contains the rule header and no project entries (blob `64f66a6423c640b79ec69316a39c2c456d4d8f18`). Attribution and scope come from commit history, code, and the PRs. Eason requested this initial baseline review.
 - Review inputs were the earlier 73-car implementation prompt, the catalog handoff, the owner-supplied spec-sheet follow-up, the repository README and generated data-gap report, and selected original sources. [PR #3](https://github.com/eason-531/Car-performance-simulator/pull/3) · [PR #4](https://github.com/eason-531/Car-performance-simulator/pull/4) · [Spec-sheet follow-up](docs/spec-sheets/2026-11-follow-up.md) · [Data gaps](docs/DATA_GAPS.md)
 
@@ -42,7 +42,7 @@
 
 ### Independent verification
 
-- Checked out the reviewed snapshot and verified its file tree matches the reviewed `main` head. The latest implementation commit was independently attributed to Claude from Git history.
+- Checked out the reviewed commit and verified its file tree matched then-current `main`. The latest implementation commit was independently attributed to Claude from Git history.
 - Local `npm run check` passed typecheck, lint, 732 tests across 19 files, and the production build. The build flagged one ~734 kB minified JS chunk (~184 kB gzip). Both generators reproduced the checked-in files byte-for-byte. [PR #4 CI](https://github.com/eason-531/Car-performance-simulator/actions/runs/45300683106) · [Reviewed head CI](https://github.com/eason-531/Car-performance-simulator/actions/runs/45319772168)
 - Additional local interaction checks passed mixed-car comparison, non-playable disabled state, two-car and same-car race paths, distinct lane colors, and tuning/results reload. The added focus check exposed item 5. Native iPad Safari and actual touch layout were not independently run. Source checks were targeted at the requested corrections and high-impact examples.
 
