@@ -8,76 +8,79 @@
 {
   "schema": "codex-review-handoff/v1",
   "branch": "claude/determined-planck-qhjicj",
-  "reviewed_head": "d6e2b40723decd871a30104a8896fe7f33123ef0",
-  "claude_md_blob": "a1ed3b7503b0785ff1181d2619e761d270fc9d15",
-  "implementation": "d40127482d08336f433ba10b422a9973c688234a",
-  "log_commit": "d6e2b40723decd871a30104a8896fe7f33123ef0",
-  "base": "1d6734ed4ac1c06a614f6c3fc13526ba8346dde0",
-  "previous_observed_head": "e1a5fb520ec78d1b2fe766538904fd51c1448404",
+  "reviewed_head": "358661b01c0621001fee3aa405a5c3dc4c9117ef",
+  "claude_md_blob": "20e1565a60525ca373df8d5f4d5439ca14138478",
+  "implementation": "a6da8c52ad514274035ac079f4c4f9b9b0589cec",
+  "log_commit": "358661b01c0621001fee3aa405a5c3dc4c9117ef",
+  "previous_observed_head": "6e4726a435c6b701868ae1b7cb2640a103008d39",
   "pull_request": "https://github.com/eason-531/Car-performance-simulator/pull/7",
-  "result": "changes_requested_before_merge",
+  "merge_commit": "66112e2815cb752392ebfc6baafa951bef88250d",
+  "result": "previous_fixes_verified_followup_requested",
   "verified_changes": [
-    "Branch-specific Claude.md entry describes the implementation; Git trailers, draft PR and the actual implementation diff agree. The implementation is 35 files; the PR also includes the Claude log and inherited branch Codex handoff.",
-    "GR Corolla Circuit uses the 100.1 mph prototype run marked equivalent; BRZ Limited 6AT adds the exact MotorTrend run with the 3.909 axle preserved and the residual visible; A91-MT Supra now links the original C/D 114 mph run; Z06 adds the matching 128.2 mph run and explains the +5.7 mph modeled trap gap.",
-    "Measured sort chooses the quickest exact observation for each metric per car, falling back to equivalent; rows show publication and timing. Source IDs/URLs and references have regression guards. Provisional labels and Turbo S higher-speed splits are present.",
-    "SLC-4 moves the B threshold from 39.4 to 36.4. Only Evo FE and Kona N go from C to B. Both owner's cars retain all generated values except the formula identifier, including both timing bases, class, score, and IDs. Vehicle specs, storage, state and physics source trees are unchanged versus PR base."
+    "Claude author/session trailers, the new Round 2 branch-local log and its implementation diff agree. The head tree is identical to merged PR #7 on main. Round 2 fixed the Nissan Z 9AT reference, StrictMode focus replay and premature backdrop dismissal, and updated four original-source references.",
+    "r44 C/D exact 9AT: 4.3 s to 60 mph, 12.7 s at 115 mph, 0.3 s rollout, 3,592 lb tested and 91 AKI. Simulation on rollout basis: 4.308 s, 12.658 s, 112.61 mph. Grip 1.30 to 1.22 with 88% efficiency retained. Generated stock changes are confined to this car, A 55.1 to A 53.3.",
+    "Picker delegates initial focus to Search and reclaims it on StrictMode setup replay. Backdrop dismissal waits for click; 7 cases run with and without production entry-point Root StrictMode. Previous modeled owner-car values and classes are identical, with only the formula identifier differing against the PR base.",
+    "Evo FE 4.4 s/13.3 s at 104 mph and 3,517 lb verified from original C/D. SF90 Assetto Fiorano 2.1 s/9.6 s at 145.2 mph and 3,839 lb verified from MotorTrend; its published methodology supports rollout. Autocar publisher CDN confirms GR Yaris 5.2 s to 60 mph, two occupants, full tank, 1,283 kg as tested and no launch control. Circuit Pack and timing procedure remain unconfirmed."
   ],
   "findings": [
     {
-      "priority": "P1",
+      "priority": "P2",
       "path": "src/data/catalog/cars/r44-nissan-z.ts",
-      "lines": "68–100,113–120",
-      "impact": "Wrong reference affects displayed 9AT residuals, measured quarter-mile ordering, and grip/efficiency calibration. The linked Mustang Mach 1 comparison is a six-speed manual Z, 4.5 s and 13.0 s @ 111 mph, and does not support the claimed exact 4.0 s / 12.3 s @ 116 mph.",
-      "request": "Use the instrumented C/D Z Performance nine-speed automatic test. Record 4.3 s, 12.7 s @ 115 mph, 0.3 s one-foot-rollout deduction, 3,592 lb tested and 91 AKI. Reevaluate bounded calibration against that test, remove the stale no-independent-automatic-test gap, regenerate stock stats and data gaps.",
-      "acceptance": "Automatic test links directly and drives exact residuals and measured sort; no unsupported figures remain; updated residuals and any SLC changes are explicit; both owner cars retain timings, scores and classes.",
+      "lines": "98–102,114,119–130; src/data/catalog/stockStats.generated.ts:2086 onward",
+      "impact": "Catalog reports modeled 296 km/h with no limiter. The exact-trim C/D test lists a governed 155 mph (about 249 km/h), a roughly 47 km/h discrepancy. The newly cited test and the Nissan U.S. brochure also resolve the stale tire fitment and power/torque RPM gaps.",
+      "request": "Verify the production US Performance 9AT limiter before substituting it, record the published governed result separately from the simulation, and label any uncapped prediction. Cite Nissan U.S. for production fitment and RPM band, and C/D for test-car tires; close supported gaps and regenerate stats/gaps if inputs change.",
+      "acceptance": "Stock display and provenance distinguish governed stock speed from uncapped simulation, cite separate factory and test conditions, and preserve owner-car records. Only explicitly justified model changes and their residuals appear in regenerated data.",
       "sources": [
-        "https://www.caranddriver.com/reviews/comparison-test/a40393375/2023-nissan-z-vs-2021-ford-mustang-mach-1-compared/",
-        "https://www.caranddriver.com/reviews/a43987884/2023-nissan-z-automatic-by-the-numbers/"
+        "https://www.caranddriver.com/reviews/a43987884/2023-nissan-z-automatic-by-the-numbers/",
+        "https://www.nissanusa.com/content/dam/Nissan/us/vehicle-brochures/2023/2023-nissan-nissan-z-brochure-en.pdf"
       ]
     },
     {
       "priority": "P2",
-      "path": "src/components/catalog/CarPicker.tsx",
-      "lines": "25–34,55–65,79–81",
-      "related": [
-        "src/main.tsx:7–12",
-        "src/__tests__/CarPicker.focus.test.tsx:8–13,33–39"
-      ],
-      "impact": "React StrictMode development effect replay restores the opener while the modal is still open. JSDOM reproduction with the existing test wrapped in the app's root StrictMode leaves focus on the Lane B button instead of Search. The unchanged release-mode test passes.",
-      "request": "Make initial focus and restoration safe under effect replay, and exercise the real StrictMode wrapper in the focus regression. Include backdrop dismissal in the check.",
-      "acceptance": "Search owns focus after opening, focus stays inside while open, and Escape, Close, backdrop and selection restore the opener. The StrictMode and existing tests pass; exercise touch/keyboard on WebKit if available."
+      "path": "src/data/catalog/cars/r44-nissan-z.ts",
+      "lines": "76–102,121–123",
+      "impact": "The linked MotorTrend 9AT test gives a materially different trap of 107.6 mph. The simulator's 112.61 mph lies between the two published results, so the C/D residual alone cannot establish the reason for the miss.",
+      "request": "Record MotorTrend as a separate equivalent preproduction 9AT run: 4.3 s, 12.9 s at 107.6 mph, 3,597 lb at 57/43, 91-octane pump fuel without booster, and the reported knock/low-power warning after initial runs. Keep the C/D exact row as the production calibration reference. Remove or qualify the unsupported causal attribution to power underrating.",
+      "acceptance": "Both source-backed runs and timing/conditions are distinguishable; equivalent MotorTrend data never overrides the exact C/D sort value; the trap residual is shown as uncertainty rather than proof of a power cause.",
+      "sources": [
+        "https://www.caranddriver.com/reviews/a43987884/2023-nissan-z-automatic-by-the-numbers/",
+        "https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review",
+        "https://www.motortrend.com/news/motor-trend-testing"
+      ]
     },
     {
       "priority": "P3",
       "paths": [
-        "src/data/catalog/cars/r18-mitsubishi-lancer-evolution.ts:69–84,110–115",
-        "src/data/catalog/cars/r66-ferrari-sf90-stradale.ts:66–81",
-        "src/data/catalog/cars/r67-porsche-taycan.ts:67–93",
-        "src/data/catalog/cars/r04-toyota-gr-yaris.ts:115–133"
+        "src/data/catalog/cars/r67-porsche-taycan.ts:36–67",
+        "src/data/catalog/cars/r18-mitsubishi-lancer-evolution.ts:63–79",
+        "src/data/catalog/cars/r04-toyota-gr-yaris.ts:82–87,119–138"
       ],
-      "impact": "Primary material is available for values still attributed to aggregators or search summaries or marked unconfirmed. C/D confirms the Evo 4.4/13.3@104 and 3,517 lb test car, and Taycan 2.4/10.5@130. MotorTrend confirms exact Assetto Fiorano 2.1/9.6@145.2, 3,839 lb. Autocar confirms 5.2 s, two people, full tank, 1,283 kg and no launch control.",
-      "request": "Point matching rows to originals, replace stale verification notes, record test-car conditions distinctly from stock specifications, and retain unresolved timing/package fields where the source does not verify them.",
-      "acceptance": "Reference blocks link directly to the published tests and describe only independently supported fields.",
+      "impact": "Taycan row is mislabeled as pre-change/2019 even though the linked story is Jan 29, 2020; the matching original C/D comparison table explicitly lists 0.2 s one-foot rollout. Evo benchmark date tracks model year rather than original 2016 publication. The new GR Yaris source hostname timed out during this inspection while the publisher CDN served the verified article.",
+      "request": "For Taycan use the original comparison table for the existing result, set 2020 and rollout-1ft with rolloutS 0.2; keep the 2020 model identity and published elapsed times. Correct Evo benchmark publication year to 2016 without calling its legacy 3 mph procedure a measured one-foot rollout. Prefer a working publisher URL for Autocar, retaining equivalent configuration and unconfirmed timing.",
+      "acceptance": "Each benchmark points to a working primary text with accurate publication metadata and timing; Taycan remains catalog-only; no fabricated exact test fitment or changed elapsed values.",
       "sources": [
-        "https://www.caranddriver.com/reviews/a15102392/2015-mitsubishi-lancer-evolution-final-edition-test-review/",
-        "https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review",
+        "https://www.caranddriver.com/reviews/comparison-test/a30799498/2020-porsche-taycan-turbo-s-vs-2020-tesla-model-s-performance/",
         "https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/",
-        "https://www.em.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024"
+        "https://www.caranddriver.com/features/a30085446/acceleration-testing-procedure-change-rollout/",
+        "https://www.caranddriver.com/reviews/a15102392/2015-mitsubishi-lancer-evolution-final-edition-test-review/",
+        "https://images.cdn.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024"
       ]
     }
   ],
-  "remaining": "Confirm original sources for other second-hand measurements; unresolved BRZ converter parameters, Z07/GT500 package aero, Turbo S AWD and held-out 0–130 mph primary source, GR Yaris timing/trim, Hyundai US N DCT gearing and Kona N gearbox code, Octavia/RS 3 axle assignments and Macan GTS axle conflict. CT4-V, ZL1 1LE and E 63 wagon still lack a benchmark.",
+  "remaining": [
+    "Native iPad Safari/WebKit touch and keyboard coverage; both operating modes, search focus, Tab wrap and opener restore without backdrop click-through.",
+    "Untouched research: secondary-only benchmarks, BRZ converter, Corvette Z07 and GT500 aero, Turbo S AWD and original 0–130 source, GR Yaris exact package/timing, US Hyundai N gearing, Octavia/RS 3 axle assignments, Macan GTS axle conflict and missing CT4-V/ZL1 1LE/E 63 wagon tests."
+  ],
   "dependencies": {
-    "eason": "No decision needed for fixes. Draft merge remains Eason's decision. A native iPad Safari touch/keyboard check and any outstanding U.S. service or factory sheets would close evidence gaps if available.",
-    "claude": "Resolve P1 before merge, add the StrictMode regression, refresh source provenance, and attach corrected residuals and CI evidence."
+    "eason": "Native iPad Safari run and any available exact-market factory/service documents. No decision required to address the evidence-backed provenance items.",
+    "claude": "Apply the source-backed corrections, retain exact versus equivalent distinctions, and attach generated diff, residuals and CI. Record unresolved fields explicitly."
   },
   "test_evidence": {
-    "github_actions": "https://github.com/eason-531/Car-performance-simulator/actions/runs/45323950561",
-    "ci_steps": "checkout, npm ci, typecheck, lint, tests and Vite build succeeded",
-    "vercel": "success for reviewed SHA",
-    "local": "npm run check passed at reviewed SHA: 815 tests in 20 files, typecheck/lint/build; Vite chunk warning 748.32 kB minified. A temporary test wrapper using StrictMode failed initial Search focus (4/5 passed). No test file committed. git diff --check passed.",
-    "browser": "Claude reports Chromium checks; native iPad Safari/WebKit not independently exercised."
+    "branch_ci": "https://github.com/eason-531/Car-performance-simulator/actions/runs/45352286276",
+    "merge_tree_ci": "https://github.com/eason-531/Car-performance-simulator/actions/runs/45355582253",
+    "verified": "GitHub job steps passed npm ci, typecheck, lint, tests and Vite build on both exact heads. Vercel reported success. Pinned-tree equality, git diff --check and generated row comparison verified locally.",
+    "engineer_reported": "824 tests, 21 files; 14 picker regression cases; Chromium iPad-size dev and production keyboard/mouse/touch pass."
   },
-  "verification_limits": "Primary-source verification was targeted; remaining transcriptions and gear/aero claims were not independently confirmed. Explicitly separate test-car configuration and publication timing from simulator assumptions."
+  "verification_limits": "No independent local full-suite or browser execution in this round; native Safari remains unverified. Primary-source checks targeted the changed rows and direct follow-up; unresolved exact-trim factory limits and secondary-source rows require evidence."
 }
 ```
