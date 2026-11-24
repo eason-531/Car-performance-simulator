@@ -49,13 +49,6 @@ export const entry: CatalogEntry = {
       kind: "reference"
     },
     {
-      id: "src-agg",
-      title: "SF90 Stradale 0–60 times",
-      publisher: "0-60specs",
-      url: "https://www.0-60specs.com/ferrari/sf90-stradale-0-60-times",
-      kind: "reference"
-    },
-    {
       id: "src-cd",
       title: "Ferrari SF90 Stradale hits 60 mph in 2.0 s",
       publisher: "Carscoops (citing Car and Driver)",
@@ -64,22 +57,6 @@ export const entry: CatalogEntry = {
     }
   ],
   benchmarks: [
-    {
-      id: "mt-agg",
-      sourceId: "src-agg",
-      publication: "MotorTrend (as listed by 0-60specs)",
-      timing: "rollout-1ft",
-      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
-      results: {
-        zeroTo60MphS: 2.1,
-        quarterMileS: 9.6,
-        quarterMileTrapMph: 145.2
-      },
-      conditions: {},
-      match: "exact",
-      verification: "Aggregator listing that attributes the run to the publication; original page not reachable. The aggregator’s source labels are inconsistent for this car.",
-      date: "2021"
-    },
     {
       id: "cd",
       sourceId: "src-cd",
@@ -96,6 +73,27 @@ export const entry: CatalogEntry = {
       verification: "Second-hand citation; original page not reachable.",
       date: "2021",
       deviation: "Assetto Fiorano package not confirmed for this test car."
+    },
+    {
+      id: "mt",
+      sourceId: "test",
+      publication: "MotorTrend",
+      timing: "rollout-1ft",
+      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
+      results: {
+        zeroTo60MphS: 2.1,
+        quarterMileS: 9.6,
+        quarterMileTrapMph: 145.2
+      },
+      conditions: {
+        testMass: "3,839 lb as tested",
+        other: [
+          "Assetto Fiorano package"
+        ]
+      },
+      match: "exact",
+      verification: "Original MotorTrend Assetto Fiorano first test, checked in the Codex inspection of d6e2b40 (2026-11-24).",
+      date: "2021"
     }
   ],
   dataGaps: [

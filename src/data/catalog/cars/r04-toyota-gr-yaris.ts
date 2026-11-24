@@ -78,6 +78,13 @@ export const entry: CatalogEntry = {
       publisher: "WhichCar (AU)",
       url: "https://www.whichcar.com.au/?p=524752",
       kind: "road-test"
+    },
+    {
+      id: "src-autocar",
+      title: "Toyota GR Yaris 2020–2024 review",
+      publisher: "Autocar",
+      url: "https://www.em.autocar.co.uk/car-review/toyota/gr-yaris-2020-2024",
+      kind: "road-test"
     }
   ],
   benchmarks: [
@@ -112,7 +119,7 @@ export const entry: CatalogEntry = {
     },
     {
       id: "autocar",
-      sourceId: "test",
+      sourceId: "src-autocar",
       publication: "Autocar",
       timing: "unconfirmed",
       timingNote: "Timing procedure of this publication is not confirmed.",
@@ -123,10 +130,10 @@ export const entry: CatalogEntry = {
         testMass: "1,283 kg as tested (kerb with fuel)",
         occupants: "Two",
         fuel: "Full tank",
-        launchControl: "None (per the handoff; not confirmed in the reachable text)"
+        launchControl: "None"
       },
       match: "equivalent",
-      verification: "Original Autocar road test as summarised in the Codex inspection handoff, 2026-11 and by search; 0–60 mph is kept distinct from the 0–100 km/h tests.",
+      verification: "Original Autocar road test, checked in the Codex inspection of d6e2b40 (2026-11-24): 5.2 s with two occupants, a full tank, 1,283 kg and no launch control. The page does not verify the timing basis or Circuit Pack fitment, so both stay unconfirmed.",
       date: "2020",
       deviation: "UK car; Circuit Pack fitment is not confirmed in the reachable text."
     }
@@ -137,7 +144,7 @@ export const entry: CatalogEntry = {
     "AWD split range",
     "Drag coefficient",
     "Pre-facelift Toyota GB release: gear table, final drives and the 360 Nm band",
-    "Autocar timing basis and Circuit Pack confirmation"
+    "Autocar timing basis and Circuit Pack fitment (not stated on the original page)"
   ],
   notes: [
     "Market ratings differ (UK/IE 261 PS; other markets up to 272 PS); only the UK identity is modelled here."

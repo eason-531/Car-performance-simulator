@@ -72,7 +72,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 - Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
 - Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [0-60specs](https://www.0-60specs.com/ferrari/sf90-stradale-0-60-times)
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
 
 ### 2020 Porsche Taycan Turbo S
 
@@ -138,7 +138,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2021 Toyota GR Yaris Circuit Pack
 
 - Unconfirmed inputs: Peak torque (using 360 Nm @ 3,000–4,600 rpm); Gear ratios (using 3.538/2.238/1.535/1.162/1.081/0.902); Tire size (using 225/40 R18)
-- Also missing: Gear ratios; Torque rpm band; AWD split range; Drag coefficient; Pre-facelift Toyota GB release: gear table, final drives and the 360 Nm band; Autocar timing basis and Circuit Pack confirmation
+- Also missing: Gear ratios; Torque rpm band; AWD split range; Drag coefficient; Pre-facelift Toyota GB release: gear table, final drives and the 360 Nm band; Autocar timing basis and Circuit Pack fitment (not stated on the original page)
 - Consulted: [Autocar](https://d2km96w3x5blkf.cloudfront.net/car-review/toyota/gr-yaris-2020-2024) · [Toyota GB](https://media.toyota.co.uk/wp-content/uploads/sites/5/2021/03/1605890847201029MGRYarisFullRelease.pdf) · [Toyota Ireland](https://www.toyota.ie/discover-toyota/toyota-gazoo-racing/gr-yaris/specifications)
 
 ### 2022 Volkswagen Golf R
@@ -342,7 +342,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 ### 2023 Nissan Z Performance 9AT
 
 - Unconfirmed inputs: Power / torque rpm (using 6,400 / 1,600–5,200 rpm); Tire size (using 255/40 R19 F, 275/35 R19 R)
-- Also missing: MotorTrend first-test results (linked page unreachable; no independent instrumented automatic test found); Power/torque rpm; Tire size; Drag coefficient; MotorTrend Performance 9AT test (roster source)
+- Also missing: Power/torque rpm; Tire size; Drag coefficient; MotorTrend Performance 9AT first-test figures (roster source; not transcribed)
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review) · [Autoblog](https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/) · [The Detroit Bureau](https://thedetroitbureau.com/reviews/a-week-with-2023-nissan-z-performance-a-t/)
 
 ### 2018 Nissan GT-R Track Edition

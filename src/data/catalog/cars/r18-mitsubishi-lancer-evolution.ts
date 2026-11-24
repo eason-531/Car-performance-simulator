@@ -57,20 +57,13 @@ export const entry: CatalogEntry = {
       publisher: "Motor Matchup",
       url: "https://www.motormatchup.com/catalog/Mitsubishi/Lancer-Evolution/2015/Final-Edition-4DR-Sedan",
       kind: "reference"
-    },
-    {
-      id: "src-agg",
-      title: "Lancer Evolution 0–60 times",
-      publisher: "0-60specs",
-      url: "https://www.0-60specs.com/mitsubishi/lancer-evolution-0-60-times",
-      kind: "reference"
     }
   ],
   benchmarks: [
     {
-      id: "cd-agg",
-      sourceId: "src-agg",
-      publication: "Car and Driver (as listed by 0-60specs)",
+      id: "cd",
+      sourceId: "test",
+      publication: "Car and Driver",
       timing: "unconfirmed",
       timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
       results: {
@@ -78,9 +71,11 @@ export const entry: CatalogEntry = {
         quarterMileS: 13.3,
         quarterMileTrapMph: 104
       },
-      conditions: {},
+      conditions: {
+        testMass: "3,517 lb as tested"
+      },
       match: "exact",
-      verification: "Aggregator listing that attributes the run to the publication; original page not reachable. The original \"Requiem for a Dream\" Final Edition test was not reachable.",
+      verification: "Original Car and Driver Final Edition test, checked in the Codex inspection of d6e2b40 (2026-11-24). Timing basis not stated in the checked material (pre-2020 test), so both simulator bases are shown.",
       date: "2015"
     }
   ],

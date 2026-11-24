@@ -63,7 +63,7 @@ export const entry: CatalogEntry = {
       },
       conditions: {},
       match: "exact",
-      verification: "As reported by Jalopnik and CarAdvice citing the test (original page not reachable). A later 2.1 s citation is a different test.",
+      verification: "Original Car and Driver test, checked in the Codex inspection of d6e2b40 (2026-11-24). Timing basis not stated in the checked material, so both simulator bases are shown.",
       date: "2019"
     }
   ],
