@@ -1,7 +1,7 @@
 import type { VehicleSpec } from '../types';
 import { ENTRIES } from './cars';
 import { STOCK_STATS, type StockStats } from './stockStats.generated';
-import { eraOf, type CatalogEntry, type Era, type Readiness } from './types';
+import { eraOf, type CatalogEntry, type Era, type MeasuredBenchmark, type Readiness } from './types';
 import type { StockClass } from './classes';
 
 export * from './types';
@@ -178,16 +178,64 @@ export const SORT_LABEL: Record<SortKey, string> = {
   'year-asc': 'Year (oldest first)',
   class: 'Stock class (quickest first)',
   'sim-0-100': '0–100 km/h · simulated, brake release',
-  'meas-0-100': '0–100 km/h · measured, as published',
+  'meas-0-100': '0–100 km/h · measured (exact tests first), as published',
   'sim-quarter': '¼-mile ET · simulated, brake release',
-  'meas-quarter': '¼-mile ET · measured, publication timing',
+  'meas-quarter': '¼-mile ET · measured (exact tests first), publication timing',
 };
 
-/** Best (lowest) published value across a car's benchmarks. */
-export function measured(e: CatalogEntry, key: 'zeroTo100KmhS' | 'quarterMileS'): number | null {
-  const values = e.benchmarks.map((b) => b.results[key]).filter((v): v is number => typeof v === 'number');
-  return values.length ? Math.min(...values) : null;
+export type MeasuredKey = 'zeroTo100KmhS' | 'quarterMileS';
+
+/**
+ * The published value used for measured sorting: the quickest result from an
+ * exact-configuration test, falling back to equivalent configurations only when
+ * no exact test exists. The benchmark is returned so the list can say which
+ * publication, timing basis and match it came from.
+ */
+export function measuredResult(e: CatalogEntry, key: MeasuredKey): { value: number; benchmark: MeasuredBenchmark } | null {
+  const withValue = e.benchmarks.filter((b) => typeof b.results[key] === 'number');
+  const pool = withValue.some((b) => b.match === 'exact') ? withValue.filter((b) => b.match === 'exact') : withValue;
+  let best: { value: number; benchmark: MeasuredBenchmark } | null = null;
+  for (const b of pool) {
+    const v = b.results[key] as number;
+    if (!best || v < best.value) best = { value: v, benchmark: b };
+  }
+  return best;
 }
+
+/** Best published value for sorting (see `measuredResult`). */
+export function measured(e: CatalogEntry, key: MeasuredKey): number | null {
+  return measuredResult(e, key)?.value ?? null;
+}
+
+const SORT_NOTE_LABEL: Partial<Record<SortKey, string>> = {
+  'sim-0-100': '0–100 km/h',
+  'meas-0-100': '0–100 km/h',
+  'sim-quarter': '¼ mile',
+  'meas-quarter': '¼ mile',
+};
+
+/** One-line explanation of the value a car is sorted by, or null for non-value sorts. */
+export function sortNote(e: CatalogEntry, key: SortKey): string | null {
+  const label = SORT_NOTE_LABEL[key];
+  if (!label) return null;
+  if (key === 'sim-0-100' || key === 'sim-quarter') {
+    const t = STOCK_STATS[e.id]?.brakeRelease;
+    const v = key === 'sim-0-100' ? t?.zeroTo100KmhS : t?.quarterMileS;
+    return v === null || v === undefined ? `Simulated ${label}: not simulated` : `Simulated ${label} ${v.toFixed(2)} s · brake release`;
+  }
+  const r = measuredResult(e, key === 'meas-0-100' ? 'zeroTo100KmhS' : 'quarterMileS');
+  if (!r) return `Measured ${label}: no published result`;
+  const b = r.benchmark;
+  const timing = TIMING_NOTE[b.timing];
+  return `Measured ${label} ${r.value} s · ${b.publication} · ${timing}${b.match === 'equivalent' ? ' · equivalent configuration' : ''}`;
+}
+
+const TIMING_NOTE: Record<MeasuredBenchmark['timing'], string> = {
+  'rollout-1ft': '1-ft rollout',
+  'standing-start': 'standing start',
+  'drag-strip': 'drag-strip timing',
+  unconfirmed: 'timing basis unconfirmed',
+};
 
 const byName = (a: CatalogEntry, b: CatalogEntry) =>
   fold(a.make).localeCompare(fold(b.make)) || fold(a.model).localeCompare(fold(b.model)) || a.modelYear - b.modelYear || a.id.localeCompare(b.id);

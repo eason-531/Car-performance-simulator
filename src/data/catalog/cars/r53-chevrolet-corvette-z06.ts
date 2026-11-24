@@ -59,6 +59,13 @@ export const entry: CatalogEntry = {
       publisher: "Chevrolet",
       url: "https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2023/chevrolet_2023_corvette.pdf",
       kind: "manufacturer"
+    },
+    {
+      id: "src-gm",
+      title: "Corvette Z06 technical release",
+      publisher: "General Motors",
+      url: "https://news.gm.com/home.detail.html/Pages/news/us/en/2021/oct/1026-corvette-z06.html",
+      kind: "manufacturer"
     }
   ],
   benchmarks: [
@@ -81,15 +88,40 @@ export const entry: CatalogEntry = {
       match: "exact",
       verification: "Syndicated copy of the article (original page not reachable from this environment).",
       date: "2022"
+    },
+    {
+      id: "mt",
+      sourceId: "test",
+      publication: "MotorTrend",
+      timing: "rollout-1ft",
+      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
+      results: {
+        zeroTo60MphS: 2.8,
+        quarterMileS: 10.8,
+        quarterMileTrapMph: 128.2
+      },
+      conditions: {
+        tires: "Michelin Pilot Sport Cup 2 R ZP (Z07)",
+        other: [
+          "Z07 package with Carbon Fiber Aero",
+          "Optional carbon-fiber wheels"
+        ]
+      },
+      match: "exact",
+      verification: "Original MotorTrend Z07 coupe test, as transcribed in the Codex inspection handoff, 2026-11.",
+      date: "2022"
     }
   ],
   dataGaps: [
-    "Z06 gear ratios (assumed shared with Stingray)",
-    "Curb mass",
-    "Carbon Fiber Aero effect on mass",
-    "Tire size",
-    "Drag coefficient",
-    "MotorTrend Z07 coupe test (package-specific; linked in the follow-up)"
+    "Z07 Carbon Fiber Aero Cd / CdA",
+    "Curb mass (factory, Z07 + carbon wheels)",
+    "Weight distribution"
+  ],
+  notes: [
+    "The Z07 Carbon Fiber Aero adds downforce and drag that the default coupe Cd does not represent; package Cd/CdA is unpublished, so the trap residual (simulation above both tests) is left unfitted."
+  ],
+  simCaveats: [
+    "Aero uses a generic coupe drag estimate; the Z07 Carbon Fiber Aero package is not modelled, so trap speed reads high."
   ],
   sim: buildSpec({
   id: "2023-chevrolet-corvette-z06-z07-carbon-fiber-aero-us-coupe-rwd-8dct",
@@ -110,15 +142,15 @@ export const entry: CatalogEntry = {
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 2.6 },
     provenance: [
-      { parameter: 'Final drive', value: '5.56 (Stingray Z51: 5.20 in the same brochure)', status: 'reported', source: 'Chevrolet MY2023 Corvette brochure (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2023/chevrolet_2023_corvette.pdf' },
+      { parameter: 'Gear ratios', value: '2.91/1.76/1.22/0.88/0.65/0.51/0.40/0.33', status: 'verified', source: 'Chevrolet MY2023 Corvette brochure', url: 'https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2023/chevrolet_2023_corvette.pdf' },
+      { parameter: 'Final drive', value: '5.56 (Z51: 5.20)', status: 'verified', source: 'Chevrolet MY2023 Corvette brochure', url: 'https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2023/chevrolet_2023_corvette.pdf' },
+      { parameter: 'Tire size', value: '275/30 R20 F · 345/25 R21 R, Michelin Pilot Sport Cup 2 R ZP (Z07)', status: 'verified', source: 'GM Z06 technical release', url: 'https://news.gm.com/home.detail.html/Pages/news/us/en/2021/oct/1026-corvette-z06.html' },
+      { parameter: 'Tire compound', value: 'Track semi-slick class', status: 'reported', source: 'Cup 2 R ZP per the GM release', url: 'https://news.gm.com/home.detail.html/Pages/news/us/en/2021/oct/1026-corvette-z06.html' },
       { parameter: 'Tire grip calibration', value: '×1.30 (fit bound)', status: 'estimated', source: 'Fit toward the Car and Driver 0–60 mph 2.6 s stopped at the 1.30 bound (sim 2.75 s); residual shown' },
       { parameter: 'Drivetrain efficiency', value: '84.4 %', status: 'estimated', source: 'Transferred from the Stingray fit (same TR-9080 transaxle); a trap fit asked for 80 %, likely absorbing the unmodelled drag of the Z07 aero, so it was not used' },
       { parameter: 'Peak power', value: '670 hp @ 8,400 rpm', status: 'reported', source: 'Chevrolet rating (multiple reviews)', url: 'https://www.thedrive.com/new-cars/2023-chevy-corvette-z06-review-c8-price-specs-driving-impressions-chevrolet' },
       { parameter: 'Peak torque', value: '460 lb-ft @ 6,300 rpm', status: 'reported', source: 'Chevrolet rating (multiple reviews)', url: 'https://www.thedrive.com/new-cars/2023-chevy-corvette-z06-review-c8-price-specs-driving-impressions-chevrolet' },
-      { parameter: 'Gear ratios', value: '2.91/…/0.33 (Stingray TR-9080 set)', status: 'estimated', source: 'Assumed shared with the Stingray; Z06 application not confirmed — awaiting spec sheet' },
       { parameter: 'Curb mass', value: '≈1,580 kg (3,480 lb)', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Tire size', value: '275/30 R20 F · 345/25 R21 R (Z07)', status: 'estimated', source: 'Recalled published figure; not verified from a reachable source — awaiting spec sheet' },
-      { parameter: 'Tire compound', value: 'Track semi-slick class', status: 'estimated', source: 'Z07 ships on Michelin Pilot Sport Cup 2 R (not verified here)' },
     ],
   }),
 };

@@ -56,13 +56,6 @@ export const entry: CatalogEntry = {
       publisher: "FastestLaps",
       url: "https://fastestlaps.com/models/dodge-challenger-srt-hellcat-redeye",
       kind: "reference"
-    },
-    {
-      id: "src4",
-      title: "Going for 10s: drag-strip testing the 2019 Challenger SRT Hellcat Redeye",
-      publisher: "Cars.com",
-      url: "https://www.cars.com/articles/going-for-10s-drag-strip-testing-the-2019-dodge-challenger-srt-hellcat-redeye-1420703398783",
-      kind: "road-test"
     }
   ],
   benchmarks: [
@@ -100,20 +93,20 @@ export const entry: CatalogEntry = {
     },
     {
       id: "carscom",
-      sourceId: "src4",
+      sourceId: "test",
       publication: "Cars.com",
-      timing: "unconfirmed",
-      timingNote: "Timing procedure of this publication is not confirmed.",
+      timing: "drag-strip",
+      timingNote: "Drag-strip ETs use staging-beam rollout and exclude reaction time.",
       results: {
         quarterMileS: 10.8
       },
       conditions: {
-        surface: "Drag strip"
+        surface: "Drag strip (preparation not stated)"
       },
-      match: "exact",
+      match: "equivalent",
       verification: "Search-result summary of the article (page itself not reachable from this environment).",
       date: "2019",
-      deviation: "Best of two to three passes at a drag strip; surface preparation not stated."
+      deviation: "Drag-strip passes with special launch conditions; not comparable with normal-road magazine tests."
     }
   ],
   dataGaps: [

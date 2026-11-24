@@ -56,9 +56,50 @@ export const entry: CatalogEntry = {
       publisher: "MotorWeek",
       url: "https://motorweek.org/road_tests/2022-lexus-is-500-f-sport-performance",
       kind: "road-test"
+    },
+    {
+      id: "src-forum",
+      title: "Lexus news thread (repost of the Car and Driver test)",
+      publisher: "AcuraZine forum",
+      url: "https://acurazine.com/forums/automotive-news-6/lexus-news-314069/page57-printthread/",
+      kind: "reference"
     }
   ],
-  benchmarks: [],
+  benchmarks: [
+    {
+      id: "motorweek",
+      sourceId: "src3",
+      publication: "MotorWeek",
+      timing: "unconfirmed",
+      timingNote: "Timing procedure of this publication is not confirmed.",
+      results: {
+        quarterMileS: 12.9,
+        quarterMileTrapMph: 112
+      },
+      conditions: {},
+      match: "equivalent",
+      verification: "Search-result summary of the article (page itself not reachable from this environment).",
+      date: "2021",
+      deviation: "Premium package not confirmed (equipment only)."
+    },
+    {
+      id: "cd-forum",
+      sourceId: "src-forum",
+      publication: "Car and Driver (forum repost)",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      results: {
+        zeroTo60MphS: 4.4,
+        quarterMileS: 12.9,
+        quarterMileTrapMph: 112
+      },
+      conditions: {},
+      match: "equivalent",
+      verification: "Forum repost of the October 2021 test; original page not reachable.",
+      date: "2021",
+      deviation: "Premium package not confirmed (equipment only)."
+    }
+  ],
   dataGaps: [
     "Car and Driver test results (linked page unreachable; MotorWeek figures not in search summary)",
     "Curb mass",

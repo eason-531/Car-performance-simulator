@@ -22,22 +22,31 @@ export function CarPickerDialog({
 }) {
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
+  // Capture the opener during the first render: by the time effects run, the
+  // search field has already taken focus via autoFocus.
+  const [opener] = useState(() => (typeof document === 'undefined' ? null : (document.activeElement as HTMLElement | null)));
+  // Callers pass a fresh onClose each render; read it through a ref so the
+  // keyboard handler (and the focus restore in its cleanup) is set up once.
+  const onCloseRef = useRef(onClose);
   useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
+    onCloseRef.current = onClose;
+  });
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
       } else if (e.key === 'Tab' && panel.current) {
         // Keep focus inside the dialog.
         const f = panel.current.querySelectorAll<HTMLElement>('button:not([disabled]), input, select, [tabindex="0"]');
         if (f.length === 0) return;
         const first = f[0];
         const last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
+        const inside = panel.current.contains(document.activeElement);
+        if (e.shiftKey && (document.activeElement === first || !inside)) {
           e.preventDefault();
           last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
+        } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
           e.preventDefault();
           first.focus();
         }
@@ -49,9 +58,11 @@ export function CarPickerDialog({
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
-      opener?.focus?.();
+      // Escape, the close button, the backdrop and a selection all unmount the
+      // dialog, so focus goes back to whatever opened it.
+      if (opener && opener.isConnected) opener.focus();
     };
-  }, [onClose]);
+  }, [opener]);
 
   return createPortal(
     <div className="dialog-backdrop" onPointerDown={(e) => e.target === e.currentTarget && onClose()}>

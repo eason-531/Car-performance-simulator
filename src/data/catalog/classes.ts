@@ -1,7 +1,7 @@
 /**
  * Stock straight-line classes (simulator classes, not road-test verdicts).
  *
- * Formula SLC-3 (versioned — bump the version and regenerate the stock stats
+ * Formula SLC-4 (versioned — bump the version and regenerate the stock stats
  * if any constant below changes):
  *
  *   each input is standardized to a 0–100 scale between a "slow" and a "fast"
@@ -14,7 +14,7 @@
  * and trap speed dominate; 0–100 km/h makes launch count without letting it
  * dominate. Body style and usage play no part.
  *
- * Thresholds (SLC-3) were derived against three reference fixtures and the
+ * Thresholds (SLC-4) were derived against three reference fixtures and the
  * stock roster: a slow fixture (15.5 s @ 150 km/h, 7.5 s to 100 → 12) must be
  * D, a middle one (13.5 s @ 170 km/h, 5.5 s → 42) B and a fast one (11.0 s @
  * 210 km/h, 3.0 s → 87) S+. Within those constraints each boundary sits in the
@@ -24,6 +24,8 @@
  * the GT-R from the M5 and 911 GT3 by under a point. SLC-2 (20/39/49/64/78)
  * was superseded when spec-sheet corrections put the Stinger 0.4 points above
  * A; SLC-3 moves A into the 45.3–47.6 gap and centres B between 38.4 and 40.3.
+ * SLC-4 (inspection-handoff recalibration put the Integra Type S 0.3 points
+ * under B) centres B in the 33.6–39.1 gap.
  */
 
 export type StockClass = 'D' | 'C' | 'B' | 'A' | 'S' | 'S+';
@@ -31,7 +33,7 @@ export type StockClass = 'D' | 'C' | 'B' | 'A' | 'S' | 'S+';
 export const CLASS_ORDER: readonly StockClass[] = ['D', 'C', 'B', 'A', 'S', 'S+'];
 
 export const CLASS_FORMULA = {
-  version: 'SLC-3',
+  version: 'SLC-4',
   weights: { quarterMileS: 0.45, trapKmh: 0.4, zeroTo100KmhS: 0.15 },
   /** Standardization anchors: slow → 0, fast → 100. */
   anchors: {
@@ -40,7 +42,7 @@ export const CLASS_FORMULA = {
     zeroTo100KmhS: { slow: 9.0, fast: 2.8 },
   },
   /** Lower bound of each class on the score scale. */
-  thresholds: { C: 20, B: 39.4, A: 46.5, S: 64, 'S+': 78 } as Record<Exclude<StockClass, 'D'>, number>,
+  thresholds: { C: 20, B: 36.4, A: 46.5, S: 64, 'S+': 78 } as Record<Exclude<StockClass, 'D'>, number>,
 } as const;
 
 export const CLASS_POLICY = {

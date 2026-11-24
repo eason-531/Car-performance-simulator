@@ -49,9 +49,25 @@ export const entry: CatalogEntry = {
       kind: "road-test"
     }
   ],
-  benchmarks: [],
+  benchmarks: [
+    {
+      id: "cd",
+      sourceId: "test",
+      publication: "Car and Driver",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test published before its late-2019 move to a 1-ft rollout; the earlier procedure is not confirmed here, so both simulator bases are shown.",
+      results: {
+        zeroTo60MphS: 2.4,
+        quarterMileS: 10.5,
+        quarterMileTrapMph: 130
+      },
+      conditions: {},
+      match: "exact",
+      verification: "As reported by Jalopnik and CarAdvice citing the test (original page not reachable). A later 2.1 s citation is a different test.",
+      date: "2019"
+    }
+  ],
   dataGaps: [
-    "Car and Driver acceleration test (roster source)",
     "Motor ratings and battery limits",
     "Two-speed rear gear ratios",
     "Drag coefficient"

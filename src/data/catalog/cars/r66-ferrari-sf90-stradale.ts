@@ -47,11 +47,58 @@ export const entry: CatalogEntry = {
       publisher: "CarSales (AU)",
       url: "https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922",
       kind: "reference"
+    },
+    {
+      id: "src-agg",
+      title: "SF90 Stradale 0–60 times",
+      publisher: "0-60specs",
+      url: "https://www.0-60specs.com/ferrari/sf90-stradale-0-60-times",
+      kind: "reference"
+    },
+    {
+      id: "src-cd",
+      title: "Ferrari SF90 Stradale hits 60 mph in 2.0 s",
+      publisher: "Carscoops (citing Car and Driver)",
+      url: "https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/",
+      kind: "reference"
     }
   ],
-  benchmarks: [],
+  benchmarks: [
+    {
+      id: "mt-agg",
+      sourceId: "src-agg",
+      publication: "MotorTrend (as listed by 0-60specs)",
+      timing: "rollout-1ft",
+      timingNote: "MotorTrend subtracts a 1-ft rollout from its acceleration times.",
+      results: {
+        zeroTo60MphS: 2.1,
+        quarterMileS: 9.6,
+        quarterMileTrapMph: 145.2
+      },
+      conditions: {},
+      match: "exact",
+      verification: "Aggregator listing that attributes the run to the publication; original page not reachable. The aggregator’s source labels are inconsistent for this car.",
+      date: "2021"
+    },
+    {
+      id: "cd",
+      sourceId: "src-cd",
+      publication: "Car and Driver (as cited by Carscoops)",
+      timing: "rollout-1ft",
+      timingNote: "Car and Driver results since late 2019 subtract a 1-ft rollout.",
+      results: {
+        zeroTo60MphS: 2.0,
+        quarterMileS: 9.5,
+        quarterMileTrapMph: 148
+      },
+      conditions: {},
+      match: "equivalent",
+      verification: "Second-hand citation; original page not reachable.",
+      date: "2021",
+      deviation: "Assetto Fiorano package not confirmed for this test car."
+    }
+  ],
   dataGaps: [
-    "MotorTrend first test results (roster source)",
     "Hybrid system power split",
     "8-speed DCT ratios",
     "Drag coefficient"

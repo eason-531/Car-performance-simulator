@@ -35,7 +35,8 @@ export const entry: CatalogEntry = {
     power: "640 hp @ 6,750 rpm",
     torque: "590 lb-ft @ 2,500–4,000 rpm",
     zeroTo60MphS: 2.6,
-    sourceId: "src2"
+    sourceId: "src2",
+    curbMass: "3,636 lb (Porsche US)"
   },
   sources: [
     {
@@ -84,13 +85,17 @@ export const entry: CatalogEntry = {
       results: {
         zeroTo60MphS: 2.2,
         quarterMileS: 10.1,
-        quarterMileTrapMph: 137
+        quarterMileTrapMph: 137,
+        zeroTo100MphS: 5.3,
+        zeroTo130MphS: 8.9,
+        rolloutS: 0.2
       },
       conditions: {
-        testMass: "3,646 lb"
+        testMass: "3,646 lb as tested",
+        tires: "Factory 255/35 ZR20 F · 315/30 ZR21 R (tire model not transcribed)"
       },
       match: "exact",
-      verification: "Original test as transcribed in the owner-supplied spec-sheet follow-up, 2026-11; regular coupe test, not the Lightweight Package.",
+      verification: "Original Car and Driver full test (regular coupe, not the Lightweight Package). 0–100 mph from the review text; 0–130 mph from a forum repost of the C/D table, which also states 0.2 s rollout omitted. The 0–100 and 0–130 mph splits are held out of calibration (grip and efficiency were fitted to 0–60 mph and trap speed only).",
       date: "2020"
     }
   ],
@@ -99,6 +104,9 @@ export const entry: CatalogEntry = {
     "Drag coefficient",
     "Weight distribution",
     "Launch-control rpm"
+  ],
+  simCaveats: [
+    "Provisional AWD approximation: one averaged rolling radius ties engine speed to the rear axle; the 3.33 front axle ratio is display-only and PTM uses a generic 0–50 % front-share range."
   ],
   sim: buildSpec({
   id: "2021-porsche-911-turbo-s-turbo-s-coupe-us-coupe-awd-8dct",
@@ -113,20 +121,20 @@ export const entry: CatalogEntry = {
     engine: { code: '9A2 Evo (3.8 TT)', description: '3.7 L twin-turbo flat-6', displacementCc: 3745, aspiration: 'twin-turbo', idleRpm: 750, redlineRpm: 7200, revLimitRpm: 7200, power: { value: 640, unit: 'hp', rpm: [6750, 6750] }, torque: { value: 590, unit: 'lb-ft', rpm: [2500, 4000] }, peakBoostBar: 1.2 },
     transmission: { type: 'dual-clutch', name: '8-speed PDK', gearRatios: [4.89, 3.17, 2.15, 1.56, 1.18, 0.94, 0.76, 0.61], finalDrive: 3.02, frontAxleRatio: 3.33, upshiftTimeS: 0.12, shiftTorqueDip: 0.12, launchClutch: { launchRpm: 4500, brakeHoldRpmLimit: 4500 } },
     drivetrain: { layout: 'AWD', efficiency: 0.88, description: 'Porsche Traction Management (variable front coupling)', frontShareRange: [0, 0.5] },
-    chassis: { curbMassKg: 1654, frontWeightFraction: 0.39, cgHeightM: 0.45, wheelbaseM: 2.45, lengthMm: 4535, widthMm: 1900, heightMm: 1303 },
+    chassis: { curbMassKg: 1649, frontWeightFraction: 0.39, cgHeightM: 0.45, wheelbaseM: 2.45, lengthMm: 4535, widthMm: 1900, heightMm: 1303 },
     aero: {},
-    tires: { sizes: [staggered('r20r21', '255/35 ZR20 F · 315/30 ZR21 R', { widthMm: 255, aspectPct: 35, rimIn: 20 }, { widthMm: 315, aspectPct: 30, rimIn: 21 }, 'Factory fitment')], compound: 'uhp', gripScale: 1.19 },
+    tires: { sizes: [staggered('r20r21', '255/35 ZR20 F · 315/30 ZR21 R', { widthMm: 255, aspectPct: 35, rimIn: 20 }, { widthMm: 315, aspectPct: 30, rimIn: 21 }, 'Factory fitment')], compound: 'uhp', gripScale: 1.18 },
     speedLimiterKmh: null,
     factory: { zeroTo60MphS: 2.6 },
     provenance: [
-      { parameter: 'Tire grip calibration', value: '×1.19', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 2.2 s with efficiency held at the AWD bound' },
-      { parameter: 'Drivetrain efficiency', value: '88 %', status: 'estimated', source: 'A trap fit asked for 92 %, above the AWD bound (the engine is widely reported to exceed its rating); 88 % kept and the ≈−3 mph trap residual left visible' },
+      { parameter: 'Tire grip calibration', value: '×1.18', status: 'estimated', source: 'Fitted to the Car and Driver 0–60 mph 2.2 s with efficiency held at the AWD bound (factory curb mass now used)' },
+      { parameter: 'Drivetrain efficiency', value: '88 %', status: 'estimated', source: 'A trap fit asked for 92 %, above the AWD bound; 88 % kept and the ≈−3 mph trap residual left visible. 0–100 and 0–130 mph splits are held out as checks' },
+      { parameter: 'Curb mass', value: '3,636 lb (1,649 kg) factory; Car and Driver weighed its test car at 3,646 lb', status: 'verified', source: 'Porsche MY2021 US technical specification', url: 'https://download.newsroom.porsche.com/dam/jcr%3A8b531ae3-48f0-4d00-bfb9-c29f2676959b/Copy%20of%20U.S.%20Technical%20Specifications%202021%20911%20Turbo%20S%20Coupe%20and%20Cabriolet.pdf' },
       { parameter: 'Peak power', value: '640 hp @ 6,750 rpm', status: 'verified', source: 'Porsche MY2021 US technical specification (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3A887d7189-958d-4946-a189-e170e87b13e7/U.S.%20Technical%20Specifications%202021%20911%20Turbo%20S%20Coupe%20and%20Cabriolet.pdf' },
       { parameter: 'Peak torque', value: '590 lb-ft @ 2,500–4,000 rpm', status: 'verified', source: 'Porsche MY2021 US technical specification (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3A887d7189-958d-4946-a189-e170e87b13e7/U.S.%20Technical%20Specifications%202021%20911%20Turbo%20S%20Coupe%20and%20Cabriolet.pdf' },
       { parameter: 'Gear ratios', value: '4.89/3.17/2.15/1.56/1.18/0.94/0.76/0.61', status: 'verified', source: 'Porsche MY2021 US technical specification (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3A887d7189-958d-4946-a189-e170e87b13e7/U.S.%20Technical%20Specifications%202021%20911%20Turbo%20S%20Coupe%20and%20Cabriolet.pdf' },
       { parameter: 'Final drive', value: '3.02 rear; 3.33 front (reference — the model ties engine speed to the rear axle)', status: 'verified', source: 'Porsche MY2021 US technical specification (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3A887d7189-958d-4946-a189-e170e87b13e7/U.S.%20Technical%20Specifications%202021%20911%20Turbo%20S%20Coupe%20and%20Cabriolet.pdf' },
       { parameter: 'Tire size', value: '255/35 ZR20 F · 315/30 ZR21 R', status: 'verified', source: 'Porsche MY2021 US technical specification (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://newsroom.porsche.com/dam/jcr%3A887d7189-958d-4946-a189-e170e87b13e7/U.S.%20Technical%20Specifications%202021%20911%20Turbo%20S%20Coupe%20and%20Cabriolet.pdf' },
-      { parameter: 'Curb mass', value: '3,646 lb (1,654 kg) as tested', status: 'reported', source: 'Car and Driver full test (owner-supplied spec-sheet follow-up, 2026-11)', url: 'https://www.caranddriver.com/reviews/a32065924/2021-porsche-911-turbo-s-drive/' },
       { parameter: 'AWD split', value: 'Front share 0–0.50', status: 'estimated', source: 'PTM is variable; no fixed split is implied, so a rear-biased range is assumed' },
       { parameter: 'Weight distribution', value: '39 % front', status: 'estimated', source: 'Typical for the rear-engine 911; not in the sheet' },
       { parameter: 'Launch rpm', value: '≈4,500 rpm', status: 'estimated', source: 'Typical launch-control hold; not published' },

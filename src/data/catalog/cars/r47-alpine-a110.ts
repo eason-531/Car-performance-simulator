@@ -95,6 +95,9 @@ export const entry: CatalogEntry = {
   notes: [
     "Gearing is provisional: Alpine publishes road speed per 1,000 rpm, not individual ratios. Effective overall reductions are derived as 60 × C / (km/h per 1,000 rpm), with C = 1.966 m, the rolling circumference of the 235/40 R18 rear tire at the simulator’s dynamic radius (97 % of unloaded). Individual gear and final-drive values remain unknown."
   ],
+  simCaveats: [
+    "Provisional gearing: effective overall reductions derived from road speed per 1,000 rpm; individual gear and final-drive ratios are unknown."
+  ],
   sim: buildSpec({
   id: "2018-alpine-a110-premiere-edition-it-coupe-rwd-7dct",
   make: "Alpine",
