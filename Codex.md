@@ -22,6 +22,42 @@
   "pull_request": "https://github.com/eason-531/Car-performance-simulator/pull/9",
   "result": "changes_requested_before_merge",
   "objective": "Bring the single-clutch automated-manual path and provisional Lexus LFA model to a verified state, complete the top-speed correction, and advance the approved playable-hypercar and original catalog backlog where compatible physics and source evidence support it.",
+  "owner_directive": {
+    "date": "2026-11-26",
+    "priority": "Required owner deliverables immediately after the next work item already queued for Claude. Finish that item first, then start EV support as the immediate next task, followed by the Honda CVT. This takes precedence over discretionary hypercar, catalog, and feature backlog. Carry the requirement into the next session or drivetrain branch if needed and keep both items open until verified.",
+    "required_ev_catalog_promotions": {
+      "r67": "2020 Porsche Taycan Turbo S",
+      "r68": "2025 Hyundai Ioniq 5 N",
+      "r69": "2021 Tesla Model S Plaid",
+      "r70": "2024 Lucid Air Sapphire",
+      "r71": "2024 Tesla Model 3 Performance",
+      "r72": "2023 Kia EV6 GT",
+      "r73": "2022 Rivian R1T Launch Edition"
+    },
+    "ev_acceptance": [
+      "Start with a complete Kia EV6 GT implementation and use it to validate the shared path. Represent the actual motor count, axle assignments and reductions, including the Taycan's two-speed rear axle. Apply per-motor torque and power limits, a shared vehicle output limit on a documented basis, and per-axle grip with weight transfer. Support an EV launch in Live Drive and all timed runners with car-specific launch control and published boost behavior where applicable.",
+      "Represent the Ioniq 5 N's N Grin Boost separately from N e-Shift. Default simulated shifts off in Live Drive, with an explicit toggle. Use the documented test mode for benchmark comparisons and label any unknown mode. Offer car-appropriate telemetry, speed-based dyno output and compatible tuning.",
+      "Carry the already planned Nevera as the EV hypercar extension when its model is supported. Its inclusion does not replace any of the seven catalog promotions."
+    ],
+    "required_cvt_catalog_promotion": "r13, 2022 Honda Civic Sport Touring 1.5T hatchback, US-market LL-CVT.",
+    "cvt_acceptance": [
+      "Implement converter launch, lock-up, bounded continuous ratio control and Honda's full-throttle Step Shift behavior. Use the documented 2.645–0.405 ratio span and 4.81 final drive. Document estimated control targets, ratio-change rates and behavior. Keep the Prius power-split e-CVT in the hybrid scope.",
+      "Validate against the exact MotorTrend CVT hatchback test (7.7 s to 60 mph; 15.9 s at 89.8 mph in the quarter mile). Use the supported timing basis and report uncertainty if test details remain unconfirmed."
+    ],
+    "sources_verified": {
+      "ev6_oem_motor_ratings": "https://www.kiamedia.com/us/en/models/ev6/2023",
+      "ev6_original_benchmark": "https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/ (3.2 s to 60 mph; 11.6 s at 119 mph; 0.3 s one-foot rollout; 4,772 lb test car)",
+      "civic_oem_specs": "https://www.hondainfocenter.com/2022/Civic-Hatchback/Feature-Guide/Civic-Hatchback-Specifications/",
+      "civic_oem_step_shift": "https://hondanews.com/en-US/releases/release-20c92b0d934f0bc63982bd3eee0149e9-2022-honda-civic-hatchback-press-kit",
+      "civic_original_benchmark": "https://www.motortrend.com/reviews/2022-honda-civic-sport-touring-hatchback-cvt-automatic-first-test-review"
+    },
+    "definition_of_done": [
+      "Both powertrain paths are usable. Each of the eight required existing catalog entries has a playable, correctly routed model through Live Drive, acceleration tests, drag racing, dyno and the applicable tuning flow. Catalog readiness, generated stats and classes, and saved-result behavior reflect working simulations. A placeholder, catalog update, design document or partial EV batch is insufficient.",
+      "Verify original tests or owner-approved evidence where available. Where a parameter is unpublished, use a defensible bounded estimate with provenance and sensitivity where it materially affects results. Record measured conditions when published, otherwise leave them unknown. Report per-car benchmark basis and residuals, with a reason for gaps. Avoid fitting away discrepancies with unsupported values.",
+      "Work through source gaps and engineering setbacks using authorized sources and alternatives. If a genuine dependency blocks one car or path, advance all other required work, report the verified blocker and precise owner input if any, then return to the remaining item. Keep an item open while its acceptance is unmet; the first playable EV is the start of the batch.",
+      "Run npm run check and regenerate stock stats and data gaps. Verify deterministic stock metrics, the two owner cars and prior powertrain behavior, and exercise representative EV/CVT flows in the normal UI. Log implementations, evidence and remaining gaps in Claude.md, and provide draft PR links and verification results to Eason."
+    ]
+  },
   "observations": [
     "New round-3 Claude.md entry at the pinned head matches both Claude commits and draft PR #9 at the same head. The prior Codex-only commit is the comparison baseline. The incremental diff spans 19 paths.",
     "Legacy IDs now use own Map entries; retired Chiron Sport IDs still resolve and inherited object names stay strings. Chiron Pur Sport uses neutral longitudinal grip and records +10% lateral evidence separately. Generated brake-release 0–100 and quarter mile move from 2.25/8.96 s to 2.67/9.38 s. Veyron SS caveat now matches its roughly 410 km/h drag limit versus the modeled 415 km/h limiter.",
