@@ -2,7 +2,7 @@
 
 ## Start a new implementation session
 
-**Current assignment: implement the Live Drive traffic and lane-control follow-up below.** The first Auto Drive release is already in [PR #10](https://github.com/eason-531/Car-performance-simulator/pull/10), merged at `ff2d47b`. The original Milestone 1 section records the baseline behavior. Launch Lab and 3D Highway are later milestones.
+**Current assignment: implement the Live Drive follow-up below, including traffic, lane controls, and conventional cruise control.** The first Auto Drive release is already in [PR #10](https://github.com/eason-531/Car-performance-simulator/pull/10), merged at `ff2d47b`. The original Milestone 1 section records the baseline behavior. Launch Lab and 3D Highway are later milestones.
 
 1. Open `eason-531/Car-performance-simulator`, fetch the current `origin/main`, and start a dedicated feature branch from that tip. Reuse a session branch already based on current `main` if it contains this work.
 2. Read `README.md` for setup and the headers of `Claude.md` and `Codex.md` for project conventions. The inherited log entries cover earlier work. Use this document and any newer review matched to the current feature branch as the brief for this assignment.
@@ -48,6 +48,13 @@ Treat the seed as the source of randomness inside simulation time. With the same
 - Autobahn defaults to **No limit**. Give NPCs varied plausible speeds, with most keeping right and using the far-left lane mainly to pass. An NPC in the passing lane should return to the right when it has finished passing or a faster vehicle is closing from behind and a safe opening exists. Apply the rule to both faster NPCs and the player. Allow occasional exceptions through seeded driver variation. Avoid unsafe merges, repeated left-right oscillation and vehicles camping in the passing lane.
 - Offer an adjustable numeric speed limit with either behavior preset, plus a way to restore its default. A numeric limit should affect NPC target speeds and passing decisions in a running session, with gradual reaction and deceleration. Retain the road preset's lane behavior when the limit is overridden. Auto Drive still requests full throttle when clear through the car's simulated limits. The road setting governs traffic behavior.
 
+### Conventional cruise control
+
+- Add an iPad-friendly **Cruise Control** panel in Live Drive. Use physical-style buttons. **SET** captures the current road speed while driving. **+** and **−** adjust the stored speed in small, predictable steps. **CANCEL** returns pedal control to the player and retains the set speed. **RESUME** restores it on command. Show the stored speed and whether cruise is active or in standby. Setpoint input is through these buttons.
+- Maintain the fixed set speed through the existing throttle and drivetrain path. Ease off and coast when above the set speed. The player handles braking for traffic and all lane changes. Keep the set speed independent of traffic density, the tracked lead, and the road preset's NPC speed limit.
+- Apply manual brake cancellation immediately, including a quick tap. Let the driver temporarily accelerate above the target and return smoothly to it once the accelerator is released. Cancel on focus loss, app hide, or view exit. Clear the stored speed on reset or car change. Require an explicit button press to resume. Handle SET at standstill and RESUME before any speed has been stored with clear feedback.
+- Give throttle authority to one active mode at a time. Activating Cruise Control cancels Auto Drive, and activating Auto Drive cancels Cruise Control. Both are available as simulator controls for playable cars. Preserve existing drivetrain behavior and factory equipment data.
+
 ### Player lane changes and visuals
 
 - Give the player explicit **Change lane left** and **Change lane right** controls for touch and keyboard. Choose key bindings that preserve the existing pedals, paddles, and Auto Drive toggle. Allow lane changes with Auto Drive on or off. Auto Drive owns longitudinal control only. Every player lane change must originate with a player command, including in Autobahn mode, where automatic keep-right and passing behavior belong to NPCs.
@@ -68,9 +75,10 @@ Reviewed `main` at `ff2d47b`, implementation `ee63026`, and Claude's handoff at 
 
 ### Acceptance and regression coverage
 
+- Verify SET at the current speed, holding speed, +/− adjustments via buttons, accelerator override and return, brake cancellation, and RESUME. Check switching between Cruise Control and Auto Drive, and confirm that slower traffic and the NPC limit leave the cruise setpoint unchanged.
 - Verify all six density choices, seeded Auto transitions, a stopped queue that restarts, Taiwan 100/110 and a custom limit under both presets, and Autobahn yielding and keeping right. Exercise Taiwan's unsignaled cut-ins, tighter gaps, and short bursts without making these the default behavior. Exercise faster traffic approaching from behind and an occupied right lane. Verify that Auto Drive never changes the player's lane and still brakes for the correct lead after a player-commanded change.
 - Compare equivalent seeded runs on the owner's Lexus IS 200t, Škoda Superb and one playable hypercar. Check smooth following, returning to full throttle on a clear road, brake cancellation, foreground/background input release, and standard manual Live Drive with traffic off. Preserve drivetrain calibration and factory ACC metadata.
-- Verify rendered tracking, edge clipping and lane motion at desktop and touch sizes. Profile a representative Heavy or Stuck session on a touch-sized viewport before raising NPC counts. The current NPC leader search runs pairwise at each fixed physics step. Report the browser or device actually tested. Include the quick steps for trying the traffic selector, the road preset and limit, and both lane controls.
+- Verify rendered tracking, edge clipping and lane motion at desktop and touch sizes. Profile a representative Heavy or Stuck session on a touch-sized viewport before raising NPC counts. The current NPC leader search runs pairwise at each fixed physics step. Report the browser or device actually tested. Include the quick steps for trying the traffic selector, the road preset and limit, both lane controls, and conventional cruise.
 - Review baseline verification: `npm run check` passed locally on the reviewed commit with all 1,131 tests across 28 files and the existing build chunk-size warning. Regenerating stock stats and the data-gap report produced no changes. Separate local reproduction checks confirmed the gap mismatch, horizon overlap, scripted stall, and focus-loss throttle. Native iPad Safari verification remains open.
 
 ## Milestone 2 · Launch Lab
