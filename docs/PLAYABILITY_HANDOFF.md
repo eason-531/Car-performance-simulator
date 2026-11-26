@@ -2,11 +2,11 @@
 
 ## Start a new implementation session
 
-**Assignment for this session: implement Milestone 1, Auto Drive in Live Drive.** The player can turn it on in any playable car, let the accelerator stay down hands-free, and have the simulator slow for traffic, follow a lead car and return to full throttle when the lane clears. Milestones 2 and 3 define later work. End this session with the verified Auto Drive implementation and a draft pull request.
+**Current assignment: implement the Live Drive traffic and lane-control follow-up below.** The first Auto Drive release is already in [PR #10](https://github.com/eason-531/Car-performance-simulator/pull/10), merged at `ff2d47b`. The original Milestone 1 section records the baseline behavior. Launch Lab and 3D Highway are later milestones.
 
-1. Open `eason-531/Car-performance-simulator` and fetch the current `origin/main`. Start a dedicated Auto Drive feature branch from that tip. Use the session branch if Claude already created it from the current `main`.
-2. Read `README.md` for setup and the headers of `Claude.md` and `Codex.md` for the project's handoff conventions. The inherited log entries capture earlier catalog and drivetrain sessions. Use this document as the implementation brief for the Auto Drive branch.
-3. Trace the current Live Drive controls and fixed-step loop, then implement the Milestone 1 requirements below. Work through routine issues independently. If a check or the draft PR is blocked, report the exact blocker and what you verified.
+1. Open `eason-531/Car-performance-simulator`, fetch the current `origin/main`, and start a dedicated feature branch from that tip. Reuse a session branch already based on current `main` if it contains this work.
+2. Read `README.md` for setup and the headers of `Claude.md` and `Codex.md` for project conventions. The inherited log entries cover earlier work. Use this document and any newer review matched to the current feature branch as the brief for this assignment.
+3. Reproduce the review findings, implement the follow-up, and verify the fixed behaviors and new scenarios. Update branch-local `Claude.md` and open a draft PR against `main` before starting Launch Lab or 3D Highway.
 
 ## Starting point
 
@@ -16,11 +16,62 @@
 
 ## Milestone 1 · Auto Drive in Live Drive
 
+The original scope below describes the merged baseline. Use the follow-up section for current lane, traffic, and review requirements.
+
 1. Add an iPad-friendly **Auto Drive** toggle to Live Drive. It starts off and works with every playable configuration using the active car and tuning. Explain in the UI that this is a simulator aid for accelerator and brake. Keep the existing gear-shift controls and drivetrain behavior. The feature should be playable using the existing road display with visible traffic and HUD feedback before any 3D work. When Highway becomes available, reuse the same controller there.
 2. With Auto Drive active and the lane clear, request **100% throttle** through the normal pedal smoothing and drivetrain path. Keep each car's modeled traction, torque, shift and speed limits. When closing on a lead car, lift early enough to account for closing speed, then brake as needed and settle near a **2-second following gap**, with a minimum standstill gap. Ease back onto the throttle when the lead pulls away or changes lanes, reaching 100% when clear. Tune for smooth transitions and leave enough hysteresis to avoid cycling between accelerator and brake. The gap and response are simulator defaults shared across cars.
 3. Generate light traffic using a seed and simulation time. Start with encounters roughly every **12–25 seconds** while driving and traffic speeds around **75–125 km/h**, with occasional lane changes both into and out of the player's lane. In Live Drive, the player can stay in a fixed lane. Show adjacent traffic and in-lane traffic clearly, track the nearest lead in the player lane, and make adjacent traffic start affecting the controller when it cuts in. Spawn vehicles with workable separation for the simulated closing speed. Replaying a seed with the same initial state and inputs should reproduce the encounter sequence and controller behavior. Offer a repeatable cut-in for testing as well as free driving with sparse traffic.
 4. Use a small reusable traffic and longitudinal-control module, updated on simulation time. Feed the winning throttle and brake commands through `useDriveSimulation.ts` to `VehicleSimulator`. Give driver brake input immediate priority and cancel Auto Drive. Give the player an explicit toggle-off action and require deliberate re-engagement after reset, car change, view exit or loss of focus. Clear stale input on disengagement so automatic throttle cannot carry over. Resolve Auto Hold when the controller starts or resumes motion. Show Auto Drive status, current lead speed and distance or time gap, and whether it is accelerating, following or braking. Keep manual Live Drive and the stock test paths working as before.
 5. Verify clear lane at 100% requested throttle, gradual closing on a slower lead, a cut-in, a cut-out and return to full throttle, manual brake cancellation, and deterministic playback. Check that the feature works on the owner's Lexus IS 200t, the owner's Škoda Superb, and one playable hypercar such as the Rimac Nevera. The Škoda's catalog entry remains `acc: false`; the Lexus's ACC stays unspecified. Factory ACC metadata must neither gate Auto Drive nor be inferred from it. Verify that the mobile controls make the behavior easy to start, observe and cancel.
+
+## Live Drive follow-up · Traffic and lane controls
+
+### Traffic density
+
+Keep **Off** and the existing deterministic **Cut-in Test**. Add these modes to the same iPad-friendly Traffic selector. **Auto** in this selector controls traffic generation and can be used with manual driving or with Auto Drive enabled.
+
+| Mode | Expected behavior |
+| --- | --- |
+| Very Sparse | Long clear stretches and occasional isolated cars, with fewer encounters than Sparse. |
+| Sparse | The current light-traffic baseline. Preserve the feel of the existing 12–25 second encounter interval. |
+| Mid | Regular encounters in multiple lanes, with clear intervals between groups. |
+| Heavy | Frequent groups, shorter openings, and periods of reduced flow as NPCs follow and react to one another. |
+| Stuck | A nearby queue at crawling speed or a standstill, with stop-and-go waves that can start and clear while the player is stationary. Auto Drive should stop, hold a gap, and resume when the queue moves. |
+| Auto | Seeded, graduated changes in traffic density over time or distance, including occasional clear stretches and congestion. Vary spawn timing, lane, speed, vehicle mix, and driver behavior. Hold each traffic pattern long enough to feel natural and transition by changing the flow of traffic. |
+
+Treat the seed as the source of randomness inside simulation time. With the same seed, settings, starting state and player inputs, replays should reproduce the same traffic and lead changes. Show the seed and allow rerolling it in every generated mode. Allow density and road settings to be selected independently. Apply density changes without teleporting existing traffic or resetting the player's drive. Document how setting changes interact with Reset and seed replay. Keep the scripted cut-in reproducible when rerunning its baseline.
+
+### Road presets and speed limit
+
+- Add **Taiwan** and **Autobahn** road presets. Taiwan offers quick **100 km/h** and **110 km/h** limits. Most NPCs should cruise near or below the selected limit and follow surrounding traffic. Give a seeded minority less courteous habits, including late or unsignaled cut-ins, tighter accepted gaps, and brief acceleration bursts. Sample driver traits per vehicle and vary the timing by context. Allow these behaviors to stand out among ordinary driving, with enough spacing for a playable response. Keep braking and acceleration finite and let cut-ins challenge Auto Drive's lead handling.
+- Make the behavioral difference visible in repeatable scenarios. In Taiwan, demonstrate a normal signaled move, a less courteous unsignaled merge, and a short acceleration burst. Keep these behaviors scoped to driver variation and document them as simulator design assumptions.
+- Autobahn defaults to **No limit**. Give NPCs varied plausible speeds, with most keeping right and using the far-left lane mainly to pass. An NPC in the passing lane should return to the right when it has finished passing or a faster vehicle is closing from behind and a safe opening exists. Apply the rule to both faster NPCs and the player. Allow occasional exceptions through seeded driver variation. Avoid unsafe merges, repeated left-right oscillation and vehicles camping in the passing lane.
+- Offer an adjustable numeric speed limit with either behavior preset, plus a way to restore its default. A numeric limit should affect NPC target speeds and passing decisions in a running session, with gradual reaction and deceleration. Retain the road preset's lane behavior when the limit is overridden. Auto Drive still requests full throttle when clear through the car's simulated limits. The road setting governs traffic behavior.
+
+### Player lane changes and visuals
+
+- Give the player explicit **Change lane left** and **Change lane right** controls for touch and keyboard. Choose key bindings that preserve the existing pedals, paddles, and Auto Drive toggle. Allow lane changes with Auto Drive on or off. Auto Drive owns longitudinal control only. Every player lane change must originate with a player command, including in Autobahn mode, where automatic keep-right and passing behavior belong to NPCs.
+- Animate the player and NPCs continuously from lane to lane during entry, exit, and an aborted maneuver. Derive rendering and occupancy from the same continuous lateral state. Update the tracked lead and contact detection at a consistent occupancy boundary, accounting for both lanes during the transition where appropriate. Handle road edges, occupied gaps, and repeated input without jumps or silent redirects. Keep the selected lead, gap and highlight synchronized.
+- Measure the rendered player front bumper and the rendered rear bumper of the selected car from the same car geometry used to draw both bodies. The gap line must meet those bumpers through cut-ins, cut-outs, player lane changes, perspective compression, and resize. Show a coherent short-gap indicator and anchor labels to the same segment. Handle distant traffic with clipping, culling, or a stable horizon treatment that prevents overlapping ghost cars at one fixed screen position. Preserve distinct tracks for visible cars.
+
+### Findings from the initial Auto Drive review
+
+Reviewed `main` at `ff2d47b`, implementation `ee63026`, and Claude's handoff at `7ee3fcb`. Fix the following before closing the follow-up and record any closely related defects found during verification.
+
+| Priority | Finding and evidence | Acceptance |
+| --- | --- | --- |
+| P2 | **Gap line separates from a moving lead.** `src/components/RoadView.tsx` lines 81–121 projects the line on the center lane and calculates its endpoint independently of the rectangle's minimum width and actual lateral position. A rendered test at 1000 × 98 with a lead halfway between lanes measured the marker at (840.12, 49) and the lead rear center at (839.68, 63). | The line reaches the selected car's rendered rear bumper throughout the move and at all supported road sizes. |
+| P2 | **Cars can pile up at the horizon.** `src/components/RoadView.tsx` lines 37–39 clamps all distances beyond 3000 m to the same x coordinate. `src/assist/traffic.ts` lines 527–533 keeps vehicles until 9000 m ahead. A rendered fixture placed cars at 3500 m and 8000 m in the same lane and produced identical on-screen body positions. | Keep beyond-horizon vehicles out of the visible car layer or represent them with a deliberate horizon treatment. Keep HUD and lead detection accurate when the physical lead is outside the drawn range. |
+| P2 | **Cut-in Test can get stuck after a manual pass.** In `src/assist/traffic.ts` lines 342–366 and 392–403, the script waits for a followed lead or a completed merge even when its actor is gone or abandons the change. With manual full throttle in the Lexus, the first lead despawned at 28.309 s and the test still showed Approach after 60 s. | Handle passed, despawned, and expired actors with a clear terminal or restartable outcome. Preserve the normal scripted Auto Drive run. |
+| P2 | **Manual throttle can survive loss of focus.** In `src/components/Pedal.tsx` lines 38–65, focused-pedal keyboard input uses the same callback as touch. `src/views/DriveView.tsx` lines 93–101 clears only the global keyboard targets. A rendered test set the throttle slider to 100% with End and it remained at 100% after blur. The pedal also has no lost-pointer-capture handler. | Clear keyboard and pointer pedal commands on blur or app hide and handle cancellation and lost capture. Preserve simultaneous touch pedals and immediate manual brake cancellation of Auto Drive. |
+| P3 | **Lane changes need a rendered motion check.** `src/assist/traffic.ts` lines 439–459 already eases normal NPC moves, but an aborted cut-in starts a new curve and the road marker and highlight use different geometry. Existing tests check logical phases and lead order. Owner reports that rendered movement looks abrupt. | Verify continuous movement and return paths with actual frame sampling at desktop and iPad sizes. Cover aborts, target handoff, and the new player controls. |
+
+### Acceptance and regression coverage
+
+- Verify all six density choices, seeded Auto transitions, a stopped queue that restarts, Taiwan 100/110 and a custom limit under both presets, and Autobahn yielding and keeping right. Exercise Taiwan's unsignaled cut-ins, tighter gaps, and short bursts without making these the default behavior. Exercise faster traffic approaching from behind and an occupied right lane. Verify that Auto Drive never changes the player's lane and still brakes for the correct lead after a player-commanded change.
+- Compare equivalent seeded runs on the owner's Lexus IS 200t, Škoda Superb and one playable hypercar. Check smooth following, returning to full throttle on a clear road, brake cancellation, foreground/background input release, and standard manual Live Drive with traffic off. Preserve drivetrain calibration and factory ACC metadata.
+- Verify rendered tracking, edge clipping and lane motion at desktop and touch sizes. Profile a representative Heavy or Stuck session on a touch-sized viewport before raising NPC counts. The current NPC leader search runs pairwise at each fixed physics step. Report the browser or device actually tested. Include the quick steps for trying the traffic selector, the road preset and limit, and both lane controls.
+- Review baseline verification: `npm run check` passed locally on the reviewed commit with all 1,131 tests across 28 files and the existing build chunk-size warning. Regenerating stock stats and the data-gap report produced no changes. Separate local reproduction checks confirmed the gap mismatch, horizon overlap, scripted stall, and focus-loss throttle. Native iPad Safari verification remains open.
 
 ## Milestone 2 · Launch Lab
 
