@@ -1,36 +1,23 @@
-import { useDeferredValue, useMemo } from "react";
-import { LineChart } from "../components/LineChart";
-import { Icon } from "../components/Icon";
-import { CarSwitcher } from "../components/catalog/CarPicker";
-import {
-  Badge,
-  Button,
-  Panel,
-  Segmented,
-  Slider,
-  Toggle,
-} from "../components/ui";
-import { TIRE_COMPOUNDS } from "../data/tires";
-import { seriesColor } from "../lib/colors";
-import { fmt, fmtSigned } from "../lib/format";
-import { DRIVER_MASS_KG } from "../physics/constants";
-import { computeDyno, topSpeedKmh } from "../physics/dyno";
-import { runAccelerationRun } from "../physics/runners";
-import { useApp } from "../state/AppState";
-import { buildSimVehicle } from "../tuning/buildSimVehicle";
-import {
-  TUNING_LIMITS,
-  isStock,
-  type EcuStage,
-  type TuningConfig,
-  type TuningOverrides,
-} from "../tuning/tuning";
+import { useDeferredValue, useMemo } from 'react';
+import { LineChart } from '../components/LineChart';
+import { Icon } from '../components/Icon';
+import { CarSwitcher } from '../components/catalog/CarPicker';
+import { Badge, Button, Panel, Segmented, Slider, Toggle } from '../components/ui';
+import { TIRE_COMPOUNDS } from '../data/tires';
+import { seriesColor } from '../lib/colors';
+import { fmt, fmtSigned } from '../lib/format';
+import { DRIVER_MASS_KG } from '../physics/constants';
+import { computeDyno, topSpeedKmh } from '../physics/dyno';
+import { runAccelerationRun } from '../physics/runners';
+import { useApp } from '../state/AppState';
+import { buildSimVehicle } from '../tuning/buildSimVehicle';
+import { TUNING_LIMITS, isStock, type EcuStage, type TuningConfig, type TuningOverrides } from '../tuning/tuning';
 
 const WEIGHT_PRESETS = [
-  { label: "Driver only", kg: 0 },
-  { label: "+1 passenger", kg: 75 },
-  { label: "+2 passengers", kg: 150 },
-  { label: "Family + luggage", kg: 350 },
+  { label: 'Driver only', kg: 0 },
+  { label: '+1 passenger', kg: 75 },
+  { label: '+2 passengers', kg: 150 },
+  { label: 'Family + luggage', kg: 350 },
 ];
 
 export function TuningView() {
@@ -41,24 +28,13 @@ export function TuningView() {
   const color = seriesColor(spec.colorSlot ?? 0);
   const launch = app.settings.launch;
 
-  const update = (patch: Partial<TuningConfig>) =>
-    app.setTuning(spec.id, { ...tuning, ...patch });
-  const updateOverride = (patch: Partial<TuningOverrides>) =>
-    update({ overrides: { ...tuning.overrides, ...patch } });
+  const update = (patch: Partial<TuningConfig>) => app.setTuning(spec.id, { ...tuning, ...patch });
+  const updateOverride = (patch: Partial<TuningOverrides>) => update({ overrides: { ...tuning.overrides, ...patch } });
 
-  const stockVehicle = app.simVehicle(spec.id, "stock");
-  const tunedVehicle = useMemo(
-    () => buildSimVehicle(spec, deferred),
-    [spec, deferred],
-  );
-  const stockPerf = useMemo(
-    () => perf(stockVehicle, launch),
-    [stockVehicle, launch],
-  );
-  const tunedPerf = useMemo(
-    () => perf(tunedVehicle, launch),
-    [tunedVehicle, launch],
-  );
+  const stockVehicle = app.simVehicle(spec.id, 'stock');
+  const tunedVehicle = useMemo(() => buildSimVehicle(spec, deferred), [spec, deferred]);
+  const stockPerf = useMemo(() => perf(stockVehicle, launch), [stockVehicle, launch]);
+  const tunedPerf = useMemo(() => perf(tunedVehicle, launch), [tunedVehicle, launch]);
   const stale = deferred !== tuning;
 
   const peakTorque = tunedPerf.dyno.peakTorqueNm;
@@ -67,11 +43,7 @@ export function TuningView() {
   return (
     <div className="view tuning">
       <div className="view__bar">
-        <CarSwitcher
-          value={spec.id}
-          onChange={app.setActiveVehicle}
-          label="Car to tune"
-        />
+        <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Car to tune" />
         <div className="view__bar-actions">
           {isStock(spec, tuning) ? (
             <Badge tone="neutral">Stock configuration</Badge>
@@ -85,86 +57,56 @@ export function TuningView() {
 
       <div className="tuning__layout">
         <div className="tuning__controls">
-          <Panel
-            title={spec.electric ? "Electric drive" : "ECU calibration"}
-            subtitle={`${spec.engine.code} · ${spec.engine.description}`}
-          >
+          <Panel title={spec.electric ? 'Electric drive' : 'ECU calibration'} subtitle={`${spec.engine.code} · ${spec.engine.description}`}>
             {spec.electric ? (
               <>
                 <p className="help">
-                  {spec.electric.motors.length} motor
-                  {spec.electric.motors.length > 1 ? "s" : ""} (
-                  {spec.electric.motors
-                    .map((m) => `${m.axle} ${fmt(m.peakPowerKw)} kW`)
-                    .join(" + ")}
-                  ), shared limit {fmt(spec.electric.systemPowerKw)} kW. There
-                  is no ECU stage for electric cars; the power adjustment scales
-                  the motors and the shared limits together.
+                  {spec.electric.motors.length} motor{spec.electric.motors.length > 1 ? 's' : ''} (
+                  {spec.electric.motors.map((m) => `${m.axle} ${fmt(m.peakPowerKw)} kW`).join(' + ')}), shared limit {fmt(spec.electric.systemPowerKw)} kW.
+                  There is no ECU stage for electric cars; the power adjustment scales the motors and the shared limits together.
                 </p>
-                {spec.electric.boost?.trigger === "driver" && (
+                {spec.electric.boost?.trigger === 'driver' && (
                   <Toggle
-                    checked={
-                      tuning.electricBoostArmed ??
-                      spec.electric.boost.armedByDefault ??
-                      false
-                    }
-                    onChange={(electricBoostArmed) =>
-                      update({ electricBoostArmed })
-                    }
+                    checked={tuning.electricBoostArmed ?? spec.electric.boost.armedByDefault ?? false}
+                    onChange={(electricBoostArmed) => update({ electricBoostArmed })}
                     label={`${spec.electric.boost.label} (${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s)`}
                     description="Armed: the boost fires on the next full-throttle pull."
                   />
                 )}
-                {spec.electric.boost?.trigger === "launch-control" && (
+                {spec.electric.boost?.trigger === 'launch-control' && (
                   <p className="help">
-                    {spec.electric.boost.label}:{" "}
-                    {fmt(spec.electric.boost.systemPowerKw)} kW for{" "}
-                    {spec.electric.boost.durationS} s after a launch-control
+                    {spec.electric.boost.label}: {fmt(spec.electric.boost.systemPowerKw)} kW for {spec.electric.boost.durationS} s after a launch-control
                     (brake-held) start.
                   </p>
                 )}
               </>
             ) : (
               <>
-                <Segmented<EcuStage>
-                  size="lg"
-                  ariaLabel="ECU stage"
-                  value={tuning.ecuStage}
-                  onChange={(ecuStage) => update({ ecuStage })}
-                  options={[
-                    {
-                      value: "stock",
-                      label: (
-                        <StageLabel
-                          title="Stock"
-                          detail={`${fmt(spec.engine.rated.powerPs)} PS · ${fmt(spec.engine.rated.torqueNm)} Nm`}
-                        />
-                      ),
-                    },
-                    {
-                      value: "stage1",
-                      disabled: !spec.stage1,
-                      label: spec.stage1 ? (
-                        <StageLabel
-                          title="Stage 1"
-                          detail={`≈${spec.stage1.claimedPowerPs} PS · ${spec.stage1.claimedTorqueNm} Nm`}
-                        />
-                      ) : (
-                        <StageLabel
-                          title="Stage 1"
-                          detail="Not offered for this car"
-                        />
-                      ),
-                    },
-                  ]}
-                />
-                <p className="help">
-                  {tuning.ecuStage === "stage1" && spec.stage1
-                    ? spec.stage1.description
-                    : spec.stage1
-                      ? "Factory calibration."
-                      : "Factory calibration. No Stage 1 is modelled for this configuration because no credible, documented calibration was found."}
-                </p>
+            <Segmented<EcuStage>
+              size="lg"
+              ariaLabel="ECU stage"
+              value={tuning.ecuStage}
+              onChange={(ecuStage) => update({ ecuStage })}
+              options={[
+                { value: 'stock', label: <StageLabel title="Stock" detail={`${fmt(spec.engine.rated.powerPs)} PS · ${fmt(spec.engine.rated.torqueNm)} Nm`} /> },
+                {
+                  value: 'stage1',
+                  disabled: !spec.stage1,
+                  label: spec.stage1 ? (
+                    <StageLabel title="Stage 1" detail={`≈${spec.stage1.claimedPowerPs} PS · ${spec.stage1.claimedTorqueNm} Nm`} />
+                  ) : (
+                    <StageLabel title="Stage 1" detail="Not offered for this car" />
+                  ),
+                },
+              ]}
+            />
+            <p className="help">
+              {tuning.ecuStage === 'stage1' && spec.stage1
+                ? spec.stage1.description
+                : spec.stage1
+                  ? 'Factory calibration.'
+                  : 'Factory calibration. No Stage 1 is modelled for this configuration because no credible, documented calibration was found.'}
+            </p>
               </>
             )}
             <Slider
@@ -174,12 +116,8 @@ export function TuningView() {
               max={TUNING_LIMITS.powerAdjustPct.max}
               step={TUNING_LIMITS.powerAdjustPct.step}
               onChange={(powerAdjustPct) => update({ powerAdjustPct })}
-              format={(v) => `${v > 0 ? "+" : ""}${v} %`}
-              hint={
-                spec.electric
-                  ? "Scales every motor and the shared output limit."
-                  : "Scales the whole torque curve (and boost) — e.g. fuel quality, intake/exhaust, or a dyno-measured offset."
-              }
+              format={(v) => `${v > 0 ? '+' : ''}${v} %`}
+              hint={spec.electric ? 'Scales every motor and the shared output limit.' : 'Scales the whole torque curve (and boost) — e.g. fuel quality, intake/exhaust, or a dyno-measured offset.'}
               onReset={() => update({ powerAdjustPct: 0 })}
               modified={tuning.powerAdjustPct !== 0}
             />
@@ -187,28 +125,22 @@ export function TuningView() {
               <div className="callout callout--warning" role="note">
                 <Icon name="warning" size={18} />
                 <span>
-                  {fmt(peakTorque)} Nm exceeds the{" "}
-                  {spec.transmission.name.split(" (")[0]} rating of about{" "}
-                  {spec.transmission.ratedInputTorqueNm} Nm. Real cars typically
-                  need a gearbox (TCU) calibration.
+                  {fmt(peakTorque)} Nm exceeds the {spec.transmission.name.split(' (')[0]} rating of about{' '}
+                  {spec.transmission.ratedInputTorqueNm} Nm. Real cars typically need a gearbox (TCU) calibration.
                 </span>
               </div>
             )}
           </Panel>
 
           <Panel title="Tires">
-            <div
-              className="option-grid"
-              role="radiogroup"
-              aria-label="Tire size"
-            >
+            <div className="option-grid" role="radiogroup" aria-label="Tire size">
               {spec.tires.sizes.map((size) => (
                 <button
                   key={size.id}
                   type="button"
                   role="radio"
                   aria-checked={tuning.tireSizeId === size.id}
-                  className={`option ${tuning.tireSizeId === size.id ? "is-active" : ""}`}
+                  className={`option ${tuning.tireSizeId === size.id ? 'is-active' : ''}`}
                   onClick={() => update({ tireSizeId: size.id })}
                 >
                   <span className="option__title">{size.label}</span>
@@ -216,33 +148,24 @@ export function TuningView() {
                 </button>
               ))}
             </div>
-            <div
-              className="option-grid option-grid--compound"
-              role="radiogroup"
-              aria-label="Tire compound"
-            >
+            <div className="option-grid option-grid--compound" role="radiogroup" aria-label="Tire compound">
               {TIRE_COMPOUNDS.map((c) => (
                 <button
                   key={c.id}
                   type="button"
                   role="radio"
                   aria-checked={tuning.tireCompoundId === c.id}
-                  className={`option ${tuning.tireCompoundId === c.id ? "is-active" : ""}`}
+                  className={`option ${tuning.tireCompoundId === c.id ? 'is-active' : ''}`}
                   onClick={() => update({ tireCompoundId: c.id })}
                 >
                   <span className="option__title">{c.label}</span>
-                  <span className="option__meta">
-                    μ {c.mu.toFixed(2)} · {c.description}
-                  </span>
+                  <span className="option__meta">μ {c.mu.toFixed(2)} · {c.description}</span>
                 </button>
               ))}
             </div>
           </Panel>
 
-          <Panel
-            title="Weight"
-            subtitle={`Curb ${fmt(spec.chassis.curbMassKg)} kg + ${DRIVER_MASS_KG} kg driver`}
-          >
+          <Panel title="Weight" subtitle={`Curb ${fmt(spec.chassis.curbMassKg)} kg + ${DRIVER_MASS_KG} kg driver`}>
             <Slider
               label="Added / removed weight"
               value={tuning.weightDeltaKg}
@@ -250,19 +173,14 @@ export function TuningView() {
               max={TUNING_LIMITS.weightDeltaKg.max}
               step={TUNING_LIMITS.weightDeltaKg.step}
               onChange={(weightDeltaKg) => update({ weightDeltaKg })}
-              format={(v) => `${v > 0 ? "+" : ""}${v} kg`}
+              format={(v) => `${v > 0 ? '+' : ''}${v} kg`}
               hint={`Test mass ${fmt(spec.chassis.curbMassKg + DRIVER_MASS_KG + tuning.weightDeltaKg)} kg. Negative values model weight reduction or a lighter trim.`}
               onReset={() => update({ weightDeltaKg: 0 })}
               modified={tuning.weightDeltaKg !== 0}
             />
             <div className="chips">
               {WEIGHT_PRESETS.map((p) => (
-                <button
-                  key={p.label}
-                  type="button"
-                  className={`chip ${tuning.weightDeltaKg === p.kg ? "is-active" : ""}`}
-                  onClick={() => update({ weightDeltaKg: p.kg })}
-                >
+                <button key={p.label} type="button" className={`chip ${tuning.weightDeltaKg === p.kg ? 'is-active' : ''}`} onClick={() => update({ weightDeltaKg: p.kg })}>
                   {p.label}
                 </button>
               ))}
@@ -280,15 +198,10 @@ export function TuningView() {
             </Panel>
           )}
 
-          <Panel
-            title="Estimated parameters"
-            subtitle="Values not published by the manufacturer — adjust if you have better data"
-          >
+          <Panel title="Estimated parameters" subtitle="Values not published by the manufacturer — adjust if you have better data">
             <Slider
               label="Drag coefficient (Cd)"
-              value={
-                tuning.overrides.dragCoefficient ?? spec.aero.dragCoefficient
-              }
+              value={tuning.overrides.dragCoefficient ?? spec.aero.dragCoefficient}
               {...TUNING_LIMITS.dragCoefficient}
               onChange={(v) => updateOverride({ dragCoefficient: v })}
               format={(v) => v.toFixed(3)}
@@ -308,10 +221,7 @@ export function TuningView() {
             />
             <Slider
               label="Drivetrain efficiency"
-              value={
-                tuning.overrides.drivetrainEfficiency ??
-                spec.drivetrain.efficiency
-              }
+              value={tuning.overrides.drivetrainEfficiency ?? spec.drivetrain.efficiency}
               {...TUNING_LIMITS.drivetrainEfficiency}
               onChange={(v) => updateOverride({ drivetrainEfficiency: v })}
               format={(v) => `${(v * 100).toFixed(1)} %`}
@@ -322,112 +232,26 @@ export function TuningView() {
           </Panel>
         </div>
 
-        <aside
-          className={`tuning__summary ${stale ? "is-stale" : ""}`}
-          aria-busy={stale}
-        >
-          <Panel
-            title="Predicted performance"
-            subtitle={`${launch === "brake-boost" ? "Brake-boost" : "Standard"} launch · vs stock`}
-          >
+        <aside className={`tuning__summary ${stale ? 'is-stale' : ''}`} aria-busy={stale}>
+          <Panel title="Predicted performance" subtitle={`${launch === 'brake-boost' ? 'Brake-boost' : 'Standard'} launch · vs stock`}>
             <div className="compare-list">
-              <CompareRow
-                label="Peak power"
-                stock={stockPerf.dyno.peakPowerPs}
-                tuned={tunedPerf.dyno.peakPowerPs}
-                unit="PS"
-                digits={0}
-                better="higher"
-              />
-              <CompareRow
-                label="Peak torque"
-                stock={stockPerf.dyno.peakTorqueNm}
-                tuned={tunedPerf.dyno.peakTorqueNm}
-                unit="Nm"
-                digits={0}
-                better="higher"
-              />
-              <CompareRow
-                label="Test mass"
-                stock={stockVehicle.massKg}
-                tuned={tunedVehicle.massKg}
-                unit="kg"
-                digits={0}
-                better="lower"
-              />
-              <CompareRow
-                label="Power-to-weight"
-                stock={stockPerf.psPerTonne}
-                tuned={tunedPerf.psPerTonne}
-                unit="PS/t"
-                digits={0}
-                better="higher"
-              />
-              <CompareRow
-                label="0–100 km/h"
-                stock={stockPerf.m.zeroTo100KmhS}
-                tuned={tunedPerf.m.zeroTo100KmhS}
-                unit="s"
-                digits={2}
-                better="lower"
-              />
-              <CompareRow
-                label="0–200 km/h"
-                stock={stockPerf.m.zeroTo200KmhS}
-                tuned={tunedPerf.m.zeroTo200KmhS}
-                unit="s"
-                digits={2}
-                better="lower"
-              />
-              <CompareRow
-                label="¼ mile"
-                stock={stockPerf.m.quarterMileS}
-                tuned={tunedPerf.m.quarterMileS}
-                unit="s"
-                digits={2}
-                better="lower"
-              />
-              <CompareRow
-                label="¼ mile trap"
-                stock={stockPerf.m.quarterMileTrapKmh}
-                tuned={tunedPerf.m.quarterMileTrapKmh}
-                unit="km/h"
-                digits={1}
-                better="higher"
-              />
-              <CompareRow
-                label="Top speed"
-                stock={stockPerf.vmax}
-                tuned={tunedPerf.vmax}
-                unit="km/h"
-                digits={0}
-                better="higher"
-              />
+              <CompareRow label="Peak power" stock={stockPerf.dyno.peakPowerPs} tuned={tunedPerf.dyno.peakPowerPs} unit="PS" digits={0} better="higher" />
+              <CompareRow label="Peak torque" stock={stockPerf.dyno.peakTorqueNm} tuned={tunedPerf.dyno.peakTorqueNm} unit="Nm" digits={0} better="higher" />
+              <CompareRow label="Test mass" stock={stockVehicle.massKg} tuned={tunedVehicle.massKg} unit="kg" digits={0} better="lower" />
+              <CompareRow label="Power-to-weight" stock={stockPerf.psPerTonne} tuned={tunedPerf.psPerTonne} unit="PS/t" digits={0} better="higher" />
+              <CompareRow label="0–100 km/h" stock={stockPerf.m.zeroTo100KmhS} tuned={tunedPerf.m.zeroTo100KmhS} unit="s" digits={2} better="lower" />
+              <CompareRow label="0–200 km/h" stock={stockPerf.m.zeroTo200KmhS} tuned={tunedPerf.m.zeroTo200KmhS} unit="s" digits={2} better="lower" />
+              <CompareRow label="¼ mile" stock={stockPerf.m.quarterMileS} tuned={tunedPerf.m.quarterMileS} unit="s" digits={2} better="lower" />
+              <CompareRow label="¼ mile trap" stock={stockPerf.m.quarterMileTrapKmh} tuned={tunedPerf.m.quarterMileTrapKmh} unit="km/h" digits={1} better="higher" />
+              <CompareRow label="Top speed" stock={stockPerf.vmax} tuned={tunedPerf.vmax} unit="km/h" digits={0} better="higher" />
             </div>
           </Panel>
           <Panel title="Power curve" subtitle="Crank PS vs rpm">
             <LineChart
               ariaLabel="Tuned versus stock power curve"
               series={[
-                {
-                  id: "stock",
-                  label: "Stock",
-                  color,
-                  dashed: true,
-                  points: stockPerf.dyno.points.map((p) => ({
-                    x: p.rpm,
-                    y: p.powerPs,
-                  })),
-                },
-                {
-                  id: "tuned",
-                  label: "Current",
-                  color,
-                  points: tunedPerf.dyno.points.map((p) => ({
-                    x: p.rpm,
-                    y: p.powerPs,
-                  })),
-                },
+                { id: 'stock', label: 'Stock', color, dashed: true, points: stockPerf.dyno.points.map((p) => ({ x: p.rpm, y: p.powerPs })) },
+                { id: 'tuned', label: 'Current', color, points: tunedPerf.dyno.points.map((p) => ({ x: p.rpm, y: p.powerPs })) },
               ]}
               xLabel="rpm"
               yLabel="PS"
@@ -439,32 +263,17 @@ export function TuningView() {
               directLabels={false}
             />
           </Panel>
-          <p className="footnote">
-            Tuning is saved automatically on this device and used by Drive,
-            Tests, Drag Race and Dyno.
-          </p>
+          <p className="footnote">Tuning is saved automatically on this device and used by Drive, Tests, Drag Race and Dyno.</p>
         </aside>
       </div>
     </div>
   );
 }
 
-function perf(
-  vehicle: ReturnType<typeof buildSimVehicle>,
-  launch: "brake-boost" | "standard",
-) {
+function perf(vehicle: ReturnType<typeof buildSimVehicle>, launch: 'brake-boost' | 'standard') {
   const dyno = computeDyno(vehicle);
-  const m = runAccelerationRun(vehicle, {
-    launch,
-    targetSpeedKmh: 200,
-    targetDistanceM: 402.336,
-  }).metrics;
-  return {
-    dyno,
-    m,
-    vmax: topSpeedKmh(vehicle),
-    psPerTonne: (dyno.peakPowerPs / vehicle.massKg) * 1000,
-  };
+  const m = runAccelerationRun(vehicle, { launch, targetSpeedKmh: 200, targetDistanceM: 402.336 }).metrics;
+  return { dyno, m, vmax: topSpeedKmh(vehicle), psPerTonne: (dyno.peakPowerPs / vehicle.massKg) * 1000 };
 }
 
 function StageLabel({ title, detail }: { title: string; detail: string }) {
@@ -489,28 +298,22 @@ function CompareRow({
   tuned: number | null;
   unit: string;
   digits: number;
-  better: "higher" | "lower";
+  better: 'higher' | 'lower';
 }) {
   const delta = stock !== null && tuned !== null ? tuned - stock : null;
   const threshold = 0.5 * 10 ** -digits;
-  const improved =
-    delta !== null &&
-    Math.abs(delta) >= threshold &&
-    (better === "higher" ? delta > 0 : delta < 0);
+  const improved = delta !== null && Math.abs(delta) >= threshold && (better === 'higher' ? delta > 0 : delta < 0);
   const worse = delta !== null && Math.abs(delta) >= threshold && !improved;
   return (
     <div className="compare-row">
       <span className="compare-row__label">{label}</span>
       <span className="compare-row__value">
-        {tuned === null ? "—" : fmt(tuned, digits)} <small>{unit}</small>
+        {tuned === null ? '—' : fmt(tuned, digits)} <small>{unit}</small>
       </span>
-      <span
-        className={`compare-row__delta ${improved ? "is-better" : worse ? "is-worse" : ""}`}
-      >
-        {delta === null || Math.abs(delta) < threshold
-          ? "—"
-          : `${delta > 0 ? "▲" : "▼"} ${fmtSigned(delta, digits)}`}
+      <span className={`compare-row__delta ${improved ? 'is-better' : worse ? 'is-worse' : ''}`}>
+        {delta === null || Math.abs(delta) < threshold ? '—' : `${delta > 0 ? '▲' : '▼'} ${fmtSigned(delta, digits)}`}
       </span>
     </div>
   );
 }
+
