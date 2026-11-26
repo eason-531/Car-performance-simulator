@@ -1,33 +1,51 @@
-import { useEffect, useState } from 'react';
-import { CatalogBrowser, ClassBadge, Monogram, ReadinessBadge } from '../components/catalog/CatalogBrowser';
-import { Icon } from '../components/Icon';
-import { Badge, Button, Panel, Segmented, StatTile } from '../components/ui';
-import { findEntry, fullName, stockStats } from '../data/catalog';
-import { CLASS_FORMULA, CLASS_POLICY } from '../data/catalog/classes';
-import { BASIS_LABEL, TIMING_LABEL, compareBenchmark, uncomparedResults } from '../data/catalog/compare';
-import { MARKET_LABEL, STATUS_LABEL, type CatalogEntry, type MeasuredBenchmark, type TestConditions } from '../data/catalog/types';
-import { getTireCompound } from '../data/tires';
-import { fmt, fmtSeconds, ordinalGear } from '../lib/format';
-import { DRIVER_MASS_KG } from '../physics/constants';
-import { topSpeedBreakdown } from '../physics/dyno';
-import { topSpeedText } from '../lib/topSpeed';
-import { kmhToMs, radSToRpm } from '../physics/units';
-import { useApp } from '../state/AppState';
-import { resolveTireSize, tireRollingRadiusM } from '../tuning/buildSimVehicle';
-import { defaultTuning } from '../tuning/tuning';
+import { useEffect, useState } from "react";
+import {
+  CatalogBrowser,
+  ClassBadge,
+  Monogram,
+  ReadinessBadge,
+} from "../components/catalog/CatalogBrowser";
+import { Icon } from "../components/Icon";
+import { Badge, Button, Panel, Segmented, StatTile } from "../components/ui";
+import { findEntry, fullName, stockStats } from "../data/catalog";
+import { CLASS_FORMULA, CLASS_POLICY } from "../data/catalog/classes";
+import {
+  BASIS_LABEL,
+  TIMING_LABEL,
+  compareBenchmark,
+  uncomparedResults,
+} from "../data/catalog/compare";
+import {
+  MARKET_LABEL,
+  STATUS_LABEL,
+  type CatalogEntry,
+  type MeasuredBenchmark,
+  type TestConditions,
+} from "../data/catalog/types";
+import { getTireCompound } from "../data/tires";
+import { fmt, fmtSeconds, ordinalGear } from "../lib/format";
+import { DRIVER_MASS_KG } from "../physics/constants";
+import { topSpeedBreakdown } from "../physics/dyno";
+import { topSpeedText } from "../lib/topSpeed";
+import { kmhToMs, radSToRpm } from "../physics/units";
+import { useApp } from "../state/AppState";
+import { resolveTireSize, tireRollingRadiusM } from "../tuning/buildSimVehicle";
+import { defaultTuning } from "../tuning/tuning";
 
 function detailFromHash(): string | null {
-  const parts = window.location.hash.replace(/^#\/?/, '').split('/');
-  return parts[0] === 'garage' && parts[1] ? decodeURIComponent(parts[1]) : null;
+  const parts = window.location.hash.replace(/^#\/?/, "").split("/");
+  return parts[0] === "garage" && parts[1]
+    ? decodeURIComponent(parts[1])
+    : null;
 }
 
 export function GarageView() {
   const [detail, setDetail] = useState<string | null>(detailFromHash);
-  const [tab, setTab] = useState<'mine' | 'all'>('mine');
+  const [tab, setTab] = useState<"mine" | "all">("mine");
   useEffect(() => {
     const onHash = () => setDetail(detailFromHash());
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
   const open = (id: string) => {
     window.location.hash = `/garage/${encodeURIComponent(id)}`;
@@ -35,7 +53,7 @@ export function GarageView() {
     window.scrollTo({ top: 0 });
   };
   const back = () => {
-    window.location.hash = '/garage';
+    window.location.hash = "/garage";
     setDetail(null);
   };
 
@@ -51,16 +69,20 @@ export function GarageView() {
           value={tab}
           onChange={setTab}
           options={[
-            { value: 'mine', label: 'My Garage' },
-            { value: 'all', label: 'All Cars' },
+            { value: "mine", label: "My Garage" },
+            { value: "all", label: "All Cars" },
           ]}
         />
       </div>
-      {tab === 'mine' ? (
-        <MyGarage onOpen={open} onBrowse={() => setTab('all')} />
+      {tab === "mine" ? (
+        <MyGarage onOpen={open} onBrowse={() => setTab("all")} />
       ) : (
         <Panel>
-          <CatalogBrowser onSelect={open} defaultSort="name" actionLabel="Details for" />
+          <CatalogBrowser
+            onSelect={open}
+            defaultSort="name"
+            actionLabel="Details for"
+          />
         </Panel>
       )}
       <ClassExplainer />
@@ -68,9 +90,18 @@ export function GarageView() {
   );
 }
 
-function MyGarage({ onOpen, onBrowse }: { onOpen: (id: string) => void; onBrowse: () => void }) {
+function MyGarage({
+  onOpen,
+  onBrowse,
+}: {
+  onOpen: (id: string) => void;
+  onBrowse: () => void;
+}) {
   const app = useApp();
-  const ids = [...app.ownerIds, ...app.settings.favorites.filter((id) => !app.ownerIds.includes(id))];
+  const ids = [
+    ...app.ownerIds,
+    ...app.settings.favorites.filter((id) => !app.ownerIds.includes(id)),
+  ];
   return (
     <div className="garage-grid">
       {ids.map((id) => {
@@ -90,7 +121,11 @@ function MyGarage({ onOpen, onBrowse }: { onOpen: (id: string) => void; onBrowse
               <ClassBadge id={id} />
             </header>
             <div className="garage-card__badges">
-              {e.owner ? <Badge tone="good">My car</Badge> : <Badge tone="neutral">Favorite</Badge>}
+              {e.owner ? (
+                <Badge tone="good">My car</Badge>
+              ) : (
+                <Badge tone="neutral">Favorite</Badge>
+              )}
               <ReadinessBadge entry={e} />
             </div>
             <dl className="garage-card__stats">
@@ -104,10 +139,17 @@ function MyGarage({ onOpen, onBrowse }: { onOpen: (id: string) => void; onBrowse
               </div>
               <div>
                 <dt>Power</dt>
-                <dd>{st ? `${fmt(st.peakPowerPs)} PS` : (e.factory.power ?? '—')}</dd>
+                <dd>
+                  {st ? `${fmt(st.peakPowerPs)} PS` : (e.factory.power ?? "—")}
+                </dd>
               </div>
             </dl>
-            <p className="garage-card__note">{e.owner?.note ?? (e.sim ? 'Simulated stock, brake-release timing.' : e.unsupportedReason)}</p>
+            <p className="garage-card__note">
+              {e.owner?.note ??
+                (e.sim
+                  ? "Simulated stock, brake-release timing."
+                  : e.unsupportedReason)}
+            </p>
             <div className="garage-card__actions">
               <Button icon="info" onClick={() => onOpen(id)}>
                 Details
@@ -115,14 +157,21 @@ function MyGarage({ onOpen, onBrowse }: { onOpen: (id: string) => void; onBrowse
               {e.sim && (
                 <Button
                   icon="drive"
-                  variant={app.settings.activeVehicleId === id ? 'ghost' : 'secondary'}
+                  variant={
+                    app.settings.activeVehicleId === id ? "ghost" : "secondary"
+                  }
                   disabled={app.settings.activeVehicleId === id}
                   onClick={() => {
                     app.setActiveVehicle(id);
-                    app.notify(`${e.sim!.shortName} is now the active car`, 'good');
+                    app.notify(
+                      `${e.sim!.shortName} is now the active car`,
+                      "good",
+                    );
                   }}
                 >
-                  {app.settings.activeVehicleId === id ? 'Active car' : 'Make active'}
+                  {app.settings.activeVehicleId === id
+                    ? "Active car"
+                    : "Make active"}
                 </Button>
               )}
               {!e.owner && (
@@ -144,11 +193,17 @@ function MyGarage({ onOpen, onBrowse }: { onOpen: (id: string) => void; onBrowse
 
 function ClassExplainer() {
   return (
-    <Panel title="About stock classes" subtitle={`Formula ${CLASS_FORMULA.version} · straight-line performance only`}>
+    <Panel
+      title="About stock classes"
+      subtitle={`Formula ${CLASS_FORMULA.version} · straight-line performance only`}
+    >
       <p className="help">
-        D, C, B, A, S and S+ rate <strong>stock straight-line performance in this simulator</strong>, not handling, braking or
-        comfort. The score is 45 % quarter-mile ET, 40 % trap speed and 15 % 0–100 km/h, each standardized between fixed slow and
-        fast anchors. Every car is scored with one policy, so your tuning and test settings never change its class:
+        D, C, B, A, S and S+ rate{" "}
+        <strong>stock straight-line performance in this simulator</strong>, not
+        handling, braking or comfort. The score is 45 % quarter-mile ET, 40 %
+        trap speed and 15 % 0–100 km/h, each standardized between fixed slow and
+        fast anchors. Every car is scored with one policy, so your tuning and
+        test settings never change its class:
       </p>
       <ul className="notes">
         <li>Tires: {CLASS_POLICY.tires}</li>
@@ -158,14 +213,22 @@ function ClassExplainer() {
         <li>Conditions: {CLASS_POLICY.conditions}</li>
       </ul>
       <p className="footnote">
-        Thresholds: C ≥ {CLASS_FORMULA.thresholds.C}, B ≥ {CLASS_FORMULA.thresholds.B}, A ≥ {CLASS_FORMULA.thresholds.A}, S ≥{' '}
-        {CLASS_FORMULA.thresholds.S}, S+ ≥ {CLASS_FORMULA.thresholds['S+']}. Cars that cannot be simulated yet show “—” (pending).
+        Thresholds: C ≥ {CLASS_FORMULA.thresholds.C}, B ≥{" "}
+        {CLASS_FORMULA.thresholds.B}, A ≥ {CLASS_FORMULA.thresholds.A}, S ≥{" "}
+        {CLASS_FORMULA.thresholds.S}, S+ ≥ {CLASS_FORMULA.thresholds["S+"]}.
+        Cars that cannot be simulated yet show “—” (pending).
       </p>
     </Panel>
   );
 }
 
-function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => void }) {
+function CarDetails({
+  entry: e,
+  onBack,
+}: {
+  entry: CatalogEntry;
+  onBack: () => void;
+}) {
   const app = useApp();
   const st = stockStats(e.id);
   const spec = e.sim;
@@ -179,7 +242,7 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
         <div className="view__bar-actions">
           {!e.owner && (
             <Button onClick={() => app.toggleFavorite(e.id)} ariaPressed={fav}>
-              {fav ? '★ In My Garage' : '☆ Add to My Garage'}
+              {fav ? "★ In My Garage" : "☆ Add to My Garage"}
             </Button>
           )}
           {spec && (
@@ -189,10 +252,12 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
               disabled={app.settings.activeVehicleId === e.id}
               onClick={() => {
                 app.setActiveVehicle(e.id);
-                app.notify(`${spec.shortName} is now the active car`, 'good');
+                app.notify(`${spec.shortName} is now the active car`, "good");
               }}
             >
-              {app.settings.activeVehicleId === e.id ? 'Active car' : 'Use in simulator'}
+              {app.settings.activeVehicleId === e.id
+                ? "Active car"
+                : "Use in simulator"}
             </Button>
           )}
         </div>
@@ -201,7 +266,7 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
       <Panel
         className="garage__hero"
         title={fullName(e)}
-        subtitle={`${e.bodyLabel}${e.chassisCode ? ` · ${e.chassisCode}` : ''} · ${MARKET_LABEL[e.market]} specification · ${e.origin} manufacturer`}
+        subtitle={`${e.bodyLabel}${e.chassisCode ? ` · ${e.chassisCode}` : ""} · ${MARKET_LABEL[e.market]} specification · ${e.origin} manufacturer`}
         actions={
           <div className="panel__actions-row">
             <ClassBadge id={e.id} />
@@ -215,7 +280,7 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
           <div className="callout callout--warning" role="note">
             <Icon name="info" size={18} />
             <span>
-              <strong>Provisional model.</strong> {e.simCaveats.join(' ')}
+              <strong>Provisional model.</strong> {e.simCaveats.join(" ")}
             </span>
           </div>
         )}
@@ -223,33 +288,73 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
           <div className="callout callout--warning" role="note">
             <Icon name="info" size={18} />
             <span>
-              <strong>Not runnable yet.</strong> {e.unsupportedReason} Published results below remain available.
+              <strong>Not runnable yet.</strong> {e.unsupportedReason} Published
+              results below remain available.
             </span>
           </div>
         )}
         <div className="garage__tiles">
-          <StatTile label="Power" value={spec ? fmt(spec.engine.rated.powerPs) : '—'} unit={spec ? 'PS' : undefined} sub={e.factory.power ?? 'Not yet sourced'} />
-          <StatTile label="Torque" value={spec ? fmt(spec.engine.rated.torqueNm) : '—'} unit={spec ? 'Nm' : undefined} sub={e.factory.torque ?? 'Not yet sourced'} />
-          <StatTile label="Curb mass" value={spec ? fmt(spec.chassis.curbMassKg) : '—'} unit={spec ? 'kg' : undefined} sub={e.factory.curbMass ?? 'Not yet sourced'} />
-          <StatTile label="Drivetrain" value={e.drive} sub={spec?.drivetrain.description ?? e.engineLabel} />
-          <StatTile label="Gearbox" value={e.transmission} sub={e.transmissionLabel} />
+          <StatTile
+            label="Power"
+            value={spec ? fmt(spec.engine.rated.powerPs) : "—"}
+            unit={spec ? "PS" : undefined}
+            sub={e.factory.power ?? "Not yet sourced"}
+          />
+          <StatTile
+            label="Torque"
+            value={spec ? fmt(spec.engine.rated.torqueNm) : "—"}
+            unit={spec ? "Nm" : undefined}
+            sub={e.factory.torque ?? "Not yet sourced"}
+          />
+          <StatTile
+            label="Curb mass"
+            value={spec ? fmt(spec.chassis.curbMassKg) : "—"}
+            unit={spec ? "kg" : undefined}
+            sub={e.factory.curbMass ?? "Not yet sourced"}
+          />
+          <StatTile
+            label="Drivetrain"
+            value={e.drive}
+            sub={spec?.drivetrain.description ?? e.engineLabel}
+          />
+          <StatTile
+            label="Gearbox"
+            value={e.transmission}
+            sub={e.transmissionLabel}
+          />
           <StatTile
             label="Stock class"
-            value={st?.cls ?? '—'}
-            sub={st?.score !== null && st?.score !== undefined ? `Score ${fmt(st.score, 1)} (${st.formula})` : 'Pending — not simulated'}
+            value={st?.cls ?? "—"}
+            sub={
+              st?.score !== null && st?.score !== undefined
+                ? `Score ${fmt(st.score, 1)} (${st.formula})`
+                : "Pending — not simulated"
+            }
           />
         </div>
         <p className="footnote">
-          Use tags: {e.usage.join(', ')} · Engine: {e.engineLabel} · Powertrain: {e.powertrain}
+          Use tags: {e.usage.join(", ")} · Engine: {e.engineLabel} · Powertrain:{" "}
+          {e.powertrain}
         </p>
       </Panel>
 
-      <Panel title="Reference tests" subtitle="Published measurements beside the simulator’s stock run on the matching timing basis">
-        {spec && e.simCaveats && e.simCaveats.length > 0 && e.benchmarks.length > 0 && (
-          <p className="help">Residuals below include the provisional-model approximations noted above.</p>
-        )}
+      <Panel
+        title="Reference tests"
+        subtitle="Published measurements beside the simulator’s stock run on the matching timing basis"
+      >
+        {spec &&
+          e.simCaveats &&
+          e.simCaveats.length > 0 &&
+          e.benchmarks.length > 0 && (
+            <p className="help">
+              Residuals below include the provisional-model approximations noted
+              above.
+            </p>
+          )}
         {e.benchmarks.length === 0 ? (
-          <p className="help">Measured results not transcribed yet — see the linked source below.</p>
+          <p className="help">
+            Measured results not transcribed yet — see the linked source below.
+          </p>
         ) : (
           e.benchmarks.map((b) => <BenchmarkBlock key={b.id} entry={e} b={b} />)
         )}
@@ -257,11 +362,22 @@ function CarDetails({ entry: e, onBack }: { entry: CatalogEntry; onBack: () => v
 
       {spec && <SimSpecs entry={e} />}
 
-      <Panel title="Sources" subtitle="Factory data, road tests and references used for this configuration">
+      <Panel
+        title="Sources"
+        subtitle="Factory data, road tests and references used for this configuration"
+      >
         <ul className="sources">
           {e.sources.map((s) => (
             <li key={s.id}>
-              <Badge tone="neutral">{s.kind === 'road-test' ? 'Road test' : s.kind === 'manufacturer' ? 'Manufacturer' : s.kind === 'owner' ? 'Owner' : 'Reference'}</Badge>{' '}
+              <Badge tone="neutral">
+                {s.kind === "road-test"
+                  ? "Road test"
+                  : s.kind === "manufacturer"
+                    ? "Manufacturer"
+                    : s.kind === "owner"
+                      ? "Owner"
+                      : "Reference"}
+              </Badge>{" "}
               {s.url ? (
                 <a href={s.url} target="_blank" rel="noreferrer noopener">
                   {s.publisher}: {s.title} <Icon name="external" size={14} />
@@ -309,12 +425,18 @@ function conditionsText(c: TestConditions): string[] {
   return [...out, ...(c.other ?? [])];
 }
 
-function BenchmarkBlock({ entry, b }: { entry: CatalogEntry; b: MeasuredBenchmark }) {
+function BenchmarkBlock({
+  entry,
+  b,
+}: {
+  entry: CatalogEntry;
+  b: MeasuredBenchmark;
+}) {
   const st = stockStats(entry.id);
   const cmp = compareBenchmark(b, st);
   const source = entry.sources.find((s) => s.id === b.sourceId);
   const cond = conditionsText(b.conditions);
-  const unit = (u: string) => (u === 's' ? 's' : u);
+  const unit = (u: string) => (u === "s" ? "s" : u);
   return (
     <section className="benchmark">
       <header className="benchmark__head">
@@ -330,7 +452,12 @@ function BenchmarkBlock({ entry, b }: { entry: CatalogEntry; b: MeasuredBenchmar
             {b.date && <small> · {b.date}</small>}
           </h3>
           <p className="benchmark__meta">
-            <Badge tone="verified">Measured</Badge> <Badge tone={b.match === 'exact' ? 'good' : 'warning'}>{b.match === 'exact' ? 'Exact configuration' : 'Equivalent configuration'}</Badge>{' '}
+            <Badge tone="verified">Measured</Badge>{" "}
+            <Badge tone={b.match === "exact" ? "good" : "warning"}>
+              {b.match === "exact"
+                ? "Exact configuration"
+                : "Equivalent configuration"}
+            </Badge>{" "}
             <Badge tone="neutral">{TIMING_LABEL[b.timing]}</Badge>
           </p>
         </div>
@@ -351,7 +478,10 @@ function BenchmarkBlock({ entry, b }: { entry: CatalogEntry; b: MeasuredBenchmar
                 ))}
                 {cmp.bases.map((basis) => (
                   <th key={`d${basis}`} scope="col">
-                    Δ {cmp.bases.length > 1 ? `(${basis === 'brake-release' ? 'BR' : '1 ft'})` : ''}
+                    Δ{" "}
+                    {cmp.bases.length > 1
+                      ? `(${basis === "brake-release" ? "BR" : "1 ft"})`
+                      : ""}
                   </th>
                 ))}
               </tr>
@@ -361,14 +491,31 @@ function BenchmarkBlock({ entry, b }: { entry: CatalogEntry; b: MeasuredBenchmar
                 <tr key={r.label + r.unit}>
                   <th scope="row">{r.label}</th>
                   <td>
-                    {fmt(r.published, r.unit === 's' ? 2 : 1)} {unit(r.unit)}
+                    {fmt(r.published, r.unit === "s" ? 2 : 1)} {unit(r.unit)}
                   </td>
                   {r.simulated.map((v, i) => (
-                    <td key={i}>{v === null ? (entry.sim ? '—' : 'not simulated') : `${fmt(v, r.unit === 's' ? 2 : 1)} ${unit(r.unit)}`}</td>
+                    <td key={i}>
+                      {v === null
+                        ? entry.sim
+                          ? "—"
+                          : "not simulated"
+                        : `${fmt(v, r.unit === "s" ? 2 : 1)} ${unit(r.unit)}`}
+                    </td>
                   ))}
                   {r.simulated.map((v, i) => (
-                    <td key={`d${i}`} className={v === null ? '' : Math.abs(v - r.published) / r.published > 0.05 ? 'is-off' : 'is-close'}>
-                      {v === null ? '—' : `${v - r.published >= 0 ? '+' : '−'}${fmt(Math.abs(v - r.published), r.unit === 's' ? 2 : 1)}`}
+                    <td
+                      key={`d${i}`}
+                      className={
+                        v === null
+                          ? ""
+                          : Math.abs(v - r.published) / r.published > 0.05
+                            ? "is-off"
+                            : "is-close"
+                      }
+                    >
+                      {v === null
+                        ? "—"
+                        : `${v - r.published >= 0 ? "+" : "−"}${fmt(Math.abs(v - r.published), r.unit === "s" ? 2 : 1)}`}
                     </td>
                   ))}
                 </tr>
@@ -378,9 +525,18 @@ function BenchmarkBlock({ entry, b }: { entry: CatalogEntry; b: MeasuredBenchmar
         </div>
       )}
       {cmp.mismatch && <p className="footnote">⚠ {cmp.mismatch}</p>}
-      {uncomparedResults(b.results).length > 0 && <p className="footnote">Also published: {uncomparedResults(b.results).join(' · ')}</p>}
-      {cond.length > 0 && <p className="footnote">Conditions: {cond.join(' · ')}</p>}
-      <p className="footnote">Simulated with the stock policy (curb + {DRIVER_MASS_KG} kg driver, stock tires, best launch). Read from: {b.verification}</p>
+      {uncomparedResults(b.results).length > 0 && (
+        <p className="footnote">
+          Also published: {uncomparedResults(b.results).join(" · ")}
+        </p>
+      )}
+      {cond.length > 0 && (
+        <p className="footnote">Conditions: {cond.join(" · ")}</p>
+      )}
+      <p className="footnote">
+        Simulated with the stock policy (curb + {DRIVER_MASS_KG} kg driver,
+        stock tires, best launch). Read from: {b.verification}
+      </p>
     </section>
   );
 }
@@ -388,53 +544,154 @@ function BenchmarkBlock({ entry, b }: { entry: CatalogEntry; b: MeasuredBenchmar
 function SimSpecs({ entry }: { entry: CatalogEntry }) {
   const spec = entry.sim!;
   const app = useApp();
-  const stock = app.simVehicle(spec.id, 'stock');
+  const stock = app.simVehicle(spec.id, "stock");
   const e = spec.engine;
   const t = spec.transmission;
   const c = spec.chassis;
   const size = resolveTireSize(spec, defaultTuning(spec));
   const radius = stock.wheelRadiusM;
-  const counts = spec.provenance.reduce<Record<string, number>>((acc, p) => ({ ...acc, [p.status]: (acc[p.status] ?? 0) + 1 }), {});
+  const counts = spec.provenance.reduce<Record<string, number>>(
+    (acc, p) => ({ ...acc, [p.status]: (acc[p.status] ?? 0) + 1 }),
+    {},
+  );
   return (
     <>
       <div className="grid-2">
         <Panel title="Simulation specifications">
           <div className="spec-list">
             <h3 className="spec-list__group">Engine</h3>
-            <Spec label="Engine" value={`${e.code} — ${e.description}`} />
-            <Spec label="Displacement" value={`${fmt(e.displacementCc)} cc`} />
-            <Spec label="Rated" value={`${fmt(e.rated.powerPs)} PS @ ${rpmRange(e.rated.powerRpm)} · ${fmt(e.rated.torqueNm)} Nm @ ${rpmRange(e.rated.torqueRpm)} rpm`} />
-            <Spec label="Idle / redline / limiter" value={`${fmt(e.idleRpm)} / ${fmt(e.redlineRpm)} / ${fmt(e.revLimitRpm)} rpm`} />
+            {spec.electric ? (
+              <>
+                <Spec label="Drive" value={`${e.code} — ${e.description}`} />
+                {spec.electric.motors.map((m, i) => (
+                  <Spec
+                    key={i}
+                    label={`${m.axle === "front" ? "Front" : "Rear"} motor`}
+                    value={`${fmt(m.peakPowerKw)} kW · ${fmt(m.peakTorqueNm)} Nm · max ${fmt(m.maxRpm)} rpm${m.peakPowerEndRpm ? ` (peak power to ${fmt(m.peakPowerEndRpm)} rpm)` : ""} · reduction ${m.reductions.map((r) => r.toFixed(2)).join(" / ")}${m.upshiftKmh ? ` (2nd from ${fmt(m.upshiftKmh)} km/h)` : ""}`}
+                  />
+                ))}
+                <Spec
+                  label="Shared limits"
+                  value={`${fmt(spec.electric.systemPowerKw)} kW${spec.electric.systemTorqueNm ? ` · ${fmt(spec.electric.systemTorqueNm)} Nm` : ""}${spec.electric.boost ? ` · ${spec.electric.boost.label}: ${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s (${spec.electric.boost.trigger === "launch-control" ? "launch control" : "driver-armed"})` : ""}`}
+                />
+                <Spec
+                  label="Creep"
+                  value={
+                    spec.electric.creep
+                      ? "Creeps off the brake"
+                      : "Holds still at idle"
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <Spec label="Engine" value={`${e.code} — ${e.description}`} />
+                <Spec
+                  label="Displacement"
+                  value={`${fmt(e.displacementCc)} cc`}
+                />
+                <Spec
+                  label="Rated"
+                  value={`${fmt(e.rated.powerPs)} PS @ ${rpmRange(e.rated.powerRpm)} · ${fmt(e.rated.torqueNm)} Nm @ ${rpmRange(e.rated.torqueRpm)} rpm`}
+                />
+                <Spec
+                  label="Idle / redline / limiter"
+                  value={`${fmt(e.idleRpm)} / ${fmt(e.redlineRpm)} / ${fmt(e.revLimitRpm)} rpm`}
+                />
+              </>
+            )}
             <h3 className="spec-list__group">Driveline</h3>
             <Spec label="Transmission" value={t.name} />
             <Spec
-              label={t.frontAxleRatio !== undefined ? 'Final drive (rear)' : 'Final drive'}
-              value={[...new Set(t.finalDrive)].map((f) => f.toFixed(3)).join(' / ')}
+              label={
+                t.frontAxleRatio !== undefined
+                  ? "Final drive (rear)"
+                  : "Final drive"
+              }
+              value={[...new Set(t.finalDrive)]
+                .map((f) => f.toFixed(3))
+                .join(" / ")}
             />
-            {t.frontAxleRatio !== undefined && <Spec label="Front axle ratio" value={`${t.frontAxleRatio.toFixed(3)} (reference; fed through the front coupling)`} />}
+            {t.frontAxleRatio !== undefined && (
+              <Spec
+                label="Front axle ratio"
+                value={`${t.frontAxleRatio.toFixed(3)} (reference; fed through the front coupling)`}
+              />
+            )}
             {t.torqueConverter && (
-              <Spec label="Torque converter" value={`Stall ≈ ${fmt(t.torqueConverter.stallRpm)} rpm, ${t.torqueConverter.stallTorqueRatio}:1, lock-up from ${ordinalGear(t.torqueConverter.lockupMinGear)}`} />
+              <Spec
+                label="Torque converter"
+                value={`Stall ≈ ${fmt(t.torqueConverter.stallRpm)} rpm, ${t.torqueConverter.stallTorqueRatio}:1, lock-up from ${ordinalGear(t.torqueConverter.lockupMinGear)}`}
+              />
             )}
             {t.launchClutch && (
-              <Spec label="Launch" value={`${t.type === 'manual' ? 'Driver clutch launch' : 'Clutch slip'} to ≈ ${fmt(t.launchClutch.launchRpm)} rpm`} />
+              <Spec
+                label="Launch"
+                value={`${t.type === "manual" ? "Driver clutch launch" : "Clutch slip"} to ≈ ${fmt(t.launchClutch.launchRpm)} rpm`}
+              />
             )}
-            <Spec label="Drivetrain efficiency" value={`${(spec.drivetrain.efficiency * 100).toFixed(0)} %`} />
+            <Spec
+              label="Drivetrain efficiency"
+              value={`${(spec.drivetrain.efficiency * 100).toFixed(0)} %`}
+            />
             {spec.drivetrain.frontShareRange && (
-              <Spec label="AWD front share" value={`${Math.round(spec.drivetrain.frontShareRange[0] * 100)}–${Math.round(spec.drivetrain.frontShareRange[1] * 100)} %`} />
+              <Spec
+                label="AWD front share"
+                value={`${Math.round(spec.drivetrain.frontShareRange[0] * 100)}–${Math.round(spec.drivetrain.frontShareRange[1] * 100)} %`}
+              />
             )}
             <h3 className="spec-list__group">Body</h3>
-            {c.lengthMm > 0 && <Spec label="L × W × H" value={`${fmt(c.lengthMm)} × ${fmt(c.widthMm)} × ${fmt(c.heightMm)} mm`} />}
+            {c.lengthMm > 0 && (
+              <Spec
+                label="L × W × H"
+                value={`${fmt(c.lengthMm)} × ${fmt(c.widthMm)} × ${fmt(c.heightMm)} mm`}
+              />
+            )}
             <Spec label="Wheelbase" value={`${fmt(c.wheelbaseM * 1000)} mm`} />
-            <Spec label="Curb / test mass" value={`${fmt(c.curbMassKg)} kg / ${fmt(c.curbMassKg + DRIVER_MASS_KG)} kg`} />
-            <Spec label="Weight distribution" value={`${Math.round(c.frontWeightFraction * 100)} / ${Math.round((1 - c.frontWeightFraction) * 100)} F/R`} />
-            <Spec label="Aerodynamics" value={`Cd ${spec.aero.dragCoefficient} · A ${spec.aero.frontalAreaM2} m² · CdA ${(spec.aero.dragCoefficient * spec.aero.frontalAreaM2).toFixed(3)} m²`} />
-            <Spec label="Tires (stock)" value={`${size.label} · ${getTireCompound(spec.tires.defaultCompoundId).label}`} />
-            <Spec label="Speed limiter" value={spec.speedLimiterKmh ? `${spec.speedLimiterKmh} km/h` : 'None modelled'} />
-            <Spec label="Simulated top speed" value={topSpeedText(topSpeedBreakdown(stock))} />
-            <Spec label="Stage 1" value={spec.stage1 ? `≈ ${spec.stage1.claimedPowerPs} PS / ${spec.stage1.claimedTorqueNm} Nm (estimated)` : 'Not offered for this configuration'} />
+            <Spec
+              label="Curb / test mass"
+              value={`${fmt(c.curbMassKg)} kg / ${fmt(c.curbMassKg + DRIVER_MASS_KG)} kg`}
+            />
+            <Spec
+              label="Weight distribution"
+              value={`${Math.round(c.frontWeightFraction * 100)} / ${Math.round((1 - c.frontWeightFraction) * 100)} F/R`}
+            />
+            <Spec
+              label="Aerodynamics"
+              value={`Cd ${spec.aero.dragCoefficient} · A ${spec.aero.frontalAreaM2} m² · CdA ${(spec.aero.dragCoefficient * spec.aero.frontalAreaM2).toFixed(3)} m²`}
+            />
+            <Spec
+              label="Tires (stock)"
+              value={`${size.label} · ${getTireCompound(spec.tires.defaultCompoundId).label}`}
+            />
+            <Spec
+              label="Speed limiter"
+              value={
+                spec.speedLimiterKmh
+                  ? `${spec.speedLimiterKmh} km/h`
+                  : "None modelled"
+              }
+            />
+            <Spec
+              label="Simulated top speed"
+              value={topSpeedText(topSpeedBreakdown(stock))}
+            />
+            {!spec.electric && (
+              <Spec
+                label="Stage 1"
+                value={
+                  spec.stage1
+                    ? `≈ ${spec.stage1.claimedPowerPs} PS / ${spec.stage1.claimedTorqueNm} Nm (estimated)`
+                    : "Not offered for this configuration"
+                }
+              />
+            )}
           </div>
         </Panel>
-        <Panel title="Gearing" subtitle={`Speed at ${fmt(e.revLimitRpm)} rpm on ${size.label} (${(tireRollingRadiusM(size.rear) * 1000).toFixed(0)} mm rolling radius)`}>
+        <Panel
+          title="Gearing"
+          subtitle={`Speed at ${fmt(e.revLimitRpm)} rpm on ${size.label} (${(tireRollingRadiusM(size.rear) * 1000).toFixed(0)} mm rolling radius)`}
+        >
           <div className="table-scroll">
             <table className="table table--numeric">
               <thead>
@@ -449,7 +706,9 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
               <tbody>
                 {t.gearRatios.map((g, i) => {
                   const overall = g * t.finalDrive[i];
-                  const vmax = ((e.revLimitRpm / overall) * 2 * Math.PI * radius * 3.6) / 60;
+                  const vmax =
+                    ((e.revLimitRpm / overall) * 2 * Math.PI * radius * 3.6) /
+                    60;
                   const rpm100 = radSToRpm((kmhToMs(100) / radius) * overall);
                   return (
                     <tr key={i}>
@@ -492,8 +751,13 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
                     {p.source}
                     {p.url && (
                       <>
-                        {' '}
-                        <a href={p.url} target="_blank" rel="noreferrer noopener" aria-label={`Source for ${p.parameter}`}>
+                        {" "}
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          aria-label={`Source for ${p.parameter}`}
+                        >
                           <Icon name="external" size={14} />
                         </a>
                       </>

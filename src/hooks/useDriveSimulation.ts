@@ -24,6 +24,9 @@ export interface DriveSnapshot {
   coupling: CouplingState;
   /** Clutch disengaged during a clutch-open shift (manual or automated manual). */
   clutchOpen: boolean;
+  /** Electric cars: motor output, kW, and whether a published boost is running. */
+  motorPowerKw: number;
+  boostActive: boolean;
   distanceM: number;
   /** Auto Hold is keeping the car stationary until the throttle is pressed. */
   autoHold: boolean;
@@ -61,6 +64,8 @@ function snapshotOf(
     fuelCut: s.fuelCut,
     coupling: s.coupling,
     clutchOpen: s.clutchOpen,
+    motorPowerKw: s.motorPowerKw,
+    boostActive: s.boostS > 0,
     distanceM: s.distance,
     autoHold,
     timer: timer.view,
