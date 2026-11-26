@@ -1,10 +1,12 @@
 import type {
   CurvePoints,
   DriveLayout,
+  ElectricSpec,
   LaunchClutchSpec,
   Provenance,
   StageTune,
   TireDims,
+  CvtSpec,
   TorqueConverterSpec,
   TransmissionType,
   VehicleSpec,
@@ -159,6 +161,7 @@ export interface SimInput {
     ratedInputTorqueNm?: number;
     torqueConverter?: Partial<TorqueConverterSpec>;
     launchClutch?: Partial<LaunchClutchSpec>;
+    cvt?: CvtSpec;
   };
   drivetrain: {
     layout: DriveLayout;
@@ -259,7 +262,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
     estimate('Turbo response', `τ ≈ ${spool.find(([r]) => r >= 2000)?.[1] ?? 0.45} s @ 2,000 rpm`, 'Generic spool model scaled by turbo layout');
   }
   const liters = e.displacementCc / 1000;
-  const tc = input.transmission.type === 'torque-converter-automatic';
+  const tc = input.transmission.type === 'torque-converter-automatic' || input.transmission.type === 'cvt';
   const inertia =
     e.inertiaKgM2 ?? Math.round(((liters < 2.1 ? 0.17 : liters < 3.1 ? 0.2 : liters < 4.5 ? 0.24 : 0.28) + (tc ? 0.03 : 0)) * 100) / 100;
   if (e.inertiaKgM2 === undefined) estimate('Engine inertia', `${inertia} kg·m²`, 'Displacement class; includes converter pump for automatics');
@@ -269,11 +272,16 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
   const finalDrive = typeof t.finalDrive === 'number' ? Array<number>(n).fill(t.finalDrive) : [...t.finalDrive];
   const isManual = t.type === 'manual';
   const isDct = t.type === 'dual-clutch';
-  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : 0.3);
-  const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : 0.4);
-  const dip = t.shiftTorqueDip ?? (isManual ? 1 : isDct ? 0.18 : 0.45);
+  const isAmt = t.type === 'automated-manual';
+  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : isAmt ? 0.25 : 0.3);
+  const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : isAmt ? 0.35 : 0.4);
+  const dip = t.shiftTorqueDip ?? (isManual || isAmt ? 1 : isDct ? 0.18 : 0.45);
   if (t.upshiftTimeS === undefined) {
-    estimate('Shift time', `${up} s up / ${down} s down`, isManual ? 'Deterministic test driver: brisk full-throttle clutch shift' : isDct ? 'Typical dual-clutch handover' : 'Typical modern planetary automatic');
+    estimate(
+      'Shift time',
+      `${up} s up / ${down} s down`,
+      isManual ? 'Deterministic test driver: brisk full-throttle clutch shift' : isDct ? 'Typical dual-clutch handover' : isAmt ? 'Typical single-clutch automated manual (clutch open for the whole shift)' : 'Typical modern planetary automatic',
+    );
   }
   const tPk = toNm(e.torque);
   const torqueConverter: TorqueConverterSpec | undefined = tc
@@ -295,7 +303,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
         launchRpm: t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         brakeHoldRpmLimit: t.launchClutch?.brakeHoldRpmLimit ?? t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         maxClutchTorqueNm: t.launchClutch?.maxClutchTorqueNm ?? Math.round(tPk * 1.6),
-        creep: t.launchClutch?.creep ?? !isManual,
+        creep: t.launchClutch?.creep ?? isDct,
         ...(t.launchClutch?.creepTorqueNm !== undefined && { creepTorqueNm: t.launchClutch.creepTorqueNm }),
         driverEngageS: t.launchClutch?.driverEngageS ?? (isManual ? 0.3 : undefined),
       };
@@ -369,6 +377,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       ratedInputTorqueNm: t.ratedInputTorqueNm ?? Math.round(tPk * 1.1),
       torqueConverter,
       launchClutch,
+      ...(t.cvt ? { cvt: t.cvt } : {}),
     },
     drivetrain: { layout: d.layout, description: d.description, efficiency, frontShareRange: d.frontShareRange },
     chassis: {
@@ -396,6 +405,134 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
     stage1: input.stage1,
     provenance: [...input.provenance, ...est],
     notes: input.notes ?? [],
+  };
+}
+
+/** Inputs for a battery-electric configuration (motors per axle, shared limits). */
+export interface ElectricInput {
+  /** Motor description for display, e.g. "Front + rear permanent-magnet synchronous motors". */
+  description: string;
+  code: string;
+  motors: ElectricSpec['motors'];
+  systemPowerKw: number;
+  systemTorqueNm?: number;
+  boost?: ElectricSpec['boost'];
+  creep?: boolean;
+  virtualShift?: ElectricSpec['virtualShift'];
+  /** Two-speed axles: change time, s (default 0.25) and torque dip (default 0.3). */
+  shiftTimeS?: number;
+  shiftTorqueDip?: number;
+  drivetrain: { layout: DriveLayout; description: string; efficiency: number };
+  chassis: SimInput['chassis'];
+  aero: SimInput['aero'];
+  tires: SimInput['tires'];
+  speedLimiterKmh: number | null;
+  factory?: SimInput['factory'];
+  provenance: readonly Provenance[];
+  notes?: readonly string[];
+}
+
+/** Full-load motor torque at a shaft speed (peak torque to base speed, constant power, 3 % fade to max speed). */
+function motorTorqueAt(m: ElectricSpec['motors'][number], rpm: number): number {
+  const omega = (rpm * 2 * Math.PI) / 60;
+  let t = m.peakTorqueNm;
+  if (omega > 0) {
+    const power = m.peakPowerEndRpm !== undefined && rpm > m.peakPowerEndRpm ? (m.peakPowerKw * 1000 * m.peakPowerEndRpm) / rpm : m.peakPowerKw * 1000;
+    t = Math.min(t, power / omega);
+  }
+  const fadeStart = m.maxRpm * 0.97;
+  if (rpm >= m.maxRpm) return 0;
+  if (rpm > fadeStart) t *= (m.maxRpm - rpm) / (m.maxRpm - fadeStart);
+  return t;
+}
+
+/**
+ * System output referred to the primary (rear, else first) motor shaft in its
+ * first reduction: Σ motor torque × its ratio ÷ primary ratio, after the shared
+ * torque and power limits. Display/dyno equivalent only; the simulator uses the
+ * motors directly.
+ */
+export function electricEquivalentCurve(input: Pick<ElectricInput, 'motors' | 'systemPowerKw' | 'systemTorqueNm'>): CurvePoints {
+  const primary = input.motors.find((m) => m.axle === 'rear') ?? input.motors[0];
+  const pr = primary.reductions[0];
+  const pts: [number, number][] = [];
+  const max = primary.maxRpm;
+  for (let i = 0; i <= 120; i++) {
+    const rpm = (max * i) / 120;
+    const wheelOmega = (rpm * 2 * Math.PI) / 60 / pr;
+    const torques = input.motors.map((m) => ({ m, rpm: (wheelOmega * m.reductions[0] * 60) / (2 * Math.PI) }));
+    let t = torques.map(({ m, rpm: r }) => motorTorqueAt(m, r));
+    const sum = t.reduce((a, b) => a + b, 0);
+    let scale = 1;
+    if (input.systemTorqueNm !== undefined && sum > input.systemTorqueNm) scale = input.systemTorqueNm / sum;
+    const power = torques.reduce((a, { rpm: r }, k) => a + t[k] * scale * ((r * 2 * Math.PI) / 60), 0);
+    if (power > input.systemPowerKw * 1000) scale *= (input.systemPowerKw * 1000) / power;
+    t = t.map((x) => x * scale);
+    const eq = torques.reduce((a, { m }, k) => a + (t[k] * m.reductions[0]) / pr, 0);
+    pts.push([Math.round(rpm), Math.round(eq * 10) / 10]);
+  }
+  // Strictly increasing x for the curve (rounding can tie the first samples).
+  return pts.filter(([x], i) => i === 0 || x > pts[i - 1][0]);
+}
+
+/** Combine identity + researched inputs into a battery-electric VehicleSpec. */
+export function buildElectricSpec(id: Identity, input: ElectricInput): VehicleSpec {
+  const curve = electricEquivalentCurve(input);
+  const primary = input.motors.find((m) => m.axle === 'rear') ?? input.motors[0];
+  const peakT = Math.max(...curve.map(([, t]) => t));
+  const powerPs = (nm: number, rpm: number) => (nm * rpm * 2 * Math.PI) / 60 / 735.49875;
+  const peakP = Math.max(...curve.map(([r, t]) => powerPs(t, r)));
+  const tBand = curve.filter(([, t]) => t >= peakT - 0.05).map(([r]) => r);
+  const pBand = curve.filter(([r, t]) => powerPs(t, r) >= peakP * 0.999).map(([r]) => r);
+  const twoSpeed = primary.reductions.length > 1;
+  const base = buildSpec(id, {
+    engine: {
+      code: input.code,
+      description: input.description,
+      displacementCc: 0,
+      aspiration: 'na',
+      idleRpm: 0,
+      redlineRpm: primary.maxRpm,
+      revLimitRpm: primary.maxRpm,
+      power: { value: Math.round(peakP * 10) / 10, unit: 'PS', rpm: [pBand[0], pBand[pBand.length - 1]] },
+      torque: { value: peakT, unit: 'Nm', rpm: [tBand[0], tBand[tBand.length - 1]] },
+      torqueCurveNm: curve,
+      inertiaKgM2: 0.05,
+    },
+    transmission: {
+      type: 'direct-drive',
+      name: twoSpeed ? 'Two-speed rear reduction' : 'Single-speed reduction',
+      gearRatios: [...primary.reductions],
+      finalDrive: 1,
+      upshiftTimeS: input.shiftTimeS ?? 0.25,
+      downshiftTimeS: input.shiftTimeS ?? 0.25,
+      shiftTorqueDip: input.shiftTorqueDip ?? 0.3,
+      launchClutch: { launchRpm: 0, brakeHoldRpmLimit: 0, creep: input.creep ?? true },
+    },
+    drivetrain: input.drivetrain,
+    chassis: input.chassis,
+    aero: input.aero,
+    tires: input.tires,
+    speedLimiterKmh: input.speedLimiterKmh,
+    factory: input.factory,
+    provenance: input.provenance,
+    notes: input.notes,
+  });
+  // Engine-only estimates (curve shape, boost, spool, inertia, launch rpm, shift
+  // time, AWD split) do not apply to the electric path.
+  const notEv = new Set(['Torque curve shape', 'Boost curve', 'Turbo response', 'Engine inertia', 'Launch rpm', 'Shift time', 'AWD split', 'Torque converter']);
+  return {
+    ...base,
+    transmission: { ...base.transmission, launchClutch: undefined },
+    provenance: base.provenance.filter((p) => p.status !== 'estimated' || !notEv.has(p.parameter) || input.provenance.includes(p)),
+    electric: {
+      motors: input.motors,
+      systemPowerKw: input.systemPowerKw,
+      systemTorqueNm: input.systemTorqueNm,
+      boost: input.boost,
+      creep: input.creep ?? true,
+      ...(input.virtualShift ? { virtualShift: input.virtualShift } : {}),
+    },
   };
 }
 

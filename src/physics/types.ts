@@ -1,4 +1,4 @@
-import type { DriveLayout, TransmissionType } from '../data/types';
+import type { CvtSpec, DriveLayout, TransmissionType } from '../data/types';
 import type { Curve } from './curve';
 
 /**
@@ -29,6 +29,40 @@ export interface SimVehicle {
   tireMu: number;
   rollingResistance: number;
   speedLimitMs: number | null;
+  /** Battery-electric drive (tuned); when present the simulator uses the electric path. */
+  electric?: SimElectric;
+}
+
+export interface SimMotor {
+  axle: 'front' | 'rear';
+  peakPowerW: number;
+  peakTorqueNm: number;
+  maxRpm: number;
+  /** End of the peak-power band, rpm (power ∝ 1/speed above it), or null. */
+  peakPowerEndRpm: number | null;
+  reductions: readonly number[];
+  upshiftMs: number | null;
+  /** Rotor inertia reflected per unit ratio², kg·m². */
+  rotorInertiaKgM2: number;
+}
+
+export interface SimElectric {
+  motors: readonly SimMotor[];
+  systemPowerW: number;
+  systemTorqueNm: number | null;
+  boost: { systemPowerW: number; systemTorqueNm: number | null; durationS: number; trigger: 'launch-control' | 'driver'; armed: boolean } | null;
+  creep: boolean;
+  /** Simulated stepped gearbox (Live Drive option), or null. */
+  virtualShift: SimVirtualShift | null;
+}
+
+export interface SimVirtualShift {
+  label: string;
+  idleRpm: number;
+  redlineRpm: number;
+  revLimitRpm: number;
+  /** Virtual gearbox: overall ratios are virtual engine rpm per wheel rpm. */
+  transmission: SimTransmission;
 }
 
 export interface SimEngine {
@@ -80,6 +114,8 @@ export interface SimTransmission {
   wotUpshiftRpm: number[];
   torqueConverter?: SimTorqueConverter;
   launchClutch?: SimLaunchClutch;
+  /** Belt CVT ratio control; `overallRatios` then hold the simulated steps × final drive. */
+  cvt?: CvtSpec;
 }
 
 export interface DriverInput {
@@ -115,6 +151,12 @@ export interface SimState {
   gear: number;
   shift: ShiftState | null;
   coupling: CouplingState;
+  /**
+   * True while a clutch-open (manual or single-clutch automated-manual) shift
+   * has the clutch disengaged: drive torque ramps out over the first 12 % of
+   * the shift, is zero in the middle and ramps back in over the last 20 %.
+   */
+  clutchOpen: boolean;
   /** Intake manifold pressure, bar absolute. */
   manifoldBar: number;
   engineTorqueNm: number;
@@ -123,6 +165,14 @@ export interface SimState {
   fuelCut: boolean;
   tractionLimited: boolean;
   speedLimited: boolean;
+  /** Electric drive: motor output after shared limits, kW (0 for combustion cars). */
+  motorPowerKw: number;
+  /** Electric drive: seconds of published boost remaining (0 when inactive). */
+  boostS: number;
+  /** Electric drive: the boost has been used on this run. */
+  boostUsed: boolean;
+  /** Electric drive: a launch-control hold (brake + full throttle) has primed the launch boost. */
+  launchPrimed: boolean;
   throttle: number;
   brake: number;
   timeSinceShift: number;
@@ -130,4 +180,7 @@ export interface SimState {
   clutchEngage: number;
   /** Continuous time spent on the rev limiter, s. */
   fuelCutTime: number;
+  /** CVT: pulley ratio (before the final drive) and whether the step-shift program is running. */
+  cvtRatio: number;
+  cvtStepping: boolean;
 }

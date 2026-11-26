@@ -26,17 +26,21 @@ describe('vehicle registry', () => {
 describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name, v) => {
   it('has a valid gearbox', () => {
     const t = v.transmission;
-    expect(t.gearRatios.length).toBeGreaterThanOrEqual(5);
+    // Direct-drive EVs have one reduction (or a two-speed axle); stepped boxes at least five.
+    if (t.type === 'direct-drive') expect([1, 2]).toContain(t.gearRatios.length);
+    else expect(t.gearRatios.length).toBeGreaterThanOrEqual(5);
     expect(t.finalDrive).toHaveLength(t.gearRatios.length);
     const overall = t.gearRatios.map((g, i) => g * t.finalDrive[i]);
     for (let i = 1; i < overall.length; i++) expect(overall[i]).toBeLessThan(overall[i - 1]);
     expect(t.upshiftTimeS).toBeGreaterThan(0);
     expect(t.shiftTorqueDip).toBeGreaterThanOrEqual(0);
-    // A manual cuts drive completely while the clutch is out; automatics only dip.
-    if (t.type === 'manual') expect(t.shiftTorqueDip).toBeLessThanOrEqual(1);
+    // A manual or single-clutch automated manual cuts drive completely while the
+    // clutch is open; converter and dual-clutch automatics only dip.
+    if (t.type === 'manual' || t.type === 'automated-manual') expect(t.shiftTorqueDip).toBeLessThanOrEqual(1);
     else expect(t.shiftTorqueDip).toBeLessThan(1);
     if (t.type === 'torque-converter-automatic') expect(t.torqueConverter).toBeDefined();
-    if (t.type === 'dual-clutch') expect(t.launchClutch).toBeDefined();
+    if (t.type === 'dual-clutch' || t.type === 'automated-manual') expect(t.launchClutch).toBeDefined();
+    if (t.type === 'automated-manual') expect(t.launchClutch?.driverEngageS ?? 0).toBe(0);
   });
 
   it('has a torque curve covering idle to the rev limit that matches the rated figures', () => {
@@ -71,7 +75,7 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
   it('has plausible chassis and aero values', () => {
     const c = v.chassis;
     expect(c.curbMassKg).toBeGreaterThan(900);
-    expect(c.curbMassKg).toBeLessThan(3200);
+    expect(c.curbMassKg).toBeLessThan(3500); // electric pickups (R1T) weigh ≈ 3,250 kg
     expect(c.frontWeightFraction).toBeGreaterThan(0.35); // rear-engine 911s sit near 0.39
     expect(c.frontWeightFraction).toBeLessThan(0.7);
     expect(v.aero.dragCoefficient).toBeGreaterThan(0.2);
@@ -79,7 +83,8 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     expect(v.aero.frontalAreaM2).toBeGreaterThan(1.6);
     expect(v.aero.frontalAreaM2).toBeLessThan(3.8);
     expect(v.drivetrain.efficiency).toBeGreaterThan(0.75);
-    expect(v.drivetrain.efficiency).toBeLessThan(0.95);
+    // A single-reduction electric drive loses less than a multi-gear driveline.
+    expect(v.drivetrain.efficiency).toBeLessThan(v.electric ? 0.98 : 0.95);
   });
 
   it('references valid default tires', () => {

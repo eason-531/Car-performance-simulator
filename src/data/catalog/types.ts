@@ -17,7 +17,8 @@ export type Origin =
   | 'France'
   | 'United Kingdom'
   | 'Sweden'
-  | 'Czechia';
+  | 'Czechia'
+  | 'Croatia';
 
 /** Specification market (country/region the configuration was sold in). */
 export type Market = 'US' | 'UK' | 'DE' | 'IT' | 'TW' | 'EU';

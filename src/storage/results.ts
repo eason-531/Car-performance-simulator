@@ -1,3 +1,4 @@
+import { canonicalId } from '../data/catalog';
 import { emptyMetrics, type PerformanceMetrics } from '../physics/metrics';
 import type { LaunchTechnique, TraceSample } from '../physics/runners';
 import type { TuningConfig } from '../tuning/tuning';
@@ -115,7 +116,7 @@ export function sanitizeResult(raw: unknown): SavedResult | null {
     id: r.id,
     createdAt: r.createdAt,
     source: r.source as ResultSource,
-    vehicleId: r.vehicleId,
+    vehicleId: canonicalId(r.vehicleId),
     vehicleName: r.vehicleName,
     colorSlot: r.colorSlot,
     tuningLabel: r.tuningLabel,

@@ -1,9 +1,10 @@
 import { ATMOSPHERE_BAR, FIXED_DT, GRAVITY, MAX_BRAKE_G, TRACTION_CONTROL_EFFICIENCY } from './constants';
 import { engineTorque, idleThrottle, stepManifold } from './engine';
-import { aeroDragN, rollingResistanceN, tractionLimitN } from './forces';
+import { electricOutput } from './electric';
+import { aeroDragN, axleLoads, rollingResistanceN, tractionLimitN } from './forces';
 import { autoShiftTarget, manualStallProtection, type ShiftContext } from './gearbox';
 import { torqueConverterTorques } from './torqueConverter';
-import type { DriverInput, ShiftMode, SimState, SimVehicle } from './types';
+import type { DriverInput, ShiftMode, SimElectric, SimState, SimVehicle } from './types';
 import { clamp, lerp, radSToRpm, rpmToRadS, smoothstep } from './units';
 
 export interface ShiftRequestResult {
@@ -13,11 +14,26 @@ export interface ShiftRequestResult {
 
 const MIN_ENGINE_RPM = 300;
 
-/** Manual / single-clutch shift: drive torque drops out while the clutch is open. */
+/**
+ * Manual / single-clutch shift envelope: drive torque ramps out over the first
+ * 12 % of the shift as the clutch opens, is zero while it is open, and ramps
+ * back in over the last 20 % as it re-engages.
+ */
 function interruptFactor(p: number): number {
   if (p < 0.12) return 1 - p / 0.12;
   if (p > 0.8) return (p - 0.8) / 0.2;
   return 0;
+}
+
+/**
+ * Simulated shift on an electric car (N e-Shift): the controller pulls torque
+ * down to 20 % over the first 15 % of the change and then restores it in one
+ * step at the end — the "jolt" Hyundai describes.
+ */
+export function virtualShiftFactor(p: number): number {
+  if (p >= 1) return 1;
+  if (p < 0.15) return 1 - (0.8 * p) / 0.15;
+  return 0.2;
 }
 
 export function initialState(vehicle: SimVehicle): SimState {
@@ -27,10 +43,11 @@ export function initialState(vehicle: SimVehicle): SimState {
     speed: 0,
     accel: 0,
     accelFiltered: 0,
-    engineRpm: vehicle.engine.idleRpm,
+    engineRpm: vehicle.electric ? 0 : vehicle.engine.idleRpm,
     gear: 1,
     shift: null,
-    coupling: 'slipping',
+    coupling: vehicle.electric ? 'locked' : 'slipping',
+    clutchOpen: false,
     manifoldBar: 0.35,
     engineTorqueNm: 0,
     driveForceN: 0,
@@ -42,6 +59,12 @@ export function initialState(vehicle: SimVehicle): SimState {
     timeSinceShift: 10,
     clutchEngage: 0,
     fuelCutTime: 0,
+    motorPowerKw: 0,
+    boostS: 0,
+    boostUsed: false,
+    launchPrimed: false,
+    cvtRatio: vehicle.transmission.cvt?.ratioLow ?? 1,
+    cvtStepping: false,
   };
 }
 
@@ -65,6 +88,8 @@ export class VehicleSimulator {
   shiftMode: ShiftMode;
   state: SimState;
 
+  private virtualOn = false;
+
   constructor(vehicle: SimVehicle, shiftMode: ShiftMode = 'auto') {
     this.vehicle = vehicle;
     this.shiftMode = shiftMode;
@@ -73,26 +98,80 @@ export class VehicleSimulator {
 
   reset(): void {
     this.state = initialState(this.vehicle);
+    if (this.virtualOn) this.state.engineRpm = this.vehicle.electric!.virtualShift!.idleRpm;
+  }
+
+  /** Whether an electric car's simulated stepped gearbox (e.g. N e-Shift) is in use. */
+  get virtualShift(): boolean {
+    return this.virtualOn;
+  }
+
+  /**
+   * Switch an electric car's simulated stepped gearbox on or off (Live Drive only).
+   * Switching on picks the virtual gear that keeps the virtual rpm under redline;
+   * switching off returns to the real reduction. No-op for cars without one.
+   */
+  setVirtualShift(on: boolean): void {
+    const vs = this.vehicle.electric?.virtualShift;
+    const next = on && !!vs;
+    if (next === this.virtualOn) return;
+    this.virtualOn = next;
+    const s = this.state;
+    s.shift = null;
+    s.timeSinceShift = 0;
+    s.fuelCut = false;
+    s.fuelCutTime = 0;
+    if (!next || !vs) {
+      s.gear = 1;
+      return;
+    }
+    const n = vs.transmission.overallRatios.length;
+    let g = 1;
+    while (g < n && this.inputRpmInGear(g) > vs.redlineRpm * 0.95) g++;
+    s.gear = g;
+    s.engineRpm = Math.max(vs.idleRpm, this.inputRpmInGear(g));
+  }
+
+  /** The transmission the driver's gears refer to (virtual gears while simulated shifting is on). */
+  private get gearbox() {
+    return this.virtualOn ? this.vehicle.electric!.virtualShift!.transmission : this.vehicle.transmission;
   }
 
   get gearCount(): number {
-    return this.vehicle.transmission.overallRatios.length;
+    return this.gearbox.overallRatios.length;
   }
 
-  /** Gearbox input-shaft rpm for a gear at the current road speed. */
+  /** Gearbox input-shaft rpm (virtual engine rpm while simulated shifting is on) for a gear at the current road speed. */
   inputRpmInGear(gear: number): number {
     const wheelOmega = this.state.speed / this.vehicle.wheelRadiusM;
-    return radSToRpm(wheelOmega * this.vehicle.transmission.overallRatios[gear - 1]);
+    return radSToRpm(wheelOmega * this.gearbox.overallRatios[gear - 1]);
   }
 
   /** Manual paddle request. Downshifts are refused if they would over-rev the engine. */
   requestShift(direction: 1 | -1): ShiftRequestResult {
     const s = this.state;
     if (s.shift) return { ok: false, reason: 'Shift in progress' };
+    const cvt = this.vehicle.transmission.cvt;
+    if (cvt && !this.virtualOn) {
+      // Paddles select a simulated step, starting from the one nearest the current ratio.
+      const steps = this.vehicle.transmission.gearRatios;
+      let g = 1;
+      steps.forEach((r, i) => {
+        if (Math.abs(r - s.cvtRatio) < Math.abs(steps[g - 1] - s.cvtRatio)) g = i + 1;
+      });
+      const to = g + direction;
+      if (to < 1) return { ok: false, reason: 'Already in 1st' };
+      if (to > steps.length) return { ok: false, reason: 'Already in top gear' };
+      if (direction < 0 && this.inputRpmInGear(to) > this.vehicle.engine.revLimitRpm - 100) return { ok: false, reason: 'Over-rev protection' };
+      s.gear = to;
+      s.timeSinceShift = 0;
+      return { ok: true };
+    }
     const target = s.gear + direction;
     if (target < 1) return { ok: false, reason: 'Already in 1st' };
     if (target > this.gearCount) return { ok: false, reason: 'Already in top gear' };
-    if (direction < 0 && this.inputRpmInGear(target) > this.vehicle.engine.revLimitRpm - 100) {
+    const limit = this.virtualOn ? this.vehicle.electric!.virtualShift!.revLimitRpm : this.vehicle.engine.revLimitRpm;
+    if (direction < 0 && this.inputRpmInGear(target) > limit - 100) {
       return { ok: false, reason: 'Over-rev protection' };
     }
     this.startShift(target);
@@ -101,7 +180,7 @@ export class VehicleSimulator {
 
   private startShift(target: number): void {
     const s = this.state;
-    const t = this.vehicle.transmission;
+    const t = this.gearbox;
     const up = target > s.gear;
     const steps = Math.abs(target - s.gear);
     // Skip-shifts take a little longer than single steps.
@@ -118,6 +197,10 @@ export class VehicleSimulator {
   }
 
   step(dt: number, input: DriverInput): void {
+    if (this.vehicle.electric) {
+      this.stepElectric(dt, input);
+      return;
+    }
     const v = this.vehicle;
     const s = this.state;
     const e = v.engine;
@@ -127,7 +210,12 @@ export class VehicleSimulator {
     const brake = clamp(input.brake, 0, 1);
     const wheelOmega = s.speed / r;
 
-    // 1. Gearbox decisions --------------------------------------------------
+    // 1. Gearbox decisions (a CVT runs its own ratio control) ----------------
+    let ratio: number;
+    let torqueFactor = 1;
+    if (tr.cvt) {
+      ratio = this.stepCvtRatio(dt, throttleCmd, brake, wheelOmega);
+    } else {
     s.timeSinceShift += dt;
     if (!s.shift) {
       if (s.speed < 0.8 && s.gear !== 1) {
@@ -149,8 +237,7 @@ export class VehicleSimulator {
     }
 
     // 2. Shift progress ------------------------------------------------------
-    let ratio = tr.overallRatios[s.gear - 1];
-    let torqueFactor = 1;
+    ratio = tr.overallRatios[s.gear - 1];
     if (s.shift) {
       const sh = s.shift;
       sh.elapsed += dt;
@@ -159,6 +246,8 @@ export class VehicleSimulator {
       torqueFactor = tr.shiftProfile === 'interrupt' ? interruptFactor(p) : 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
       if (p >= 1) s.shift = null;
     }
+    }
+    s.clutchOpen = tr.shiftProfile === 'interrupt' && s.shift !== null && torqueFactor < 1;
     const inputOmega = wheelOmega * ratio;
     const inputRpm = radSToRpm(inputOmega);
 
@@ -296,6 +385,248 @@ export class VehicleSimulator {
     s.throttle = throttleCmd;
     s.brake = brake;
     s.time += dt;
+  }
+
+  /**
+   * CVT ratio control (Honda LL-CVT style). Returns the overall ratio.
+   * - At rest: the launch (lowest) ratio; the torque converter provides the launch.
+   * - Manual (paddles): the selected simulated step, reached at the step rate.
+   * - Hard acceleration (throttle ≥ the step-shift threshold): the step-shift
+   *   program holds a step while the engine climbs to the step rpm, then moves
+   *   to the next step at the step rate; past the last step it holds the hold
+   *   rpm continuously. Entering the program picks the step that keeps the
+   *   engine under the step rpm (a kickdown).
+   * - Otherwise: a part-throttle engine-speed target (or the braking target)
+   *   reached at the normal ratio rate, within the pulley span.
+   * `gear` reports the nearest simulated step for display.
+   */
+  private stepCvtRatio(dt: number, throttle: number, brake: number, wheelOmega: number): number {
+    const s = this.state;
+    const tr = this.vehicle.transmission;
+    const c = tr.cvt!;
+    const fd = tr.finalDrive[0];
+    const steps = tr.gearRatios;
+    const n = steps.length;
+    const wheelRpm = radSToRpm(wheelOmega);
+    const rpmAt = (pulley: number) => wheelRpm * pulley * fd;
+    s.timeSinceShift += dt;
+    s.shift = null;
+    let target: number;
+    let rate = c.ratioRatePerS;
+    const stepping = this.shiftMode === 'auto' && throttle >= c.stepThrottle && s.speed >= 0.8;
+    if (s.speed < 0.8) {
+      s.gear = 1;
+      target = c.ratioLow;
+    } else if (this.shiftMode === 'manual') {
+      // Stall protection: drop a step before the engine lugs below idle.
+      if (s.gear > 1 && rpmAt(steps[s.gear - 1]) < this.vehicle.engine.idleRpm * 1.05) s.gear -= 1;
+      target = steps[s.gear - 1];
+      rate = c.stepRatePerS;
+    } else if (stepping) {
+      if (!s.cvtStepping) {
+        let g = 1;
+        while (g < n && rpmAt(steps[g - 1]) > c.stepUpshiftRpm * 0.98) g++;
+        s.gear = g;
+      } else if (s.gear < n && rpmAt(steps[s.gear - 1]) >= c.stepUpshiftRpm) {
+        s.gear += 1;
+        s.timeSinceShift = 0;
+      }
+      target = steps[s.gear - 1];
+      if (s.gear === n) target = Math.min(target, Math.max(c.ratioHigh, c.holdRpm / Math.max(rpmAt(1), 1)));
+      rate = c.stepRatePerS;
+    } else {
+      const rpmTarget = brake > 0.1 ? c.brakingRpm : lerp(c.partThrottleRpm[0], c.partThrottleRpm[1], Math.min(1, throttle / c.stepThrottle) ** 1.5);
+      target = clamp(rpmTarget / Math.max(rpmAt(1), 1), c.ratioHigh, c.ratioLow);
+    }
+    s.cvtStepping = stepping;
+    s.cvtRatio = clamp(s.cvtRatio + clamp(target - s.cvtRatio, -rate * dt, rate * dt), c.ratioHigh, c.ratioLow);
+    if (!stepping && this.shiftMode === 'auto' && s.speed >= 0.8) {
+      // Display the nearest simulated step.
+      let best = 1;
+      steps.forEach((r, i) => {
+        if (Math.abs(r - s.cvtRatio) < Math.abs(steps[best - 1] - s.cvtRatio)) best = i + 1;
+      });
+      s.gear = best;
+    }
+    return s.cvtRatio * fd;
+  }
+
+  /**
+   * Battery-electric step: motors per axle (peak torque to base speed, then
+   * constant power, fading at max speed), shared system torque/power limits with
+   * any published boost, per-axle tire limits under weight transfer, creep, the
+   * speed limiter and optional two-speed axles. No clutch, converter or idle.
+   */
+  private stepElectric(dt: number, input: DriverInput): void {
+    const v = this.vehicle;
+    const s = this.state;
+    const el = v.electric!;
+    const tr = v.transmission;
+    const throttleCmd = clamp(input.throttle, 0, 1);
+    const brake = clamp(input.brake, 0, 1);
+    const twoSpeed = el.motors.find((m) => m.reductions.length > 1);
+    const vs = this.virtualOn ? el.virtualShift : null;
+    if (vs) {
+      this.stepVirtualShift(dt, input, vs);
+      return;
+    }
+
+    // 1. Two-speed axle schedule (first below the published change speed).
+    s.timeSinceShift += dt;
+    if (!s.shift && twoSpeed && twoSpeed.upshiftMs !== null) {
+      if (s.speed < 0.8) s.gear = 1;
+      else if (s.gear === 1 && s.speed >= twoSpeed.upshiftMs && this.shiftMode === 'auto') this.startShift(2);
+      else if (s.gear === 2 && s.speed < twoSpeed.upshiftMs * 0.6 && this.shiftMode === 'auto' && throttleCmd > 0.5) this.startShift(1);
+    }
+    let torqueFactor = 1;
+    let blendTo: { gear: number; f: number } | undefined;
+    if (s.shift) {
+      const sh = s.shift;
+      sh.elapsed += dt;
+      const p = Math.min(1, sh.elapsed / sh.duration);
+      blendTo = { gear: sh.to, f: smoothstep(p) };
+      torqueFactor = 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
+      if (p >= 1) s.shift = null;
+    }
+    const gearFrom = s.shift ? s.shift.from : s.gear;
+
+    this.driveElectric(dt, input, throttleCmd, brake, gearFrom, blendTo, torqueFactor);
+    const primary = this.lastElectric!.motors.find((mo) => mo.axle === 'rear') ?? this.lastElectric!.motors[0];
+    s.engineRpm = primary.rpm;
+    s.fuelCut = false;
+    s.fuelCutTime = 0;
+  }
+
+  /**
+   * Electric step with the simulated stepped gearbox (N e-Shift): the virtual
+   * gear sets a virtual engine speed for the tach, shift lights and the hard
+   * limiter; each change interrupts motor torque and restores it with a jolt.
+   * The real single-speed reduction is unchanged.
+   */
+  private stepVirtualShift(dt: number, input: DriverInput, vs: NonNullable<SimElectric['virtualShift']>): void {
+    const s = this.state;
+    const vt = vs.transmission;
+    const throttleCmd = clamp(input.throttle, 0, 1);
+    const brake = clamp(input.brake, 0, 1);
+    s.timeSinceShift += dt;
+    if (!s.shift) {
+      if (s.speed < 0.8 && s.gear !== 1) {
+        s.gear = 1;
+      } else {
+        const ctx: ShiftContext = { gear: s.gear, inputRpm: this.inputRpmInGear(s.gear), throttle: throttleCmd, timeSinceShift: s.timeSinceShift, idleRpm: vs.idleRpm };
+        let target = this.shiftMode === 'auto' ? autoShiftTarget(vt, ctx) : manualStallProtection(ctx);
+        if (this.shiftMode === 'auto' && target === null && s.fuelCutTime > 0.4 && s.gear < this.gearCount) target = s.gear + 1;
+        if (target !== null && target !== s.gear) this.startShift(target);
+      }
+    }
+    let torqueFactor = 1;
+    if (s.shift) {
+      const sh = s.shift;
+      sh.elapsed += dt;
+      const p = Math.min(1, sh.elapsed / sh.duration);
+      torqueFactor = virtualShiftFactor(p);
+      if (p >= 1) s.shift = null;
+    }
+    // Hard limiter at the virtual rev limit (150 rpm hysteresis).
+    const virtualRpm = this.inputRpmInGear(s.gear);
+    if (virtualRpm >= vs.revLimitRpm) s.fuelCut = true;
+    else if (virtualRpm < vs.revLimitRpm - 150) s.fuelCut = false;
+    s.fuelCutTime = s.fuelCut || virtualRpm > vs.revLimitRpm - 160 ? s.fuelCutTime + dt : 0;
+    this.driveElectric(dt, input, s.fuelCut ? 0 : throttleCmd, brake, 1, undefined, torqueFactor);
+    s.engineRpm = Math.max(vs.idleRpm, virtualRpm);
+    s.throttle = throttleCmd;
+  }
+
+  private lastElectric: ReturnType<typeof electricOutput> | null = null;
+
+  /** Shared electric drive: speed limiter, boost, motor output, traction, creep and integration. */
+  private driveElectric(
+    dt: number,
+    input: DriverInput,
+    throttleCmd: number,
+    brake: number,
+    gearFrom: number,
+    blendTo: { gear: number; f: number } | undefined,
+    torqueFactor: number,
+  ): void {
+    const v = this.vehicle;
+    const s = this.state;
+    const el = v.electric!;
+    const r = v.wheelRadiusM;
+
+    // 2. Speed limiter.
+    let throttle = throttleCmd;
+    s.speedLimited = false;
+    if (v.speedLimitMs !== null && s.speed > v.speedLimitMs - 0.5) {
+      const allowed = clamp((v.speedLimitMs - s.speed) / 0.5, 0, 1);
+      if (throttle > allowed) {
+        throttle = allowed;
+        s.speedLimited = true;
+      }
+    }
+    const stationaryHold = s.speed < 0.3 && brake > 0.2;
+
+    // 3. Published boost: launch-control boosts prime on a brake-held full-throttle
+    // launch and fire on release; driver boosts fire when armed.
+    if (el.boost) {
+      if (el.boost.trigger === 'launch-control') {
+        if (stationaryHold && throttle > 0.9) s.launchPrimed = true;
+        else if (s.launchPrimed && !stationaryHold && throttle > 0.9 && !s.boostUsed) {
+          s.boostS = el.boost.durationS;
+          s.boostUsed = true;
+          s.launchPrimed = false;
+        }
+      } else if (el.boost.armed && throttle > 0.9 && !s.boostUsed && s.boostS === 0) {
+        s.boostS = el.boost.durationS;
+        s.boostUsed = true;
+      }
+    }
+    const boosting = s.boostS > 0;
+    if (boosting) s.boostS = Math.max(0, s.boostS - dt);
+
+    // 4. Motor output and per-axle traction.
+    const out = electricOutput(v, el, s.speed, throttle, gearFrom, { boosting, blendTo, torqueFactor });
+    const loads = axleLoads(v, s.accelFiltered);
+    const mu = v.tireMu * TRACTION_CONTROL_EFFICIENCY;
+    let front = Math.min(out.front, mu * loads.front);
+    let rear = Math.min(out.rear, mu * loads.rear);
+    s.tractionLimited = (front < out.front - 1e-6 || rear < out.rear - 1e-6) && !stationaryHold;
+    // Creep off the brake at a walking pace, from whichever axle is driven.
+    if (el.creep && throttleCmd < 0.02 && brake < 0.05 && s.speed < 2) {
+      const creepN = v.massKg * 0.6 * (1 - s.speed / 2);
+      if (el.motors.some((m) => m.axle === 'rear')) rear += creepN;
+      else front += creepN;
+    }
+    const driveForce = stationaryHold ? 0 : front + rear;
+
+    // 5. Resistances and integration.
+    const m = v.massKg;
+    const brakeForce = brake * Math.min(MAX_BRAKE_G, v.tireMu * 1.05) * m * GRAVITY;
+    const resist = aeroDragN(v, s.speed) + rollingResistanceN(v, s.speed) + brakeForce;
+    const mass = m + (v.wheelInertiaKgM2 + out.reflectedInertiaKgM2) / (r * r);
+    let accel: number;
+    if (s.speed <= 1e-6 && driveForce - resist <= 0) {
+      accel = 0;
+      s.speed = 0;
+    } else {
+      accel = (driveForce - resist) / mass;
+      s.speed = Math.max(0, s.speed + accel * dt);
+      if (s.speed === 0) accel = 0;
+    }
+    s.distance += s.speed * dt;
+    s.accel = accel;
+    s.accelFiltered += (accel - s.accelFiltered) * (1 - Math.exp(-dt / 0.12));
+    const primary = out.motors.find((mo) => mo.axle === 'rear') ?? out.motors[0];
+    s.engineTorqueNm = primary.torqueNm;
+    s.motorPowerKw = out.powerW / 1000;
+    s.coupling = 'locked';
+    s.clutchOpen = false;
+    s.manifoldBar = ATMOSPHERE_BAR;
+    s.driveForceN = driveForce;
+    s.throttle = clamp(input.throttle, 0, 1);
+    s.brake = brake;
+    s.time += dt;
+    this.lastElectric = out;
   }
 
   /** Boost gauge reading, bar (negative = vacuum). */

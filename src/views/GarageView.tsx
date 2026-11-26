@@ -9,6 +9,8 @@ import { MARKET_LABEL, STATUS_LABEL, type CatalogEntry, type MeasuredBenchmark, 
 import { getTireCompound } from '../data/tires';
 import { fmt, fmtSeconds, ordinalGear } from '../lib/format';
 import { DRIVER_MASS_KG } from '../physics/constants';
+import { topSpeedBreakdown } from '../physics/dyno';
+import { topSpeedText } from '../lib/topSpeed';
 import { kmhToMs, radSToRpm } from '../physics/units';
 import { useApp } from '../state/AppState';
 import { resolveTireSize, tireRollingRadiusM } from '../tuning/buildSimVehicle';
@@ -387,7 +389,6 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
   const spec = entry.sim!;
   const app = useApp();
   const stock = app.simVehicle(spec.id, 'stock');
-  const st = stockStats(entry.id);
   const e = spec.engine;
   const t = spec.transmission;
   const c = spec.chassis;
@@ -400,12 +401,38 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
         <Panel title="Simulation specifications">
           <div className="spec-list">
             <h3 className="spec-list__group">Engine</h3>
-            <Spec label="Engine" value={`${e.code} — ${e.description}`} />
-            <Spec label="Displacement" value={`${fmt(e.displacementCc)} cc`} />
-            <Spec label="Rated" value={`${fmt(e.rated.powerPs)} PS @ ${rpmRange(e.rated.powerRpm)} · ${fmt(e.rated.torqueNm)} Nm @ ${rpmRange(e.rated.torqueRpm)} rpm`} />
-            <Spec label="Idle / redline / limiter" value={`${fmt(e.idleRpm)} / ${fmt(e.redlineRpm)} / ${fmt(e.revLimitRpm)} rpm`} />
+            {spec.electric ? (
+              <>
+                <Spec label="Drive" value={`${e.code} — ${e.description}`} />
+                {spec.electric.motors.map((m, i) => (
+                  <Spec
+                    key={i}
+                    label={`${m.axle === 'front' ? 'Front' : 'Rear'} motor`}
+                    value={`${fmt(m.peakPowerKw)} kW · ${fmt(m.peakTorqueNm)} Nm · max ${fmt(m.maxRpm)} rpm${m.peakPowerEndRpm ? ` (peak power to ${fmt(m.peakPowerEndRpm)} rpm)` : ''} · reduction ${m.reductions.map((r) => r.toFixed(2)).join(' / ')}${m.upshiftKmh ? ` (2nd from ${fmt(m.upshiftKmh)} km/h)` : ''}`}
+                  />
+                ))}
+                <Spec
+                  label="Shared limits"
+                  value={`${fmt(spec.electric.systemPowerKw)} kW${spec.electric.systemTorqueNm ? ` · ${fmt(spec.electric.systemTorqueNm)} Nm` : ''}${spec.electric.boost ? ` · ${spec.electric.boost.label}: ${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s (${spec.electric.boost.trigger === 'launch-control' ? 'launch control' : 'driver-armed'})` : ''}`}
+                />
+                <Spec label="Creep" value={spec.electric.creep ? 'Creeps off the brake' : 'Holds still at idle'} />
+              </>
+            ) : (
+              <>
+                <Spec label="Engine" value={`${e.code} — ${e.description}`} />
+                <Spec label="Displacement" value={`${fmt(e.displacementCc)} cc`} />
+                <Spec label="Rated" value={`${fmt(e.rated.powerPs)} PS @ ${rpmRange(e.rated.powerRpm)} · ${fmt(e.rated.torqueNm)} Nm @ ${rpmRange(e.rated.torqueRpm)} rpm`} />
+                <Spec label="Idle / redline / limiter" value={`${fmt(e.idleRpm)} / ${fmt(e.redlineRpm)} / ${fmt(e.revLimitRpm)} rpm`} />
+              </>
+            )}
             <h3 className="spec-list__group">Driveline</h3>
             <Spec label="Transmission" value={t.name} />
+            {t.cvt && (
+              <>
+                <Spec label="CVT ratio span" value={`${t.cvt.ratioLow.toFixed(3)}–${t.cvt.ratioHigh.toFixed(3)} · up to ${t.cvt.ratioRatePerS} ratio/s · ${t.gearRatios.length} simulated steps for paddles and Step Shift`} />
+                <Spec label="Step Shift" value={`From ${Math.round(t.cvt.stepThrottle * 100)} % throttle: steps change at ${fmt(t.cvt.stepUpshiftRpm)} rpm (${t.cvt.stepRatePerS} ratio/s); ${fmt(t.cvt.holdRpm)} rpm held past the last step`} />
+              </>
+            )}
             <Spec
               label={t.frontAxleRatio !== undefined ? 'Final drive (rear)' : 'Final drive'}
               value={[...new Set(t.finalDrive)].map((f) => f.toFixed(3)).join(' / ')}
@@ -429,13 +456,8 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
             <Spec label="Aerodynamics" value={`Cd ${spec.aero.dragCoefficient} · A ${spec.aero.frontalAreaM2} m² · CdA ${(spec.aero.dragCoefficient * spec.aero.frontalAreaM2).toFixed(3)} m²`} />
             <Spec label="Tires (stock)" value={`${size.label} · ${getTireCompound(spec.tires.defaultCompoundId).label}`} />
             <Spec label="Speed limiter" value={spec.speedLimiterKmh ? `${spec.speedLimiterKmh} km/h` : 'None modelled'} />
-            {st && (
-              <Spec
-                label="Simulated top speed"
-                value={`${fmt(st.topSpeedKmh)} km/h · ${spec.speedLimiterKmh ? 'capped by the modelled limiter' : 'uncapped gearing/drag prediction, not a published or governed figure'}`}
-              />
-            )}
-            <Spec label="Stage 1" value={spec.stage1 ? `≈ ${spec.stage1.claimedPowerPs} PS / ${spec.stage1.claimedTorqueNm} Nm (estimated)` : 'Not offered for this configuration'} />
+            <Spec label="Simulated top speed" value={topSpeedText(topSpeedBreakdown(stock))} />
+            {!spec.electric && <Spec label="Stage 1" value={spec.stage1 ? `≈ ${spec.stage1.claimedPowerPs} PS / ${spec.stage1.claimedTorqueNm} Nm (estimated)` : 'Not offered for this configuration'} />}
           </div>
         </Panel>
         <Panel title="Gearing" subtitle={`Speed at ${fmt(e.revLimitRpm)} rpm on ${size.label} (${(tireRollingRadiusM(size.rear) * 1000).toFixed(0)} mm rolling radius)`}>
@@ -443,7 +465,7 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
             <table className="table table--numeric">
               <thead>
                 <tr>
-                  <th scope="col">Gear</th>
+                  <th scope="col">{t.cvt ? 'Step' : 'Gear'}</th>
                   <th scope="col">Ratio</th>
                   <th scope="col">Overall</th>
                   <th scope="col">km/h @ limiter</th>
@@ -451,13 +473,13 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
                 </tr>
               </thead>
               <tbody>
-                {t.gearRatios.map((g, i) => {
-                  const overall = g * t.finalDrive[i];
+                {(t.cvt ? [...t.gearRatios, t.cvt.ratioHigh] : t.gearRatios).map((g, i) => {
+                  const overall = g * t.finalDrive[Math.min(i, t.finalDrive.length - 1)];
                   const vmax = ((e.revLimitRpm / overall) * 2 * Math.PI * radius * 3.6) / 60;
                   const rpm100 = radSToRpm((kmhToMs(100) / radius) * overall);
                   return (
                     <tr key={i}>
-                      <th scope="row">{i + 1}</th>
+                      <th scope="row">{t.cvt && i === t.gearRatios.length ? 'Top' : i + 1}</th>
                       <td>{g.toFixed(3)}</td>
                       <td>{overall.toFixed(2)}</td>
                       <td>{fmt(vmax)}</td>

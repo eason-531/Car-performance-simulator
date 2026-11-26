@@ -57,7 +57,31 @@ export function TuningView() {
 
       <div className="tuning__layout">
         <div className="tuning__controls">
-          <Panel title="ECU calibration" subtitle={`${spec.engine.code} · ${spec.engine.description}`}>
+          <Panel title={spec.electric ? 'Electric drive' : 'ECU calibration'} subtitle={`${spec.engine.code} · ${spec.engine.description}`}>
+            {spec.electric ? (
+              <>
+                <p className="help">
+                  {spec.electric.motors.length} motor{spec.electric.motors.length > 1 ? 's' : ''} (
+                  {spec.electric.motors.map((m) => `${m.axle} ${fmt(m.peakPowerKw)} kW`).join(' + ')}), shared limit {fmt(spec.electric.systemPowerKw)} kW.
+                  There is no ECU stage for electric cars; the power adjustment scales the motors and the shared limits together.
+                </p>
+                {spec.electric.boost?.trigger === 'driver' && (
+                  <Toggle
+                    checked={tuning.electricBoostArmed ?? spec.electric.boost.armedByDefault ?? false}
+                    onChange={(electricBoostArmed) => update({ electricBoostArmed })}
+                    label={`${spec.electric.boost.label} (${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s)`}
+                    description="Armed: the boost fires on the next full-throttle pull."
+                  />
+                )}
+                {spec.electric.boost?.trigger === 'launch-control' && (
+                  <p className="help">
+                    {spec.electric.boost.label}: {fmt(spec.electric.boost.systemPowerKw)} kW for {spec.electric.boost.durationS} s after a launch-control
+                    (brake-held) start.
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
             <Segmented<EcuStage>
               size="lg"
               ariaLabel="ECU stage"
@@ -83,6 +107,8 @@ export function TuningView() {
                   ? 'Factory calibration.'
                   : 'Factory calibration. No Stage 1 is modelled for this configuration because no credible, documented calibration was found.'}
             </p>
+              </>
+            )}
             <Slider
               label="Power adjustment"
               value={tuning.powerAdjustPct}
@@ -91,7 +117,7 @@ export function TuningView() {
               step={TUNING_LIMITS.powerAdjustPct.step}
               onChange={(powerAdjustPct) => update({ powerAdjustPct })}
               format={(v) => `${v > 0 ? '+' : ''}${v} %`}
-              hint="Scales the whole torque curve (and boost) — e.g. fuel quality, intake/exhaust, or a dyno-measured offset."
+              hint={spec.electric ? 'Scales every motor and the shared output limit.' : 'Scales the whole torque curve (and boost) — e.g. fuel quality, intake/exhaust, or a dyno-measured offset.'}
               onReset={() => update({ powerAdjustPct: 0 })}
               modified={tuning.powerAdjustPct !== 0}
             />

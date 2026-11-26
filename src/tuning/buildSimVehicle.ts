@@ -3,7 +3,7 @@ import type { TireDims, TireSizeOption, VehicleSpec } from '../data/types';
 import { DEFAULT_CREEP_TORQUE_NM, DRIVER_MASS_KG } from '../physics/constants';
 import { Curve } from '../physics/curve';
 import { computeWotUpshiftRpms } from '../physics/gearbox';
-import type { SimTransmission, SimVehicle } from '../physics/types';
+import type { SimElectric, SimTransmission, SimVehicle } from '../physics/types';
 import { kmhToMs, rpmToRadS } from '../physics/units';
 import { defaultTuning, type TuningConfig } from './tuning';
 
@@ -61,9 +61,13 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     upshiftTimeS: t.upshiftTimeS * shiftScale,
     downshiftTimeS: t.downshiftTimeS * shiftScale,
     shiftTorqueDip: t.shiftTorqueDip,
-    shiftProfile: t.shiftProfile ?? (t.type === 'manual' ? 'interrupt' : 'blend'),
+    shiftProfile: t.shiftProfile ?? (t.type === 'manual' || t.type === 'automated-manual' ? 'interrupt' : 'blend'),
     maxAutoUpshiftRpm: t.maxAutoUpshiftRpm,
-    wotUpshiftRpm: computeWotUpshiftRpms(torque, overallRatios, t.maxAutoUpshiftRpm, spec.engine.revLimitRpm),
+    // A CVT's simulated steps change at the step-shift rpm; other gearboxes at the best full-throttle point.
+    wotUpshiftRpm: t.cvt
+      ? overallRatios.map((_, i) => (i < overallRatios.length - 1 ? t.cvt!.stepUpshiftRpm : spec.engine.revLimitRpm))
+      : computeWotUpshiftRpms(torque, overallRatios, t.maxAutoUpshiftRpm, spec.engine.revLimitRpm),
+    ...(t.cvt ? { cvt: t.cvt } : {}),
   };
   if (t.torqueConverter) {
     const stallOmega = rpmToRadS(t.torqueConverter.stallRpm);
@@ -80,7 +84,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
       launchRpm: t.launchClutch.launchRpm,
       brakeHoldRpmLimit: t.launchClutch.brakeHoldRpmLimit,
       maxClutchTorqueNm: t.launchClutch.maxClutchTorqueNm,
-      creep: t.launchClutch.creep ?? t.type !== 'manual',
+      creep: t.launchClutch.creep ?? t.type === 'dual-clutch',
       creepTorqueNm: t.launchClutch.creepTorqueNm ?? DEFAULT_CREEP_TORQUE_NM,
       driverEngageS: t.launchClutch.driverEngageS ?? 0,
     };
@@ -133,5 +137,61 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     tireMu: compound.mu * widthFactor * (spec.tires.gripScale ?? 1),
     rollingResistance: compound.rollingResistance,
     speedLimitMs: tuning.speedLimiter && spec.speedLimiterKmh !== null ? kmhToMs(spec.speedLimiterKmh) : null,
+    ...(spec.electric ? { electric: buildSimElectric(spec, tuning) } : {}),
+  };
+}
+
+/** Rotor inertia per motor (reflected through its reduction), kg·m² — a typical traction-motor value. */
+export const MOTOR_ROTOR_INERTIA_KG_M2 = 0.05;
+
+/** Electric drive after tuning: the power adjustment scales every motor and the shared limits. */
+function buildSimElectric(spec: VehicleSpec, tuning: TuningConfig): SimElectric {
+  const el = spec.electric!;
+  const k = 1 + tuning.powerAdjustPct / 100;
+  return {
+    motors: el.motors.map((m) => ({
+      axle: m.axle,
+      peakPowerW: m.peakPowerKw * 1000 * k,
+      peakTorqueNm: m.peakTorqueNm * k,
+      maxRpm: m.maxRpm,
+      peakPowerEndRpm: m.peakPowerEndRpm ?? null,
+      reductions: [...m.reductions],
+      upshiftMs: m.upshiftKmh !== undefined ? kmhToMs(m.upshiftKmh) : null,
+      rotorInertiaKgM2: MOTOR_ROTOR_INERTIA_KG_M2,
+    })),
+    systemPowerW: el.systemPowerKw * 1000 * k,
+    systemTorqueNm: el.systemTorqueNm !== undefined ? el.systemTorqueNm * k : null,
+    boost: el.boost
+      ? {
+          systemPowerW: el.boost.systemPowerKw * 1000 * k,
+          systemTorqueNm: el.boost.systemTorqueNm !== undefined ? el.boost.systemTorqueNm * k : null,
+          durationS: el.boost.durationS,
+          trigger: el.boost.trigger,
+          armed: tuning.electricBoostArmed ?? el.boost.armedByDefault ?? el.boost.trigger === 'launch-control',
+        }
+      : null,
+    creep: el.creep,
+    virtualShift: el.virtualShift
+      ? {
+          label: el.virtualShift.label,
+          idleRpm: el.virtualShift.idleRpm,
+          redlineRpm: el.virtualShift.redlineRpm,
+          revLimitRpm: el.virtualShift.revLimitRpm,
+          transmission: {
+            type: 'dual-clutch',
+            gearRatios: [...el.virtualShift.ratios],
+            finalDrive: el.virtualShift.ratios.map(() => 1),
+            overallRatios: [...el.virtualShift.ratios],
+            upshiftTimeS: el.virtualShift.upshiftTimeS,
+            downshiftTimeS: el.virtualShift.downshiftTimeS,
+            shiftTorqueDip: 1,
+            shiftProfile: 'interrupt',
+            maxAutoUpshiftRpm: el.virtualShift.redlineRpm,
+            // Motor output does not depend on the virtual gear, so the best
+            // full-throttle change is at the virtual redline.
+            wotUpshiftRpm: el.virtualShift.ratios.map((_, i, a) => (i < a.length - 1 ? el.virtualShift!.redlineRpm : el.virtualShift!.revLimitRpm)),
+          },
+        }
+      : null,
   };
 }

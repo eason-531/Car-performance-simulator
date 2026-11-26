@@ -6,7 +6,20 @@ import { useApp } from '../../state/AppState';
 import { Icon } from '../Icon';
 import { CatalogBrowser, ClassBadge } from './CatalogBrowser';
 
-/** Modal car picker: keyboard accessible (Escape closes, focus returns to the opener). */
+/**
+ * Touch-first devices (phones, tablets): focusing a text field there opens the
+ * on-screen keyboard, so the picker must not put focus in its search field
+ * until the user taps it.
+ */
+function isTouchFirst(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+}
+
+/**
+ * Modal car picker: keyboard accessible (Escape closes, focus returns to the
+ * opener). Desktop focus starts in the search field; on touch-first devices it
+ * starts on the dialog itself so the on-screen keyboard stays down.
+ */
 export function CarPickerDialog({
   title,
   selectedId,
@@ -22,6 +35,7 @@ export function CarPickerDialog({
 }) {
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
+  const [touchFirst] = useState(isTouchFirst);
   // Capture the opener during the first render: by the time effects run, the
   // search field has already taken focus via autoFocus.
   const [opener] = useState(() => (typeof document === 'undefined' ? null : (document.activeElement as HTMLElement | null)));
@@ -32,11 +46,14 @@ export function CarPickerDialog({
     onCloseRef.current = onClose;
   });
   useEffect(() => {
-    // Own the focus while open. On first mount the search field's autoFocus has
-    // already done this; under StrictMode's development effect replay the
-    // cleanup below has just handed focus back to the opener, so take it back.
+    // Own the focus while open. On desktop the search field's autoFocus has
+    // already done this on first mount; on touch-first devices focus the dialog
+    // itself (no on-screen keyboard). Under StrictMode's development effect
+    // replay the cleanup below has just handed focus back to the opener, so
+    // take it back the same way.
     if (panel.current && !panel.current.contains(document.activeElement)) {
-      (panel.current.querySelector<HTMLElement>('input') ?? panel.current.querySelector<HTMLElement>('button:not([disabled])'))?.focus();
+      const target = touchFirst ? panel.current : (panel.current.querySelector<HTMLElement>('input') ?? panel.current.querySelector<HTMLElement>('button:not([disabled])'));
+      target?.focus({ preventScroll: true });
     }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -69,7 +86,7 @@ export function CarPickerDialog({
       // also lands here; the setup above immediately reclaims focus.)
       if (opener && opener.isConnected) opener.focus();
     };
-  }, [opener]);
+  }, [opener, touchFirst]);
 
   // Dismiss on a completed tap/click that both started and ended on the
   // backdrop. Closing on pointerdown let the browser's own mousedown (fired after
@@ -88,7 +105,7 @@ export function CarPickerDialog({
         pressedBackdrop.current = false;
       }}
     >
-      <div ref={panel} className="dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div ref={panel} className="dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <header className="dialog__head">
           <h2 id={titleId} className="dialog__title">
             {title}
@@ -99,7 +116,7 @@ export function CarPickerDialog({
         </header>
         <div className="dialog__body">
           <CatalogBrowser
-            autoFocus
+            autoFocus={!touchFirst}
             requirePlayable={requirePlayable}
             selectedId={selectedId}
             defaultSort="favorites"

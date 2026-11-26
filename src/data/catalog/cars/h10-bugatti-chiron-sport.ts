@@ -5,15 +5,15 @@ import { CHIRON_REDUCTIONS } from './h02-bugatti-chiron';
 const SHEET = 'https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf';
 const BASE_SHEET = 'https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf';
 
-/** Hypercar extension #10: 2021 Bugatti Chiron Sport (US). */
+/** Hypercar extension #10: 2018 Bugatti Chiron Sport (US). */
 export const entry: CatalogEntry = {
-  id: "2021-bugatti-chiron-sport-us-coupe-awd-7dct",
+  id: "2018-bugatti-chiron-sport-us-coupe-awd-7dct",
   extension: { set: 'Hypercars', order: 10 },
   section: "Hypercars",
   make: "Bugatti",
   model: "Chiron",
   trim: "Sport",
-  modelYear: 2021,
+  modelYear: 2018,
   market: "US",
   body: "Coupe",
   bodyLabel: "Coupé",
@@ -56,11 +56,27 @@ export const entry: CatalogEntry = {
       kind: "manufacturer"
     },
     {
+      id: "src-bugatti-geneva",
+      title: "88th Geneva International Motor Show 2018 (Chiron Sport launch)",
+      publisher: "Bugatti",
+      url: "https://newsroom.bugatti.com/en/press-releases/88th-geneva-international-motor-show-2018",
+      kind: "manufacturer",
+      date: "2018-03"
+    },
+    {
       id: "src-cd",
-      title: "Bugatti Chiron tested: quickest car ever (Chiron Sport)",
+      title: "2021 Bugatti Chiron Sport by the numbers",
+      publisher: "Car and Driver",
+      url: "https://www.caranddriver.com/reviews/a35353692/2021-bugatti-chiron-sport-by-the-numbers/",
+      kind: "road-test",
+      date: "2021"
+    },
+    {
+      id: "src-cd-news",
+      title: "Bugatti Chiron tested: quickest car ever",
       publisher: "Car and Driver",
       url: "https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/",
-      kind: "road-test",
+      kind: "reference",
       date: "2021"
     }
   ],
@@ -79,10 +95,13 @@ export const entry: CatalogEntry = {
         rolloutS: 0.2
       },
       conditions: {
-        testMass: "4,544 lb as tested"
+        testMass: "4,544 lb as tested",
+        tires: "Michelin Pilot Sport Cup 2 BG, 285/30ZR20 F / 355/25ZR21 R",
+        launchControl: "Launch control used"
       },
-      match: "exact",
-      verification: "Result, test mass and rollout as verified in the Codex hypercar handoff (main 62eca11, 2026-11); the Car and Driver page refuses automated fetches from this session. Test-car model year, drive mode and tires not transcribed."
+      match: "equivalent",
+      deviation: "The test car was a 2018 Chiron that Bugatti retrofitted to Chiron Sport specification, not a production Chiron Sport; it was published in 2021.",
+      verification: "Full instrumented article, test context and conditions as verified in the Codex review of 7571153 (2026-11); the Car and Driver site refuses automated fetches from this session. Reclassified from exact: no exact test of a production Chiron Sport is transcribed."
     }
   ],
   dataGaps: [
@@ -92,18 +111,20 @@ export const entry: CatalogEntry = {
     "Weight distribution",
     "Rev limit",
     "Launch-control rpm",
-    "Car and Driver test-car model year, drive mode and tires"
+    "Instrumented test of a production Chiron Sport (the Car and Driver car was a retrofitted 2018 Chiron)",
+    "Car and Driver drive mode"
   ],
   simCaveats: [
     "Gearing uses the Chiron's effective overall reductions (the Sport sheet repeats the Chiron speed-per-gear table); the final-drive entry is 1.000.",
-    "Provisional AWD approximation: one averaged rolling radius ties engine speed to both axles, and the front coupling uses a generic 0–50 % front-share range."
+    "Provisional AWD approximation: one averaged rolling radius ties engine speed to both axles, and the front coupling uses a generic 0–50 % front-share range.",
+    "Provisional calibration: grip and efficiency are fitted to Car and Driver's run of a 2018 Chiron that Bugatti retrofitted to Chiron Sport specification, not a production Chiron Sport."
   ],
   sim: buildSpec({
-  id: "2021-bugatti-chiron-sport-us-coupe-awd-7dct",
+  id: "2018-bugatti-chiron-sport-us-coupe-awd-7dct",
   make: "Bugatti",
   model: "Chiron",
   trim: "Sport",
-  modelYear: 2021,
+  modelYear: 2018,
   market: "US",
   body: "Coupe",
   shortName: "Bugatti Chiron Sport"
@@ -123,6 +144,7 @@ export const entry: CatalogEntry = {
       { parameter: 'Final drive', value: '1.000 (folded into the effective reductions)', status: 'estimated', source: 'Bugatti does not publish the gearbox/axle split' },
       { parameter: 'Tire size', value: '285/30 ZR20 F · 355/25 ZR21 R', status: 'verified', source: 'Bugatti Chiron Sport technical specifications', url: SHEET },
       { parameter: 'Curb mass', value: '1,977 kg', status: 'verified', source: 'Bugatti Chiron Sport sheet: 18 kg lighter than the Chiron through lightweight measures; the homologated DIN empty value stays 1,995 kg because the Sport was not homologated as a variant', url: SHEET },
+      { parameter: 'Model year', value: '2018 (production start)', status: 'reported', source: 'Bugatti Geneva 2018 release: Chiron Sport launched March 2018 with US pricing; first deliveries planned for the end of 2018. Replaces 2021, which came from the test publication year (old id kept as an alias for saved data)', url: 'https://newsroom.bugatti.com/en/press-releases/88th-geneva-international-motor-show-2018' },
       { parameter: 'Dimensions', value: '4,544 × 2,038 × 1,212 mm, WB 2,711 mm', status: 'verified', source: 'Bugatti Chiron Sport technical specifications', url: SHEET },
       { parameter: 'Speed limiter', value: '380 km/h (EB / Autobahn / Handling); 420 km/h in Top Speed mode, documented separately', status: 'verified', source: 'Bugatti Chiron Sport technical specifications', url: SHEET },
       { parameter: 'Drag coefficient', value: 'Cd 0.40 (EB mode); 0.39 Autobahn, 0.41 Handling, 0.36 Top Speed', status: 'verified', source: 'Bugatti Chiron Sport technical specifications (EB mode modelled)', url: SHEET },
@@ -132,8 +154,8 @@ export const entry: CatalogEntry = {
       { parameter: 'Creep torque', value: '40 Nm clutch torque off the brake', status: 'estimated', source: 'Dual-clutch creep sized for a ≈ 2-tonne car (the generic 25 Nm barely moves it); affects idle creep only, not launches' },
       { parameter: 'Weight distribution', value: '43 % front', status: 'estimated', source: 'Mid-engine layout; not published' },
       { parameter: 'AWD split', value: 'Front share 0–0.50', status: 'estimated', source: 'Front-axle controlled longitudinal differential (BorgWarner); no fixed split published' },
-      { parameter: 'Tire grip calibration', value: '×1.00', status: 'estimated', source: 'Fit to the Car and Driver 0–60 mph 2.4 s (1-ft rollout) reaches the 1.00 floor; the simulation stays ≈ 0.06 s quicker' },
-      { parameter: 'Drivetrain efficiency', value: '84 %', status: 'estimated', source: 'A trap fit to 158 mph asked for less than 80 %, below the plausible AWD range; held at 84 % (the lowest accepted AWD value) and the ≈ +4 mph trap residual left visible with no cause attributed' },
+      { parameter: 'Tire grip calibration', value: '×1.00', status: 'estimated', source: 'Provisional: the fit to the Car and Driver 0–60 mph 2.4 s (1-ft rollout; retrofitted 2018 Chiron, equivalent) reaches the 1.00 floor; the simulation stays ≈ 0.06 s quicker' },
+      { parameter: 'Drivetrain efficiency', value: '84 %', status: 'estimated', source: 'Provisional (equivalent retrofit run): a trap fit to 158 mph asked for less than 80 %, below the plausible AWD range; held at 84 % (the lowest accepted AWD value) and the ≈ +4 mph trap residual left visible with no cause attributed' },
     ],
   }),
 };

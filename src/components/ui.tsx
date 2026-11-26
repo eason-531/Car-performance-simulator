@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from 'react';
 import { seriesColor } from '../lib/colors';
+import { DASH } from '../lib/format';
 import { Icon, type IconName } from './Icon';
 
 export function Panel({
@@ -213,7 +214,8 @@ export function StatTile({
       <div className="stat__label">{label}</div>
       <div className="stat__value">
         {value}
-        {unit && <span className="stat__unit">{unit}</span>}
+        {/* No unit after a dash (e.g. 0–200 km/h on a truck limited to 177 km/h). */}
+        {unit && value !== DASH && <span className="stat__unit">{unit}</span>}
       </div>
       {sub && <div className="stat__sub">{sub}</div>}
     </div>

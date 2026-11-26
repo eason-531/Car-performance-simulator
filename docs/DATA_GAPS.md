@@ -6,13 +6,7 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (18) — need data before they can run
-
-### 2022 Honda Civic Sport Touring 1.5T
-
-- Why: Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet.
-- Missing: MotorTrend first test (roster source); Torque figure; Tire size; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2022-honda-civic-sport-touring-hatchback-cvt-automatic-first-test-review) · [Edmunds](https://www.edmunds.com/car-news/tested-2022-honda-civic-hatchback-loses-speed-but-wins-our-hearts.html)
+## Catalog-only cars (9) — need data before they can run
 
 ### 2023 Toyota Prius Limited AWD
 
@@ -56,12 +50,6 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: 4WD torque split; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40059355/2021-ford-f-150-raptor-37-performance-package-by-the-numbers/) · [Motor1](https://www.motor1.com/reviews/529834/2021-ford-raptor-first-drive/) · [Edmunds (via Carscoops)](https://www.carscoops.com/2022/05/want-a-fast-ford-f-150-buy-the-hybrid-not-the-raptor/)
 
-### 2012 Lexus LFA
-
-- Why: Single-clutch automated manual (ASG) launch and shift model not added yet.
-- Missing: Drag coefficient; Where the 1.259 counter gear acts in the ASG driveline
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [PakWheels forum (Car and Driver reprint)](https://www.pakwheels.com/forums/t/lexus-fan-club/119439?page=8) · [ClubLexus forum (quote)](https://clublexus.com/forums/lfa-model-2012/533844-hell-has-frozen-over-c-and-d-comparo-lexus-lfa-vs-ferrari-599-hgte-spoiler-2.html)
-
 ### 2017 Acura NSX
 
 - Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
@@ -74,49 +62,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
 
-### 2020 Porsche Taycan Turbo S
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Motor ratings and battery limits; Two-speed rear gear ratios; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/) · [Car and Driver](https://www.caranddriver.com/reviews/comparison-test/a30799498/2020-porsche-taycan-turbo-s-vs-2020-tesla-model-s-performance/) · [Autocar](https://autocar.co.uk/node/99423)
-
-### 2025 Hyundai Ioniq 5 N
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: MotorTrend trap speed and test mass; Motor ratings and battery limits; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2025-hyundai-ioniq-5-n-first-test-review) · [The Drive (citing MotorTrend)](https://www.thedrive.com/car-reviews/2025-hyundai-ioniq-5-n-review-a-racing-sim-you-can-drive-on-the-road) · [Car and Driver (syndicated on Yahoo)](https://uk.news.yahoo.com/2025-hyundai-ioniq-5-n-180000719.html)
-
-### 2021 Tesla Model S Plaid
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver 0–60 and trap speed; Motor ratings and battery limits; Drag coefficient (published but not verified here)
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a38439509/2021-tesla-model-s-plaid-performance-test-comparison/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/tested-2021-tesla-model-plaid-140000565.html) · [Edmunds](https://www.edmunds.com/car-news/2021-tesla-model-s-plaid-track-tested.html)
-
-### 2024 Lucid Air Sapphire
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver test (roster source); Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a46992150/lucid-air-sapphire-quickest-ev-tested/) · [Edmunds](https://www.edmunds.com/car-news/lucid-air-sapphire-vs-tesla-model-s-plaid.html) · [Jalopnik (citing MotorTrend)](https://jalopnik.com/1984093/lucid-air-sapphite-quickest-car-motortrend/)
-
-### 2024 Tesla Model 3 Performance
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a62597386/2024-tesla-model-3-performance-test/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/highland-tesla-model-3-performance-200000182.html) · [Edmunds](https://www.edmunds.com/car-news/2024-tesla-model-3-performance-full-rating.html)
-
-### 2023 Kia EV6 GT
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver quarter-mile and trap speed (roster source); Curb mass; Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/) · [Gear Patrol (citing Car and Driver)](https://gearpatrol.com/cars/g42261748/2023-kia-ev6-gt-review/)
-
-### 2022 Rivian R1T Launch Edition
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
-
-## Playable cars (61) — running on estimates to confirm
+## Playable cars (74) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -188,6 +134,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Unconfirmed inputs: Gear ratios (using 3.643/2.080/1.361/1.024/0.830/0.686); Final drive (using 4.35); Curb mass (using ≈2,906 lb (1,318 kg); Edmunds weighed its test car at 2,944 lb); Tire size (using 235/40 R18)
 - Also missing: Gear ratios and final drive; Curb mass; Tire size; Drag coefficient; Car and Driver trap speed
 - Consulted: [Car and Driver](https://www.caranddriver.com/honda/civic-si-2022) · [TopSpeed (citing Car and Driver)](https://www.topspeed.com/cars/honda/2022-honda-civic-si-ar195286.html) · [Edmunds](https://www.edmunds.com/car-news/tested-honda-civic-si-is-slower-but-great-to-drive.html)
+
+### 2022 Honda Civic Sport Touring 1.5T
+
+- Also missing: Step Shift step ratios, change points and ratio-change rates (Honda describes the behaviour only); Torque converter stall speed and multiplication; Drag coefficient; MotorTrend test drive mode
+- Consulted: [American Honda (Honda Info Center)](https://www.hondainfocenter.com/2022/Civic-Hatchback/Feature-Guide/Civic-Hatchback-Specifications/) · [American Honda (Honda News)](https://hondanews.com/en-US/releases/release-20c92b0d934f0bc63982bd3eee0149e9-2022-honda-civic-hatchback-press-kit) · [US EPA](https://www.epa.gov/system/files/documents/2023-06/22-testcar-2023-06-13.xlsx)
 
 ### 2025 Hyundai Elantra N DCT
 
@@ -341,7 +292,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2023 Nissan Z Performance 9AT
 
-- Also missing: Drag coefficient; Production speed limiter (Car and Driver lists a governed 155 mph estimate; no Nissan US document confirms it, so none is modelled)
+- Also missing: Drag coefficient; Production speed limiter (Car and Driver reports a governed 155 mph; no Nissan US document confirms it, so none is modelled)
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review) · [Autoblog](https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/) · [The Detroit Bureau](https://thedetroitbureau.com/reviews/a-week-with-2023-nissan-z-performance-a-t/)
 
 ### 2018 Nissan GT-R Track Edition
@@ -434,6 +385,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Also missing: Power/torque rpm; Tire size; Drag coefficient; Original test pages
 - Consulted: [MotorTrend](https://www.motortrend.com/news/alfa-romeo-stelvio-quadrifoglio-2018-best-drivers-car-contender) · [Autoblog](https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/) · [Yahoo Autos (syndicated; outlet inferred)](https://autos.yahoo.com/2018-alfa-romeo-stelvio-quadrifoglio-204500570.html)
 
+### 2012 Lexus LFA
+
+- Also missing: How Car and Driver's legacy 3 mph timing maps onto the simulator's bases (needed before fitting grip); An exact test of a US production LFA (both Car and Driver runs are equivalent: prototype short take; UK-based comparison car); High-speed drag with the active rear wing raised (it rises from 80 km/h depending on mode; only the retracted Cd 0.31 is published); Frontal area; US curb mass basis (Lexus Europe gives a 1,480–1,580 kg range; Car and Driver weighed 3,583 lb and 3,569 lb); A hard fuel cut distinct from the published 9,000 rpm maximum engine speed; ASG idle creep behaviour
+- Consulted: [Lexus Europe](https://prensa.lexusauto.es/wp-content/uploads/2009/10/Dossier%20Lexus_LFA%20ingles.pdf) · [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [Car and Driver](https://www.caranddriver.com/reviews/comparison-test/a15128593/2011-ferrari-599-hgte-vs-2012-lexus-lfa-comparison-test/)
+
 ### 2018 McLaren 720S Coupe
 
 - Unconfirmed inputs: Tire size (using 245/35 R19 F · 305/30 R20 R); Dimensions (using 4,543 × 1,930 × 1,196 mm, WB 2,670 mm)
@@ -446,15 +402,50 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Also missing: Factory confirmation of the LDF gear ratios and final drive (secondary listing only); AWD control map; Drag coefficient; Launch-control rpm
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)
 
+### 2020 Porsche Taycan Turbo S
+
+- Also missing: Overboost duration (not published by Porsche); Exact gear ratios (Porsche gives approximately 15:1 and 8:1); Rear first-to-second change speed; Weight distribution and the Car and Driver test mass; Power curve above base speed (Porsche publishes peak ratings only)
+- Consulted: [Porsche AG](https://newsroom.porsche.com/dam/jcr:36531be5-a8a3-46ec-b146-27272996361d/pag-taycan-turbo-s-td-en.pdf.PDF) · [Porsche Newsroom (Australia)](https://newsroom.porsche.com/pdf/7504e7b5-be34-4bcd-9ea8-5f102d60d9a7) · [Porsche Newsroom](https://newsroom.porsche.com/en/products/taycan/powertrain-18555.html)
+
+### 2025 Hyundai Ioniq 5 N
+
+- Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift not stated); N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping
+- Consulted: [Hyundai Motor Europe](https://www.hyundai.news/newsroom/dam/eu/press-kits/20240325_ioniq_5_n/hyundai-ioniq-5-n-technical-data-0324.pdf) · [Hyundai Motor Europe](https://www.hyundai.news/eu/models/performance/ioniq-5-n/press-kit/press-information.html) · [US EPA](https://www.epa.gov/system/files/documents/2026-01/25-testcar-2026-01-21.xlsx)
+
+### 2021 Tesla Model S Plaid
+
+- Also missing: Car and Driver 0–60 and trap speed; Per-motor torque and the power split (Tesla publishes ratings only in its China manual, read here through a search summary); Dimensions and weight distribution (not transcribed from a reachable Tesla page); Test-car wheel fitment and drive mode
+- Consulted: [US EPA](https://www.epa.gov/system/files/documents/2025-05/24-testcar-2025-05.xlsx) · [Tesla](https://www.tesla.cn/ownersmanual/models/en_cn/GUID-E414862C-CFA1-4A0B-9548-BE21C32CAA58.html) · [Car and Driver](https://www.caranddriver.com/news/a38439509/2021-tesla-model-s-plaid-performance-test-comparison/)
+
+### 2024 Lucid Air Sapphire
+
+- Also missing: Car and Driver test (roster source); Per-motor power and torque (Lucid publishes system totals only); Motor maximum speed; Weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced)
+- Consulted: [Lucid Motors](https://lucidmotors.com/media/document/lucid-air-sapphire-technical-specs-2024.pdf) · [US EPA](https://www.epa.gov/system/files/documents/2025-05/24-testcar-2025-05.xlsx) · [Car and Driver](https://www.caranddriver.com/news/a46992150/lucid-air-sapphire-quickest-ev-tested/)
+
+### 2024 Tesla Model 3 Performance
+
+- Also missing: Per-motor torque (only the front 3D3 rating and a reported 741 Nm system figure); Motor maximum speed; Drag coefficient (only the EPA road-load coefficients are sourced); Dimensions, wheel fitment and weight distribution (not transcribed from a reachable Tesla page)
+- Consulted: [Tesla](https://www.tesla.com/blog/introducing-new-model-3-performance) · [US EPA](https://www.epa.gov/system/files/documents/2025-05/24-testcar-2025-05.xlsx) · [EVSpecifications](https://www.evspecifications.com/en/model/7c633d9)
+
+### 2023 Kia EV6 GT
+
+- Also missing: Per-motor torque (derived from the peak-power rpm bands); Motor maximum speed and the power curve above the published peak-power bands; Front reduction (assumed equal to the EPA-derived overall reduction); US curb mass and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced); Test-day drive mode, state of charge and battery temperature
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/) · [Kia Spain](https://press.kia.com/content/dam/kiapress/ES/Kia%20EV6%20GT%20-%20Ficha%20t%C3%A9cnica.pdf) · [Kia Austria](https://press.kia.com/content/dam/kiapress/AT/PDF2022/2822%20Kia%20EV6%20GT%20Marktstart.pdf)
+
+### 2022 Rivian R1T Launch Edition
+
+- Also missing: Car and Driver original page; Per-motor ratings (Rivian publishes system totals only); Motor maximum speed and the power curve above base speed; Test-truck wheel fitment, dimensions and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced)
+- Consulted: [Wikipedia](https://en.wikipedia.org/wiki/Rivian_R1T) · [Motor Authority](https://www.motorauthority.com/news/1143445_2025-rivian-r1t-r1s-quad-motor-acceleration-130-mph) · [US EPA](https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx)
+
 ### 2008 Bugatti Veyron 16.4 Coupé
 
-- Also missing: Rev limit and redline (not in the OEM release or EPA filing); Dimensions and wheelbase; Weight distribution; Drag coefficient and frontal area split (only the EPA road-load CdA is sourced); Speed-per-gear table cross-check (period test spec-table scan unreachable); Period Car and Driver timing procedure (needed before fitting launch grip); Launch-control rpm
+- Also missing: Rev limit and redline (not in the OEM release or EPA filing); Exact ride height used for the aero frontal area (Car and Driver lists 45.1–47.4 in); Weight distribution; Drag coefficient and frontal area split (only the EPA road-load CdA is sourced); Speed-per-gear table cross-check (period test spec-table scan unreachable); Period Car and Driver timing procedure (needed before fitting launch grip); Launch-control rpm
 - Consulted: [Bugatti](https://newsroom.bugatti.com/en/press-releases/the-bugatti-veyron-on-the-track-of-the-targa-florio) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/final-bugatti-veyron-16-4-sold-to-a-customer-in-europe) · [US EPA / Bugatti](https://www.autonocion.com/wp-content/uploads/2015/10/Certificado-EPA-Bugatti-Veyron.pdf)
 
 ### 2017 Bugatti Chiron Coupé
 
 - Also missing: Individual gear and axle ratios (only effective reductions derived from the speed-per-gear table); 7th-gear reduction (the listed 420 km/h equals the Top Speed limiter, so 7th is at least this tall); Frontal area; Weight distribution; Rev limit (gear speeds are listed at 6,700 rpm; the Super Sport release implies about 6,800 rpm); Launch-control rpm
-- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) · [Car and Driver](https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/)
+- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) · [Car and Driver](https://www.caranddriver.com/reviews/a35353692/2021-bugatti-chiron-sport-by-the-numbers/)
 
 ### 2006 Koenigsegg CCX Coupé
 
@@ -463,15 +454,35 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2022 Bugatti Chiron Super Sport
 
-- Also missing: Individual gear and axle ratios (effective reductions from the Chiron table plus Bugatti's 3.6 % longer 7th); Frontal area; Weight distribution; Launch-control rpm; Car and Driver drive mode and tires
+- Also missing: Individual gear and axle ratios (effective reductions from the Chiron table plus Bugatti's 3.6 % longer 7th); Frontal area; Weight distribution; Car and Driver drive mode
 - Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673edce31d99cf64fc74087/211122_BU_Chiron%20Super%20Sport_ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf)
 
 ### 2005 Porsche Carrera GT Roadster
 
-- Also missing: Measured road test (a 2004 Car and Driver result is known only through secondary summaries; verification requested); Weight distribution; Frontal area; US-market rating (605 hp SAE) and US curb weight
-- Consulted: [Porsche](https://newsroom.porsche.com/pdf/17da8703-0d52-4ab7-8630-6e98ff05c194?print=) · [Porsche (mirror)](https://www.ausmotive.com/downloads/Porsche/Carrera-GT-specs.pdf)
+- Also missing: Car and Driver 2004 timing procedure (needed before fitting grip to its run); Weight distribution; Frontal area; US-market rating (605 hp SAE) and US curb weight
+- Consulted: [Porsche](https://newsroom.porsche.com/pdf/17da8703-0d52-4ab7-8630-6e98ff05c194?print=) · [Porsche (mirror)](https://www.ausmotive.com/downloads/Porsche/Carrera-GT-specs.pdf) · [Car and Driver](https://www.caranddriver.com/reviews/a15132548/porsche-carrera-gt-road-test/)
 
-### 2021 Bugatti Chiron Sport
+### 2018 Bugatti Chiron Sport
 
-- Also missing: Individual gear and axle ratios (effective reductions shared with the Chiron); 7th-gear reduction (limiter-bound in the factory table); Frontal area; Weight distribution; Rev limit; Launch-control rpm; Car and Driver test-car model year, drive mode and tires
-- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Car and Driver](https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/)
+- Also missing: Individual gear and axle ratios (effective reductions shared with the Chiron); 7th-gear reduction (limiter-bound in the factory table); Frontal area; Weight distribution; Rev limit; Launch-control rpm; Instrumented test of a production Chiron Sport (the Car and Driver car was a retrofitted 2018 Chiron); Car and Driver drive mode
+- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/88th-geneva-international-motor-show-2018)
+
+### 2020 Bugatti Chiron Pur Sport
+
+- Also missing: Individual gear and axle ratios (effective reductions derived from the speed-per-gear table); Speed-per-gear table rpm (6,900 rpm maximum shift speed assumed; 7,000 rpm maximum engine speed would make every reduction 1.4 % taller); Measured road test; Frontal area; Weight distribution; Launch-control rpm; 0–200 km/h claim (sheet 5.5 s vs release 5.9 s)
+- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673ed80bde16a1e5495301d/211122_BU_Chiron%20Pur%20Sport_ENG-1.pdf) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/the-technology-of-the-bugatti-chiron-pur-sport-in-detail)
+
+### 2010 Bugatti Veyron 16.4 Super Sport
+
+- Also missing: Measured road test; Rev limit and redline; Dimensions, wheelbase and drag coefficient (EPA road-load target identical to the 16.4 coupé); Weight distribution; Launch-control rpm; Speed-per-gear cross-check against the EPA N/V (as the 16.4 coupé)
+- Consulted: [Bugatti](https://newsroom.bugatti.com/en/press-releases/bugatti-presents-veyron-16-4-super-sport-to-public) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/landspeed-worldrecord-with-the-bugatti-veyron-16-4-super-sport) · [US EPA / Bugatti](https://www.autonocion.com/wp-content/uploads/2015/10/Certificado-EPA-Bugatti-Veyron.pdf)
+
+### 1994 McLaren F1 Road car
+
+- Also missing: Road-car rev limit (7,500 rpm from secondary leads; the record run used a raised limit); Model year of the represented car (production 1993–1998); Measured road test with timing basis (the sheet's 0–60 mph 3.2 s and ¼ mile 11.1 s @ 138 mph are listed without conditions); Frontal area; Gearbox internal stages (listed ratios × 2.37 are ≈ 23 % taller than the sheet's speed-per-1,000-rpm column)
+- Consulted: [McLaren Automotive (mirror)](https://www.allcarcentral.com/McLaren_pdf/McLAREN_F1_ROADCAR-SPECIFICATION.pdf) · [McLaren](https://www.mclaren.com/cars/gl_en/ultimate-models/mclaren-f1)
+
+### 2022 Rimac Nevera Coupé
+
+- Also missing: Gear ratio (derived from Rimac's wheel and motor torque); Motor maximum speed and the power curve above base speed; Weight distribution; Frontal area (Rimac gives Cd 0.3 in low-drag mode only); Magazine road test
+- Consulted: [Rimac Automobili](https://www.rimac-automobili.com/nevera/) · [US EPA](https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx) · [IEEE Spectrum](https://spectrum.ieee.org/rimac-nevera-record)

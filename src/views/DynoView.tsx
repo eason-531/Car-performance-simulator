@@ -76,9 +76,17 @@ export function DynoView() {
     return out;
   }, [app, selected, showStock]);
 
-  const maxRpm = Math.max(7000, ...entries.map((e) => e.sheet.points[e.sheet.points.length - 1].rpm));
-  const xDomain = [1000, Math.ceil(maxRpm / 500) * 500] as const;
-  const revealX = pull.time !== null ? 1000 + (pull.time / PULL_SECONDS) * (xDomain[1] - 1000) : undefined;
+  // Electric cars are measured over road speed; when every car on the dyno is
+  // electric the chart uses km/h, otherwise their curves follow motor rpm.
+  const speedAxis = entries.length > 0 && entries.every((e) => e.sheet.axis === 'speed');
+  const xOf = (p: DynoSheet['points'][number]) => (speedAxis ? (p.speedKmh ?? 0) : p.rpm);
+  const xMin = speedAxis ? 0 : 1000;
+  const xMaxRaw = Math.max(speedAxis ? 100 : 7000, ...entries.map((e) => xOf(e.sheet.points[e.sheet.points.length - 1])));
+  const xStep = speedAxis ? 20 : 500;
+  const xDomain = [xMin, Math.ceil(xMaxRaw / xStep) * xStep] as const;
+  const xLabel = speedAxis ? 'km/h' : 'rpm';
+  const mixedEv = !speedAxis && entries.some((e) => e.sheet.axis === 'speed');
+  const revealX = pull.time !== null ? xMin + (pull.time / PULL_SECONDS) * (xDomain[1] - xMin) : undefined;
 
   const mk = (pick: (p: DynoSheet['points'][number]) => number): ChartSeries[] =>
     entries.map((e) => ({
@@ -87,7 +95,7 @@ export function DynoView() {
       shortLabel: e.short,
       color: e.color,
       dashed: e.dashed,
-      points: e.sheet.points.map((p) => ({ x: p.rpm, y: pick(p) })),
+      points: e.sheet.points.map((p) => ({ x: xOf(p), y: pick(p) })),
     }));
   const powerSeries = mk((p) => (measure === 'crank' ? p.powerPs : p.wheelPowerPs));
   const torqueSeries = mk((p) => (measure === 'crank' ? p.torqueNm : p.wheelTorqueNm));
@@ -98,7 +106,9 @@ export function DynoView() {
 
   const rpmFmt = (v: number) => fmt(v);
   const tableRpms: number[] = [];
-  for (let r = 1500; r <= xDomain[1]; r += 500) tableRpms.push(r);
+  for (let r = speedAxis ? 20 : 1500; r <= xDomain[1]; r += xStep) tableRpms.push(r);
+  const nearest = (pts: DynoSheet['points'], x: number) =>
+    speedAxis ? pts.find((q) => Math.abs((q.speedKmh ?? -1) - x) < 1e-6) : pts.find((q) => q.rpm === x);
 
   return (
     <div className="view dyno">
@@ -147,14 +157,14 @@ export function DynoView() {
             </div>
             <div className="peak-card__row">
               <span className="peak-card__value">{fmt(measure === 'crank' ? e.sheet.peakPowerPs : e.sheet.peakWheelPowerPs)}</span>
-              <span className="peak-card__unit">PS @ {fmt(e.sheet.peakPowerRpm)}</span>
+              <span className="peak-card__unit">PS @ {e.sheet.axis === 'speed' ? `${fmt(e.sheet.peakPowerKmh)} km/h` : fmt(e.sheet.peakPowerRpm)}</span>
             </div>
             <div className="peak-card__row">
               <span className="peak-card__value">{fmt(measure === 'crank' ? e.sheet.peakTorqueNm : e.sheet.peakWheelTorqueNm)}</span>
-              <span className="peak-card__unit">Nm @ {fmt(e.sheet.peakTorqueRpm)}</span>
+              <span className="peak-card__unit">Nm @ {e.sheet.axis === 'speed' ? `${fmt(e.sheet.peakTorqueKmh)} km/h` : fmt(e.sheet.peakTorqueRpm)}</span>
             </div>
             <div className="peak-card__meta">
-              {fmt(e.sheet.peakBoostBar, 2)} bar peak · {fmt((e.sheet.peakPowerPs / e.massKg) * 1000)} PS/t
+              {e.sheet.axis === 'speed' ? 'electric' : `${fmt(e.sheet.peakBoostBar, 2)} bar peak`} · {fmt((e.sheet.peakPowerPs / e.massKg) * 1000)} PS/t
             </div>
           </div>
         ))}
@@ -182,7 +192,7 @@ export function DynoView() {
             <LineChart
               ariaLabel="Power versus engine speed"
               series={powerSeries}
-              xLabel="rpm"
+              xLabel={xLabel}
               yLabel="PS"
               xDomain={xDomain}
               height={260}
@@ -198,7 +208,7 @@ export function DynoView() {
             <LineChart
               ariaLabel="Torque versus engine speed"
               series={torqueSeries}
-              xLabel="rpm"
+              xLabel={xLabel}
               yLabel="Nm"
               xDomain={xDomain}
               height={220}
@@ -214,7 +224,7 @@ export function DynoView() {
             <LineChart
               ariaLabel="Boost versus engine speed"
               series={boostSeries}
-              xLabel="rpm"
+              xLabel={xLabel}
               yLabel="bar"
               xDomain={xDomain}
               yDomain={[0, 2]}
@@ -228,12 +238,12 @@ export function DynoView() {
             />
           </Panel>
           {showTable && (
-            <Panel title="Dyno table" subtitle={`${measure === 'crank' ? 'Crank' : 'Wheel'} figures every 500 rpm`}>
+            <Panel title="Dyno table" subtitle={`${measure === 'crank' ? (speedAxis ? 'Motor' : 'Crank') : 'Wheel'} figures every ${speedAxis ? '20 km/h' : '500 rpm'}`}>
               <div className="table-scroll">
                 <table className="table table--numeric">
                   <thead>
                     <tr>
-                      <th scope="col">rpm</th>
+                      <th scope="col">{xLabel}</th>
                       {entries.map((e) => (
                         <th key={e.key} scope="col" colSpan={2}>
                           {e.label}
@@ -253,7 +263,7 @@ export function DynoView() {
                       <tr key={rpm}>
                         <th scope="row">{fmt(rpm)}</th>
                         {entries.map((e) => {
-                          const p = e.sheet.points.find((q) => q.rpm === rpm);
+                          const p = nearest(e.sheet.points, rpm);
                           return [
                             <td key={`${e.key}p`}>{p ? fmt(measure === 'crank' ? p.powerPs : p.wheelPowerPs) : '—'}</td>,
                             <td key={`${e.key}t`}>{p ? fmt(measure === 'crank' ? p.torqueNm : p.wheelTorqueNm) : '—'}</td>,
@@ -269,6 +279,8 @@ export function DynoView() {
           <p className="footnote">
             Wheel figures apply each car’s drivetrain efficiency, as a chassis dyno would read. Curves are modelled from
             rated outputs — see Garage for data sources.
+            {speedAxis && ' Electric cars are measured over road speed (best gear, shared output limits, no boost).'}
+            {mixedEv && ' Electric cars are plotted against rear-motor rpm here; load only electric cars for a road-speed axis.'}
           </p>
         </>
       )}

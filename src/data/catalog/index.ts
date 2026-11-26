@@ -13,12 +13,29 @@ export const OWNER_IDS: readonly string[] = CATALOG.filter((e) => e.owner).map((
 
 const BY_ID = new Map(CATALOG.map((e) => [e.id, e]));
 
+/**
+ * Retired configuration ids → current ids. An identity correction must not
+ * orphan saved settings, tunes, favorites, results or links, so storage and
+ * lookups resolve these before use.
+ */
+export const LEGACY_IDS: Readonly<Record<string, string>> = {
+  // Chiron Sport: year corrected from the 2021 test publication to its 2018 production start.
+  '2021-bugatti-chiron-sport-us-coupe-awd-7dct': '2018-bugatti-chiron-sport-us-coupe-awd-7dct',
+};
+
+const LEGACY = new Map(Object.entries(LEGACY_IDS));
+
+/** The current id for a possibly retired one (own entries only, so ids such as "constructor" stay as given). */
+export function canonicalId(id: string): string {
+  return LEGACY.get(id) ?? id;
+}
+
 export function findEntry(id: string): CatalogEntry | undefined {
-  return BY_ID.get(id);
+  return BY_ID.get(canonicalId(id));
 }
 
 export function getEntry(id: string): CatalogEntry {
-  const e = BY_ID.get(id);
+  const e = BY_ID.get(canonicalId(id));
   if (!e) throw new Error(`Unknown catalog id: ${id}`);
   return e;
 }
@@ -27,7 +44,7 @@ export function getEntry(id: string): CatalogEntry {
 export const PLAYABLE: readonly VehicleSpec[] = CATALOG.flatMap((e) => (e.sim ? [e.sim] : []));
 
 export function isPlayable(id: string): boolean {
-  return !!BY_ID.get(id)?.sim;
+  return !!BY_ID.get(canonicalId(id))?.sim;
 }
 
 /** Pre-generated stock benchmark (see stockStats.ts); undefined when not simulated. */

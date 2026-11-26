@@ -30,7 +30,7 @@ export interface StockStats {
 
 export const STOCK_STATS: Record<string, StockStats> = {
   "lexus-is200t-2016-tw": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.091,
       "zeroTo200KmhS": 28.143,
@@ -81,7 +81,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "skoda-superb-combi-lk-280": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.658,
       "zeroTo200KmhS": 23.396,
@@ -134,7 +134,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2023-honda-civic-type-r-us-hatch-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.8,
       "zeroTo200KmhS": 19.215,
@@ -187,7 +187,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2024-acura-integra-type-s-us-liftback-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.985,
       "zeroTo200KmhS": 19.077,
@@ -240,7 +240,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2023-toyota-gr-corolla-circuit-edition-us-hatch-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.419,
       "zeroTo200KmhS": 20.556,
@@ -293,7 +293,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2021-toyota-gr-yaris-circuit-pack-uk-hatch-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.284,
       "zeroTo200KmhS": 20.654,
@@ -346,7 +346,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2022-volkswagen-golf-r-us-hatch-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.615,
       "zeroTo200KmhS": 18.877,
@@ -399,7 +399,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-volkswagen-golf-gti-autobahn-us-hatch-fwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.852,
       "zeroTo200KmhS": 23.163,
@@ -452,7 +452,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2019-hyundai-veloster-n-performance-package-us-hatch-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.228,
       "zeroTo200KmhS": 21.676,
@@ -505,7 +505,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "1997-acura-integra-type-r-us-liftback-fwd-5mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.548,
       "zeroTo200KmhS": 31.87,
@@ -556,7 +556,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2018-honda-accord-touring-2-0t-us-sedan-fwd-10at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.107,
       "zeroTo200KmhS": 24.739,
@@ -609,7 +609,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2020-toyota-camry-trd-v6-us-sedan-fwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.27,
       "zeroTo200KmhS": 22.445,
@@ -662,7 +662,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2021-mazda-mazda3-2-5-turbo-premium-plus-us-hatch-awd-6at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.953,
       "zeroTo200KmhS": 27.351,
@@ -715,7 +715,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2022-honda-civic-si-us-sedan-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.565,
       "zeroTo200KmhS": 28.996,
@@ -765,8 +765,59 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 14,
     "cls": "D"
   },
+  "2022-honda-civic-sport-touring-1-5t-us-hatch-fwd-cvt": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 8.141,
+      "zeroTo200KmhS": 38.695,
+      "sixtyFootS": 2.908,
+      "quarterMileS": 16.055,
+      "quarterMileTrapKmh": 144.693,
+      "kilometerS": 28.949,
+      "kilometerTrapKmh": 184.334,
+      "metres400S": 15.997,
+      "metres400TrapKmh": 144.449,
+      "splits": {
+        "30mph": 3.132,
+        "60mph": 7.67,
+        "100mph": 20.291,
+        "130mph": 48.548,
+        "100kmh": 8.141,
+        "160kmh": 20.022,
+        "180kmh": 26.985,
+        "200kmh": 38.695
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 7.776,
+      "zeroTo200KmhS": 38.33,
+      "sixtyFootS": 2.544,
+      "quarterMileS": 15.69,
+      "quarterMileTrapKmh": 144.693,
+      "kilometerS": 28.585,
+      "kilometerTrapKmh": 184.334,
+      "metres400S": 15.632,
+      "metres400TrapKmh": 144.449,
+      "splits": {
+        "30mph": 2.768,
+        "60mph": 7.305,
+        "100mph": 19.927,
+        "130mph": 48.183,
+        "100kmh": 7.776,
+        "160kmh": 19.658,
+        "180kmh": 26.62,
+        "200kmh": 38.33
+      }
+    },
+    "topSpeedKmh": 222,
+    "peakPowerPs": 182,
+    "peakTorqueNm": 240,
+    "testMassKg": 1470,
+    "score": 4,
+    "cls": "D"
+  },
   "2025-hyundai-elantra-n-dct-us-sedan-fwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.278,
       "zeroTo200KmhS": 19.437,
@@ -819,7 +870,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2022-subaru-wrx-limited-us-sedan-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.152,
       "zeroTo200KmhS": 22.852,
@@ -872,7 +923,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2019-subaru-wrx-sti-s209-us-sedan-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.18,
       "zeroTo200KmhS": 18.563,
@@ -925,7 +976,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2015-mitsubishi-lancer-evolution-final-edition-us-sedan-awd-5mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.39,
       "zeroTo200KmhS": 20.335,
@@ -976,7 +1027,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2016-lexus-gs-350-f-sport-rwd-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.175,
       "zeroTo200KmhS": 22.564,
@@ -1029,7 +1080,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2016-lexus-gs-f-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.763,
       "zeroTo200KmhS": 15.588,
@@ -1082,7 +1133,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-lexus-is-500-f-sport-performance-premium-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.129,
       "zeroTo200KmhS": 15.807,
@@ -1135,7 +1186,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2018-kia-stinger-gt2-3-3t-awd-us-liftback-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.766,
       "zeroTo200KmhS": 17.879,
@@ -1188,7 +1239,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-genesis-g70-3-3t-awd-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.871,
       "zeroTo200KmhS": 18.356,
@@ -1241,7 +1292,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-cadillac-ct4-v-blackwing-us-sedan-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.282,
       "zeroTo200KmhS": 13.889,
@@ -1294,7 +1345,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-cadillac-ct5-v-blackwing-10at-us-sedan-rwd-10at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.796,
       "zeroTo200KmhS": 11.786,
@@ -1347,7 +1398,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-bmw-m5-standard-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.268,
       "zeroTo200KmhS": 10.712,
@@ -1400,7 +1451,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2023-bmw-m3-competition-xdrive-edition-50-jahre-bmw-m-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.29,
       "zeroTo200KmhS": 12.116,
@@ -1453,7 +1504,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2020-bmw-m340i-xdrive-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.514,
       "zeroTo200KmhS": 16.549,
@@ -1506,7 +1557,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2017-alfa-romeo-giulia-quadrifoglio-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.036,
       "zeroTo200KmhS": 12.671,
@@ -1559,7 +1610,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2024-acura-tlx-type-s-us-sedan-awd-10at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.038,
       "zeroTo200KmhS": 20.318,
@@ -1612,7 +1663,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2021-skoda-octavia-combi-rs-2-0-tsi-dsg-de-wagon-fwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.391,
       "zeroTo200KmhS": 24.711,
@@ -1665,7 +1716,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2021-audi-rs-6-avant-us-wagon-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.519,
       "zeroTo200KmhS": 12.495,
@@ -1718,7 +1769,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "1993-toyota-supra-turbo-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.172,
       "zeroTo200KmhS": 19.238,
@@ -1771,7 +1822,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2023-toyota-gr-supra-a91-mt-edition-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.435,
       "zeroTo200KmhS": 15.531,
@@ -1824,7 +1875,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-toyota-gr86-premium-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.584,
       "zeroTo200KmhS": 25.146,
@@ -1877,7 +1928,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2022-subaru-brz-limited-6at-us-coupe-rwd-6at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.627,
       "zeroTo200KmhS": 27.321,
@@ -1928,7 +1979,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2016-mazda-mx-5-miata-club-us-conv-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.295,
       "zeroTo200KmhS": 35.497,
@@ -1979,7 +2030,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2024-mazda-mx-5-miata-rf-club-us-conv-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.31,
       "zeroTo200KmhS": 32.924,
@@ -2030,7 +2081,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2000-honda-s2000-us-conv-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.725,
       "zeroTo200KmhS": 24.628,
@@ -2083,60 +2134,60 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2023-nissan-z-performance-9at-us-coupe-rwd-9at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
-      "zeroTo100KmhS": 4.839,
-      "zeroTo200KmhS": 15.687,
-      "sixtyFootS": 2.422,
-      "quarterMileS": 12.967,
-      "quarterMileTrapKmh": 181.674,
-      "kilometerS": 23.144,
-      "kilometerTrapKmh": 234.55,
-      "metres400S": 12.921,
-      "metres400TrapKmh": 181.34,
+      "zeroTo100KmhS": 4.834,
+      "zeroTo200KmhS": 15.933,
+      "sixtyFootS": 2.409,
+      "quarterMileS": 12.999,
+      "quarterMileTrapKmh": 180.529,
+      "kilometerS": 23.247,
+      "kilometerTrapKmh": 232.876,
+      "metres400S": 12.953,
+      "metres400TrapKmh": 180.2,
       "splits": {
-        "30mph": 2.132,
-        "60mph": 4.629,
-        "100mph": 10.117,
-        "130mph": 17.215,
-        "150mph": 25.062,
-        "100kmh": 4.839,
-        "160kmh": 9.955,
-        "180kmh": 12.736,
-        "200kmh": 15.687
+        "30mph": 2.11,
+        "60mph": 4.62,
+        "100mph": 10.355,
+        "130mph": 17.466,
+        "150mph": 25.661,
+        "100kmh": 4.834,
+        "160kmh": 10.233,
+        "180kmh": 12.924,
+        "200kmh": 15.933
       }
     },
     "rollout": {
-      "zeroTo100KmhS": 4.511,
-      "zeroTo200KmhS": 15.359,
-      "sixtyFootS": 2.094,
-      "quarterMileS": 12.64,
-      "quarterMileTrapKmh": 181.674,
-      "kilometerS": 22.816,
-      "kilometerTrapKmh": 234.55,
-      "metres400S": 12.593,
-      "metres400TrapKmh": 181.34,
+      "zeroTo100KmhS": 4.508,
+      "zeroTo200KmhS": 15.606,
+      "sixtyFootS": 2.083,
+      "quarterMileS": 12.673,
+      "quarterMileTrapKmh": 180.529,
+      "kilometerS": 22.921,
+      "kilometerTrapKmh": 232.876,
+      "metres400S": 12.626,
+      "metres400TrapKmh": 180.2,
       "splits": {
-        "30mph": 1.804,
-        "60mph": 4.301,
-        "100mph": 9.789,
-        "130mph": 16.887,
-        "150mph": 24.734,
-        "100kmh": 4.511,
-        "160kmh": 9.627,
-        "180kmh": 12.408,
-        "200kmh": 15.359
+        "30mph": 1.783,
+        "60mph": 4.293,
+        "100mph": 10.029,
+        "130mph": 17.14,
+        "150mph": 25.335,
+        "100kmh": 4.508,
+        "160kmh": 9.907,
+        "180kmh": 12.598,
+        "200kmh": 15.606
       }
     },
     "topSpeedKmh": 296,
     "peakPowerPs": 406,
     "peakTorqueNm": 475,
     "testMassKg": 1709,
-    "score": 53.6,
+    "score": 52.8,
     "cls": "A"
   },
   "2018-nissan-gt-r-track-edition-us-coupe-awd-6dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.134,
       "zeroTo200KmhS": 11,
@@ -2189,7 +2240,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-audi-tt-rs-coupe-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.725,
       "zeroTo200KmhS": 13.575,
@@ -2242,7 +2293,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-alpine-a110-premiere-edition-it-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.963,
       "zeroTo200KmhS": 18.095,
@@ -2295,7 +2346,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2023-bmw-m2-carbon-package-6mt-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.429,
       "zeroTo200KmhS": 14.207,
@@ -2348,7 +2399,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-porsche-718-cayman-gt4-rs-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.285,
       "zeroTo200KmhS": 10.897,
@@ -2401,7 +2452,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2022-porsche-911-gt3-gt3-pdk-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.168,
       "zeroTo200KmhS": 10.252,
@@ -2454,7 +2505,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2021-porsche-911-turbo-s-turbo-s-coupe-us-coupe-awd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.456,
       "zeroTo200KmhS": 8.723,
@@ -2507,7 +2558,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2020-chevrolet-corvette-stingray-z51-fe4-us-coupe-rwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.485,
       "zeroTo200KmhS": 12.021,
@@ -2560,7 +2611,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2023-chevrolet-corvette-z06-z07-carbon-fiber-aero-us-coupe-rwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.977,
       "zeroTo200KmhS": 9.303,
@@ -2613,7 +2664,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2020-ford-mustang-shelby-gt500-carbon-fiber-track-package-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.955,
       "zeroTo200KmhS": 9.837,
@@ -2666,7 +2717,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-chevrolet-camaro-zl1-1le-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.462,
       "zeroTo200KmhS": 10.477,
@@ -2719,7 +2770,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2019-dodge-challenger-srt-hellcat-redeye-widebody-us-coupe-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.792,
       "zeroTo200KmhS": 10.528,
@@ -2772,7 +2823,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2022-hyundai-kona-n-us-cuv-fwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.47,
       "zeroTo200KmhS": 21.328,
@@ -2825,7 +2876,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2018-jeep-grand-cherokee-trackhawk-us-suv-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.526,
       "zeroTo200KmhS": 12.922,
@@ -2878,7 +2929,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-alfa-romeo-stelvio-quadrifoglio-us-suv-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.689,
       "zeroTo200KmhS": 14.643,
@@ -2930,8 +2981,61 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 65.8,
     "cls": "S"
   },
+  "2012-lexus-lfa-us-coupe-rwd-6amt": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.695,
+      "zeroTo200KmhS": 10.886,
+      "sixtyFootS": 2.053,
+      "quarterMileS": 11.515,
+      "quarterMileTrapKmh": 206.693,
+      "kilometerS": 20.507,
+      "kilometerTrapKmh": 268.365,
+      "metres400S": 11.474,
+      "metres400TrapKmh": 206.265,
+      "splits": {
+        "30mph": 1.551,
+        "60mph": 3.54,
+        "100mph": 7.343,
+        "130mph": 11.759,
+        "150mph": 16.187,
+        "100kmh": 3.695,
+        "160kmh": 7.28,
+        "180kmh": 9.103,
+        "200kmh": 10.886
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.417,
+      "zeroTo200KmhS": 10.608,
+      "sixtyFootS": 1.775,
+      "quarterMileS": 11.237,
+      "quarterMileTrapKmh": 206.693,
+      "kilometerS": 20.23,
+      "kilometerTrapKmh": 268.365,
+      "metres400S": 11.196,
+      "metres400TrapKmh": 206.265,
+      "splits": {
+        "30mph": 1.273,
+        "60mph": 3.263,
+        "100mph": 7.065,
+        "130mph": 11.481,
+        "150mph": 15.909,
+        "100kmh": 3.417,
+        "160kmh": 7.003,
+        "180kmh": 8.825,
+        "200kmh": 10.608
+      }
+    },
+    "topSpeedKmh": 332,
+    "peakPowerPs": 560,
+    "peakTorqueNm": 480,
+    "testMassKg": 1555,
+    "score": 79.8,
+    "cls": "S+"
+  },
   "2018-mclaren-720s-coupe-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.94,
       "zeroTo200KmhS": 7.656,
@@ -2984,7 +3088,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-lamborghini-huracan-performante-lp-640-4-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.358,
       "zeroTo200KmhS": 8.377,
@@ -3036,61 +3140,424 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 99.9,
     "cls": "S+"
   },
-  "2008-bugatti-veyron-16-4-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+  "2020-porsche-taycan-turbo-s-us-sedan-awd-ev2": {
+    "formula": "SLC-5",
     "brakeRelease": {
-      "zeroTo100KmhS": 2.695,
-      "zeroTo200KmhS": 7.667,
-      "sixtyFootS": 1.872,
-      "quarterMileS": 10.136,
-      "quarterMileTrapKmh": 233.211,
-      "kilometerS": 18.091,
-      "kilometerTrapKmh": 300.479,
-      "metres400S": 10.1,
-      "metres400TrapKmh": 232.78,
+      "zeroTo100KmhS": 2.802,
+      "zeroTo200KmhS": 10.206,
+      "sixtyFootS": 1.836,
+      "quarterMileS": 10.892,
+      "quarterMileTrapKmh": 206.231,
+      "kilometerS": 19.911,
+      "kilometerTrapKmh": 258.783,
+      "metres400S": 10.851,
+      "metres400TrapKmh": 205.869,
       "splits": {
-        "30mph": 1.285,
-        "60mph": 2.587,
-        "100mph": 5.309,
-        "130mph": 8.314,
-        "150mph": 10.866,
-        "100kmh": 2.695,
-        "160kmh": 5.262,
-        "180kmh": 6.312,
-        "200kmh": 7.667
+        "30mph": 1.232,
+        "60mph": 2.646,
+        "100mph": 6.605,
+        "130mph": 11.233,
+        "150mph": 15.518,
+        "100kmh": 2.802,
+        "160kmh": 6.532,
+        "180kmh": 8.223,
+        "200kmh": 10.206
       }
     },
     "rollout": {
-      "zeroTo100KmhS": 2.454,
-      "zeroTo200KmhS": 7.426,
-      "sixtyFootS": 1.631,
-      "quarterMileS": 9.895,
-      "quarterMileTrapKmh": 233.211,
-      "kilometerS": 17.85,
-      "kilometerTrapKmh": 300.479,
-      "metres400S": 9.859,
-      "metres400TrapKmh": 232.78,
+      "zeroTo100KmhS": 2.558,
+      "zeroTo200KmhS": 9.961,
+      "sixtyFootS": 1.591,
+      "quarterMileS": 10.647,
+      "quarterMileTrapKmh": 206.231,
+      "kilometerS": 19.666,
+      "kilometerTrapKmh": 258.783,
+      "metres400S": 10.606,
+      "metres400TrapKmh": 205.869,
       "splits": {
-        "30mph": 1.044,
-        "60mph": 2.346,
-        "100mph": 5.068,
-        "130mph": 8.073,
-        "150mph": 10.625,
-        "100kmh": 2.454,
-        "160kmh": 5.021,
-        "180kmh": 6.071,
-        "200kmh": 7.426
+        "30mph": 0.987,
+        "60mph": 2.401,
+        "100mph": 6.361,
+        "130mph": 10.988,
+        "150mph": 15.273,
+        "100kmh": 2.558,
+        "160kmh": 6.288,
+        "180kmh": 7.978,
+        "200kmh": 9.961
+      }
+    },
+    "topSpeedKmh": 260,
+    "peakPowerPs": 625,
+    "peakTorqueNm": 990,
+    "testMassKg": 2370,
+    "score": 86.4,
+    "cls": "S+"
+  },
+  "2025-hyundai-ioniq-5-n-us-cuv-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.459,
+      "zeroTo200KmhS": 11.273,
+      "sixtyFootS": 2.063,
+      "quarterMileS": 11.445,
+      "quarterMileTrapKmh": 201.408,
+      "kilometerS": 20.735,
+      "kilometerTrapKmh": 255.616,
+      "metres400S": 11.403,
+      "metres400TrapKmh": 201.066,
+      "splits": {
+        "30mph": 1.562,
+        "60mph": 3.303,
+        "100mph": 7.338,
+        "130mph": 12.442,
+        "150mph": 17.629,
+        "100kmh": 3.459,
+        "160kmh": 7.26,
+        "180kmh": 9.078,
+        "200kmh": 11.273
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.194,
+      "zeroTo200KmhS": 11.008,
+      "sixtyFootS": 1.798,
+      "quarterMileS": 11.179,
+      "quarterMileTrapKmh": 201.408,
+      "kilometerS": 20.469,
+      "kilometerTrapKmh": 255.616,
+      "metres400S": 11.137,
+      "metres400TrapKmh": 201.066,
+      "splits": {
+        "30mph": 1.296,
+        "60mph": 3.038,
+        "100mph": 7.072,
+        "130mph": 12.176,
+        "150mph": 17.363,
+        "100kmh": 3.194,
+        "160kmh": 6.994,
+        "180kmh": 8.812,
+        "200kmh": 11.008
+      }
+    },
+    "topSpeedKmh": 259,
+    "peakPowerPs": 609,
+    "peakTorqueNm": 740,
+    "testMassKg": 2275,
+    "score": 78.3,
+    "cls": "S+"
+  },
+  "2021-tesla-model-s-plaid-us-liftback-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.442,
+      "zeroTo200KmhS": 6.723,
+      "sixtyFootS": 1.788,
+      "quarterMileS": 9.675,
+      "quarterMileTrapKmh": 242.731,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 9.641,
+      "metres400TrapKmh": 242.292,
+      "splits": {
+        "30mph": 1.171,
+        "60mph": 2.35,
+        "100mph": 4.662,
+        "130mph": 7.293,
+        "150mph": 9.571,
+        "100kmh": 2.442,
+        "160kmh": 4.619,
+        "180kmh": 5.6,
+        "200kmh": 6.723
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.206,
+      "zeroTo200KmhS": 6.487,
+      "sixtyFootS": 1.551,
+      "quarterMileS": 9.439,
+      "quarterMileTrapKmh": 242.731,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 9.404,
+      "metres400TrapKmh": 242.292,
+      "splits": {
+        "30mph": 0.934,
+        "60mph": 2.113,
+        "100mph": 4.426,
+        "130mph": 7.056,
+        "150mph": 9.334,
+        "100kmh": 2.206,
+        "160kmh": 4.383,
+        "180kmh": 5.363,
+        "200kmh": 6.487
+      }
+    },
+    "topSpeedKmh": 262,
+    "peakPowerPs": 1033,
+    "peakTorqueNm": 1424,
+    "testMassKg": 2237,
+    "score": 114.7,
+    "cls": "S+"
+  },
+  "2024-lucid-air-sapphire-us-sedan-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.424,
+      "zeroTo200KmhS": 6.422,
+      "sixtyFootS": 1.78,
+      "quarterMileS": 9.542,
+      "quarterMileTrapKmh": 246.907,
+      "kilometerS": 17.056,
+      "kilometerTrapKmh": 318.756,
+      "metres400S": 9.508,
+      "metres400TrapKmh": 246.468,
+      "splits": {
+        "30mph": 1.162,
+        "60mph": 2.334,
+        "100mph": 4.492,
+        "130mph": 6.958,
+        "150mph": 9.122,
+        "100kmh": 2.424,
+        "160kmh": 4.452,
+        "180kmh": 5.368,
+        "200kmh": 6.422
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.192,
+      "zeroTo200KmhS": 6.191,
+      "sixtyFootS": 1.549,
+      "quarterMileS": 9.311,
+      "quarterMileTrapKmh": 246.907,
+      "kilometerS": 16.825,
+      "kilometerTrapKmh": 318.756,
+      "metres400S": 9.277,
+      "metres400TrapKmh": 246.468,
+      "splits": {
+        "30mph": 0.93,
+        "60mph": 2.103,
+        "100mph": 4.26,
+        "130mph": 6.727,
+        "150mph": 8.89,
+        "100kmh": 2.192,
+        "160kmh": 4.22,
+        "180kmh": 5.136,
+        "200kmh": 6.191
+      }
+    },
+    "topSpeedKmh": 330,
+    "peakPowerPs": 1235,
+    "peakTorqueNm": 1940,
+    "testMassKg": 2495,
+    "score": 117.8,
+    "cls": "S+"
+  },
+  "2024-tesla-model-3-performance-us-sedan-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.456,
+      "zeroTo200KmhS": 11.264,
+      "sixtyFootS": 2.063,
+      "quarterMileS": 11.46,
+      "quarterMileTrapKmh": 201.671,
+      "kilometerS": 20.664,
+      "kilometerTrapKmh": 260.173,
+      "metres400S": 11.418,
+      "metres400TrapKmh": 201.316,
+      "splits": {
+        "30mph": 1.556,
+        "60mph": 3.295,
+        "100mph": 7.399,
+        "130mph": 12.378,
+        "150mph": 17.099,
+        "100kmh": 3.456,
+        "160kmh": 7.322,
+        "180kmh": 9.128,
+        "200kmh": 11.264
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.184,
+      "zeroTo200KmhS": 10.992,
+      "sixtyFootS": 1.79,
+      "quarterMileS": 11.187,
+      "quarterMileTrapKmh": 201.671,
+      "kilometerS": 20.392,
+      "kilometerTrapKmh": 260.173,
+      "metres400S": 11.145,
+      "metres400TrapKmh": 201.316,
+      "splits": {
+        "30mph": 1.284,
+        "60mph": 3.023,
+        "100mph": 7.127,
+        "130mph": 12.106,
+        "150mph": 16.827,
+        "100kmh": 3.184,
+        "160kmh": 7.049,
+        "180kmh": 8.856,
+        "200kmh": 10.992
+      }
+    },
+    "topSpeedKmh": 262,
+    "peakPowerPs": 517,
+    "peakTorqueNm": 741,
+    "testMassKg": 1910,
+    "score": 78.3,
+    "cls": "S+"
+  },
+  "2023-kia-ev6-gt-us-cuv-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.632,
+      "zeroTo200KmhS": 15.503,
+      "sixtyFootS": 2.131,
+      "quarterMileS": 11.884,
+      "quarterMileTrapKmh": 184.694,
+      "kilometerS": 22.428,
+      "kilometerTrapKmh": 218.067,
+      "metres400S": 11.839,
+      "metres400TrapKmh": 184.461,
+      "splits": {
+        "30mph": 1.675,
+        "60mph": 3.477,
+        "100mph": 8.188,
+        "130mph": 18.512,
+        "150mph": 60.636,
+        "100kmh": 3.632,
+        "160kmh": 8.075,
+        "180kmh": 11.007,
+        "200kmh": 15.503
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.365,
+      "zeroTo200KmhS": 15.236,
+      "sixtyFootS": 1.865,
+      "quarterMileS": 11.618,
+      "quarterMileTrapKmh": 184.694,
+      "kilometerS": 22.161,
+      "kilometerTrapKmh": 218.067,
+      "metres400S": 11.572,
+      "metres400TrapKmh": 184.461,
+      "splits": {
+        "30mph": 1.409,
+        "60mph": 3.21,
+        "100mph": 7.922,
+        "130mph": 18.246,
+        "150mph": 60.369,
+        "100kmh": 3.365,
+        "160kmh": 7.808,
+        "180kmh": 10.74,
+        "200kmh": 15.236
+      }
+    },
+    "topSpeedKmh": 243,
+    "peakPowerPs": 585,
+    "peakTorqueNm": 726,
+    "testMassKg": 2185,
+    "score": 66.2,
+    "cls": "S"
+  },
+  "2022-rivian-r1t-launch-edition-us-pickup-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.73,
+      "zeroTo200KmhS": null,
+      "sixtyFootS": 2.127,
+      "quarterMileS": 11.853,
+      "quarterMileTrapKmh": 176.729,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 11.806,
+      "metres400TrapKmh": 176.729,
+      "splits": {
+        "30mph": 1.668,
+        "60mph": 3.568,
+        "100mph": 7.704,
+        "100kmh": 3.73,
+        "160kmh": 7.625
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.464,
+      "zeroTo200KmhS": null,
+      "sixtyFootS": 1.86,
+      "quarterMileS": 11.587,
+      "quarterMileTrapKmh": 176.729,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 11.539,
+      "metres400TrapKmh": 176.729,
+      "splits": {
+        "30mph": 1.401,
+        "60mph": 3.302,
+        "100mph": 7.437,
+        "100kmh": 3.464,
+        "160kmh": 7.358
+      }
+    },
+    "topSpeedKmh": 177,
+    "peakPowerPs": 847,
+    "peakTorqueNm": 1231,
+    "testMassKg": 3317,
+    "score": 62.2,
+    "cls": "A"
+  },
+  "2008-bugatti-veyron-16-4-us-coupe-awd-7dct": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.379,
+      "zeroTo200KmhS": 7.351,
+      "sixtyFootS": 1.64,
+      "quarterMileS": 9.846,
+      "quarterMileTrapKmh": 233.528,
+      "kilometerS": 17.796,
+      "kilometerTrapKmh": 300.603,
+      "metres400S": 9.81,
+      "metres400TrapKmh": 233.098,
+      "splits": {
+        "30mph": 1.01,
+        "60mph": 2.27,
+        "100mph": 4.993,
+        "130mph": 7.998,
+        "150mph": 10.55,
+        "100kmh": 2.379,
+        "160kmh": 4.946,
+        "180kmh": 5.995,
+        "200kmh": 7.351
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.255,
+      "zeroTo200KmhS": 7.227,
+      "sixtyFootS": 1.517,
+      "quarterMileS": 9.723,
+      "quarterMileTrapKmh": 233.528,
+      "kilometerS": 17.672,
+      "kilometerTrapKmh": 300.603,
+      "metres400S": 9.687,
+      "metres400TrapKmh": 233.098,
+      "splits": {
+        "30mph": 0.886,
+        "60mph": 2.147,
+        "100mph": 4.869,
+        "130mph": 7.874,
+        "150mph": 10.426,
+        "100kmh": 2.255,
+        "160kmh": 4.823,
+        "180kmh": 5.872,
+        "200kmh": 7.227
       }
     },
     "topSpeedKmh": 375,
     "peakPowerPs": 1001,
     "peakTorqueNm": 1250,
     "testMassKg": 2122,
-    "score": 105.8,
+    "score": 108.9,
     "cls": "S+"
   },
   "2017-bugatti-chiron-eu-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.677,
       "zeroTo200KmhS": 6.031,
@@ -3143,7 +3610,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2006-koenigsegg-ccx-eu-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.178,
       "zeroTo200KmhS": 7.534,
@@ -3196,49 +3663,49 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2022-bugatti-chiron-super-sport-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.459,
-      "zeroTo200KmhS": 5.687,
-      "sixtyFootS": 1.738,
-      "quarterMileS": 9.195,
-      "quarterMileTrapKmh": 265.713,
-      "kilometerS": 16.182,
-      "kilometerTrapKmh": 342.012,
+      "zeroTo200KmhS": 5.688,
+      "sixtyFootS": 1.739,
+      "quarterMileS": 9.196,
+      "quarterMileTrapKmh": 265.711,
+      "kilometerS": 16.183,
+      "kilometerTrapKmh": 342.009,
       "metres400S": 9.164,
-      "metres400TrapKmh": 265.173,
+      "metres400TrapKmh": 265.171,
       "splits": {
         "30mph": 1.133,
         "60mph": 2.364,
-        "100mph": 4.186,
+        "100mph": 4.187,
         "130mph": 6.05,
-        "150mph": 7.803,
+        "150mph": 7.804,
         "100kmh": 2.459,
-        "160kmh": 4.15,
-        "180kmh": 4.912,
-        "200kmh": 5.687
+        "160kmh": 4.151,
+        "180kmh": 4.913,
+        "200kmh": 5.688
       }
     },
     "rollout": {
       "zeroTo100KmhS": 2.296,
-      "zeroTo200KmhS": 5.524,
+      "zeroTo200KmhS": 5.525,
       "sixtyFootS": 1.576,
       "quarterMileS": 9.033,
-      "quarterMileTrapKmh": 265.713,
-      "kilometerS": 16.019,
-      "kilometerTrapKmh": 342.012,
+      "quarterMileTrapKmh": 265.711,
+      "kilometerS": 16.02,
+      "kilometerTrapKmh": 342.009,
       "metres400S": 9.001,
-      "metres400TrapKmh": 265.173,
+      "metres400TrapKmh": 265.171,
       "splits": {
         "30mph": 0.97,
         "60mph": 2.201,
         "100mph": 4.024,
         "130mph": 5.887,
-        "150mph": 7.64,
+        "150mph": 7.641,
         "100kmh": 2.296,
-        "160kmh": 3.987,
-        "180kmh": 4.749,
-        "200kmh": 5.524
+        "160kmh": 3.988,
+        "180kmh": 4.75,
+        "200kmh": 5.525
       }
     },
     "topSpeedKmh": 380,
@@ -3249,7 +3716,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2005-porsche-carrera-gt-de-convertible-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.35,
       "zeroTo200KmhS": 9.756,
@@ -3301,8 +3768,8 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 88.2,
     "cls": "S+"
   },
-  "2021-bugatti-chiron-sport-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+  "2018-bugatti-chiron-sport-us-coupe-awd-7dct": {
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.676,
       "zeroTo200KmhS": 6.001,
@@ -3352,6 +3819,218 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakTorqueNm": 1600,
     "testMassKg": 2052,
     "score": 125,
+    "cls": "S+"
+  },
+  "2020-bugatti-chiron-pur-sport-eu-coupe-awd-7dct": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.671,
+      "zeroTo200KmhS": 5.919,
+      "sixtyFootS": 1.87,
+      "quarterMileS": 9.376,
+      "quarterMileTrapKmh": 265.138,
+      "kilometerS": 16.349,
+      "kilometerTrapKmh": 343.686,
+      "metres400S": 9.344,
+      "metres400TrapKmh": 264.628,
+      "splits": {
+        "30mph": 1.283,
+        "60mph": 2.578,
+        "100mph": 4.437,
+        "130mph": 6.325,
+        "150mph": 7.946,
+        "100kmh": 2.671,
+        "160kmh": 4.406,
+        "180kmh": 5.084,
+        "200kmh": 5.919
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.43,
+      "zeroTo200KmhS": 5.678,
+      "sixtyFootS": 1.63,
+      "quarterMileS": 9.135,
+      "quarterMileTrapKmh": 265.138,
+      "kilometerS": 16.109,
+      "kilometerTrapKmh": 343.686,
+      "metres400S": 9.103,
+      "metres400TrapKmh": 264.628,
+      "splits": {
+        "30mph": 1.043,
+        "60mph": 2.337,
+        "100mph": 4.196,
+        "130mph": 6.084,
+        "150mph": 7.706,
+        "100kmh": 2.43,
+        "160kmh": 4.165,
+        "180kmh": 4.843,
+        "200kmh": 5.678
+      }
+    },
+    "topSpeedKmh": 350,
+    "peakPowerPs": 1504,
+    "peakTorqueNm": 1600,
+    "testMassKg": 2020,
+    "score": 127.6,
+    "cls": "S+"
+  },
+  "2010-bugatti-veyron-16-4-super-sport-us-coupe-awd-7dct": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.22,
+      "zeroTo200KmhS": 6.305,
+      "sixtyFootS": 1.6,
+      "quarterMileS": 9.384,
+      "quarterMileTrapKmh": 247.737,
+      "kilometerS": 16.882,
+      "kilometerTrapKmh": 318.963,
+      "metres400S": 9.35,
+      "metres400TrapKmh": 247.284,
+      "splits": {
+        "30mph": 0.972,
+        "60mph": 2.136,
+        "100mph": 4.387,
+        "130mph": 6.852,
+        "150mph": 8.93,
+        "100kmh": 2.22,
+        "160kmh": 4.347,
+        "180kmh": 5.239,
+        "200kmh": 6.305
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.11,
+      "zeroTo200KmhS": 6.196,
+      "sixtyFootS": 1.491,
+      "quarterMileS": 9.275,
+      "quarterMileTrapKmh": 247.737,
+      "kilometerS": 16.772,
+      "kilometerTrapKmh": 318.963,
+      "metres400S": 9.241,
+      "metres400TrapKmh": 247.284,
+      "splits": {
+        "30mph": 0.862,
+        "60mph": 2.026,
+        "100mph": 4.277,
+        "130mph": 6.742,
+        "150mph": 8.82,
+        "100kmh": 2.11,
+        "160kmh": 4.237,
+        "180kmh": 5.129,
+        "200kmh": 6.196
+      }
+    },
+    "topSpeedKmh": 410,
+    "peakPowerPs": 1199,
+    "peakTorqueNm": 1500,
+    "testMassKg": 2122,
+    "score": 119.9,
+    "cls": "S+"
+  },
+  "1994-mclaren-f1-uk-coupe-rwd-6mt": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.806,
+      "zeroTo200KmhS": 8.296,
+      "sixtyFootS": 1.974,
+      "quarterMileS": 10.435,
+      "quarterMileTrapKmh": 229.352,
+      "kilometerS": 18.559,
+      "kilometerTrapKmh": 292.361,
+      "metres400S": 10.398,
+      "metres400TrapKmh": 228.881,
+      "splits": {
+        "30mph": 1.391,
+        "60mph": 2.706,
+        "100mph": 5.803,
+        "130mph": 8.937,
+        "150mph": 11.814,
+        "100kmh": 2.806,
+        "160kmh": 5.755,
+        "180kmh": 6.824,
+        "200kmh": 8.296
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.482,
+      "zeroTo200KmhS": 7.971,
+      "sixtyFootS": 1.65,
+      "quarterMileS": 10.111,
+      "quarterMileTrapKmh": 229.352,
+      "kilometerS": 18.234,
+      "kilometerTrapKmh": 292.361,
+      "metres400S": 10.074,
+      "metres400TrapKmh": 228.881,
+      "splits": {
+        "30mph": 1.067,
+        "60mph": 2.382,
+        "100mph": 5.479,
+        "130mph": 8.612,
+        "150mph": 11.49,
+        "100kmh": 2.482,
+        "160kmh": 5.431,
+        "180kmh": 6.499,
+        "200kmh": 7.971
+      }
+    },
+    "topSpeedKmh": 362,
+    "peakPowerPs": 627,
+    "peakTorqueNm": 651,
+    "testMassKg": 1215,
+    "score": 101.4,
+    "cls": "S+"
+  },
+  "2022-rimac-nevera-eu-coupe-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.133,
+      "zeroTo200KmhS": 4.568,
+      "sixtyFootS": 1.687,
+      "quarterMileS": 8.417,
+      "quarterMileTrapKmh": 295.123,
+      "kilometerS": 14.667,
+      "kilometerTrapKmh": 384.677,
+      "metres400S": 8.389,
+      "metres400TrapKmh": 294.575,
+      "splits": {
+        "30mph": 1.04,
+        "60mph": 2.06,
+        "100mph": 3.489,
+        "130mph": 4.857,
+        "150mph": 5.996,
+        "100kmh": 2.133,
+        "160kmh": 3.466,
+        "180kmh": 3.991,
+        "200kmh": 4.568
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 1.904,
+      "zeroTo200KmhS": 4.34,
+      "sixtyFootS": 1.459,
+      "quarterMileS": 8.189,
+      "quarterMileTrapKmh": 295.123,
+      "kilometerS": 14.439,
+      "kilometerTrapKmh": 384.677,
+      "metres400S": 8.16,
+      "metres400TrapKmh": 294.575,
+      "splits": {
+        "30mph": 0.812,
+        "60mph": 1.831,
+        "100mph": 3.26,
+        "130mph": 4.629,
+        "150mph": 5.767,
+        "100kmh": 1.904,
+        "160kmh": 3.237,
+        "180kmh": 3.762,
+        "200kmh": 4.34
+      }
+    },
+    "topSpeedKmh": 412,
+    "peakPowerPs": 1914,
+    "peakTorqueNm": 2340,
+    "testMassKg": 2375,
+    "score": 151,
     "cls": "S+"
   }
 };

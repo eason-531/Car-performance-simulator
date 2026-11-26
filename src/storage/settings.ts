@@ -1,4 +1,4 @@
-import { CATALOG, OWNER_IDS, findEntry, isPlayable } from '../data/catalog';
+import { CATALOG, OWNER_IDS, canonicalId, findEntry, isPlayable } from '../data/catalog';
 import type { TimingBasis } from '../physics/metrics';
 import type { LaunchTechnique } from '../physics/runners';
 import type { ShiftMode } from '../physics/types';
@@ -49,7 +49,7 @@ function sanitizeChoice(raw: unknown): CarChoice | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
   if (typeof r.vehicleId !== 'string' || !isPlayable(r.vehicleId)) return null;
-  return { vehicleId: r.vehicleId, variant: r.variant === 'stock' ? 'stock' : 'current' };
+  return { vehicleId: canonicalId(r.vehicleId), variant: r.variant === 'stock' ? 'stock' : 'current' };
 }
 
 export function sanitizeSettings(raw: unknown): AppSettings {
@@ -58,18 +58,19 @@ export function sanitizeSettings(raw: unknown): AppSettings {
   const r = raw as Record<string, unknown>;
   const tuningsRaw = (r.tunings && typeof r.tunings === 'object' ? r.tunings : {}) as Record<string, unknown>;
   const tunings: Record<string, TuningConfig> = {};
-  for (const [id, t] of Object.entries(tuningsRaw)) {
+  for (const [rawId, t] of Object.entries(tuningsRaw)) {
+    const id = canonicalId(rawId);
     const spec = findVehicle(id);
-    if (spec) tunings[id] = sanitizeTuning(spec, t);
+    if (spec && !(id in tunings && id !== rawId)) tunings[id] = sanitizeTuning(spec, t);
   }
   const lanes = Array.isArray(r.dragLanes) ? r.dragLanes : [];
   return {
-    activeVehicleId: typeof r.activeVehicleId === 'string' && isPlayable(r.activeVehicleId) ? r.activeVehicleId : d.activeVehicleId,
+    activeVehicleId: typeof r.activeVehicleId === 'string' && isPlayable(r.activeVehicleId) ? canonicalId(r.activeVehicleId) : d.activeVehicleId,
     tunings,
     shiftMode: r.shiftMode === 'manual' ? 'manual' : 'auto',
     launch: r.launch === 'standard' ? 'standard' : 'brake-boost',
     favorites: Array.isArray(r.favorites)
-      ? [...new Set(r.favorites.filter((id): id is string => typeof id === 'string' && !!findEntry(id)))]
+      ? [...new Set(r.favorites.filter((id): id is string => typeof id === 'string' && !!findEntry(id)).map(canonicalId))]
       : [],
     dragLanes: [sanitizeChoice(lanes[0]) ?? d.dragLanes[0], sanitizeChoice(lanes[1]) ?? d.dragLanes[1]],
     testCompare: sanitizeChoice(r.testCompare),

@@ -38,6 +38,19 @@ export class Curve {
     return this.lut[i] + (this.lut[i + 1] - this.lut[i]) * t;
   }
 
+  /**
+   * x positions of the lookup-table samples inside [lo, hi]. `at()` is linear
+   * between consecutive samples, so these are the only points where its slope
+   * can change.
+   */
+  knotsWithin(lo: number, hi: number): number[] {
+    const out: number[] = [];
+    const first = Math.max(0, Math.ceil((lo - this.xMin) / this.lutStep));
+    const last = Math.min(this.lut.length - 1, Math.floor((hi - this.xMin) / this.lutStep));
+    for (let i = first; i <= last; i++) out.push(this.xMin + i * this.lutStep);
+    return out;
+  }
+
   /** Point-wise product with another curve, sampled on the union of both point sets. */
   multiply(other: Curve): Curve {
     return this.combine(other, (a, b) => a * b);

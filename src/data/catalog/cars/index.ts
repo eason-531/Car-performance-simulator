@@ -80,6 +80,10 @@ import { entry as h03 } from './h03-koenigsegg-ccx';
 import { entry as h04 } from './h04-bugatti-chiron-super-sport';
 import { entry as h06 } from './h06-porsche-carrera-gt';
 import { entry as h10 } from './h10-bugatti-chiron-sport';
+import { entry as h11 } from './h11-bugatti-chiron-pur-sport';
+import { entry as h12 } from './h12-bugatti-veyron-super-sport';
+import { entry as h20 } from './h20-mclaren-f1';
+import { entry as h26 } from './h26-rimac-nevera';
 
 /**
  * Every catalog entry: the owner's two cars first, then the 73-car roster in
@@ -167,4 +171,8 @@ export const ENTRIES: readonly CatalogEntry[] = [
   h04,
   h06,
   h10,
+  h11,
+  h12,
+  h20,
+  h26,
 ];

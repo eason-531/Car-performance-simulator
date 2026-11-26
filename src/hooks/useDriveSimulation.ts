@@ -22,6 +22,11 @@ export interface DriveSnapshot {
   speedLimited: boolean;
   fuelCut: boolean;
   coupling: CouplingState;
+  /** Clutch disengaged during a clutch-open shift (manual or automated manual). */
+  clutchOpen: boolean;
+  /** Electric cars: motor output, kW, and whether a published boost is running. */
+  motorPowerKw: number;
+  boostActive: boolean;
   distanceM: number;
   /** Auto Hold is keeping the car stationary until the throttle is pressed. */
   autoHold: boolean;
@@ -58,6 +63,9 @@ function snapshotOf(
     speedLimited: s.speedLimited,
     fuelCut: s.fuelCut,
     coupling: s.coupling,
+    clutchOpen: s.clutchOpen,
+    motorPowerKw: s.motorPowerKw,
+    boostActive: s.boostS > 0,
     distanceM: s.distance,
     autoHold,
     timer: timer.view,
@@ -69,7 +77,7 @@ function snapshotOf(
  * physics always advances in FIXED_DT steps through a time accumulator, so
  * the simulation is identical at 30, 60 or 120 Hz.
  */
-export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode) {
+export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, virtualShift = false) {
   const simRef = useRef<VehicleSimulator | null>(null);
   const timerRef = useRef(new LiveTimer());
   const targets = useRef({ pointer: { throttle: 0, brake: 0 }, key: { throttle: 0, brake: 0 } });
@@ -83,6 +91,8 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode) {
     hold.current = true;
   }
   simRef.current.shiftMode = shiftMode;
+  // Electric cars with a simulated stepped gearbox (e.g. N e-Shift): Live Drive only, off unless chosen.
+  simRef.current.setVirtualShift(virtualShift);
 
   const [snapshot, setSnapshot] = useState<DriveSnapshot>(() => snapshotOf(simRef.current!, timerRef.current, NO_INPUT, true));
 

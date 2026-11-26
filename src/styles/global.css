@@ -260,6 +260,11 @@ small {
   gap: 10px;
 }
 
+.drive__virtual-shift .toggle {
+  min-height: 40px;
+  gap: 10px;
+}
+
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2942,6 +2947,11 @@ small {
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   animation: view-in 200ms var(--ease);
+}
+
+/* The dialog takes programmatic focus on touch devices (keeps the on-screen keyboard down). */
+.dialog:focus {
+  outline: none;
 }
 
 .dialog {
