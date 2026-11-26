@@ -1365,45 +1365,191 @@ small {
   color: var(--good-text);
 }
 
-.drive__road {
+.drive__assist {
+  display: grid;
+  grid-template-columns: minmax(160px, 200px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.assist {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+}
+
+.assist__toggle {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 120ms, border-color 120ms;
+}
+
+.assist__toggle:focus-visible {
+  outline: 2px solid var(--series-1);
+  outline-offset: 2px;
+}
+
+.assist__toggle.is-on {
+  background: rgba(12, 163, 12, 0.16);
+  border-color: rgba(12, 163, 12, 0.7);
+}
+
+.assist__led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3a3f46;
+}
+
+.assist__toggle.is-on .assist__led {
+  background: var(--good-text);
+  box-shadow: 0 0 8px var(--good);
+}
+
+.assist__state {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.assist__toggle.is-on .assist__state {
+  color: var(--good-text);
+}
+
+.assist__traffic {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assist__select {
+  flex: 1;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.assist__seed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.road {
   position: relative;
-  height: 36px;
+  min-height: 98px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: linear-gradient(180deg, #121519, #0d1013);
   border: 1px solid var(--border);
 }
 
-.drive__road-lines {
+.road__svg {
   position: absolute;
-  inset: 0 -100% 0 0;
-  background:
-    linear-gradient(90deg, rgba(240, 239, 236, 0.4) 0 50%, transparent 50% 100%) 0 50% / 8.333% 3px repeat-x;
-  will-change: transform;
+  inset: 0;
+  display: block;
 }
 
-.drive__road-car {
-  position: absolute;
-  left: 14%;
-  top: 50%;
-  width: 56px;
-  height: 22px;
-  margin-top: -11px;
-  border-radius: 9px 14px 14px 9px;
-  box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
+.road__edge {
+  stroke: rgba(240, 239, 236, 0.22);
+  stroke-width: 2;
 }
 
-.drive__road-odo {
+.road__dash {
+  stroke: rgba(240, 239, 236, 0.4);
+  stroke-width: 2;
+}
+
+.road__gap line {
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.road__gap-label,
+.road__odo,
+.road__contact {
   position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  background: rgba(10, 12, 15, 0.8);
-  padding: 2px 8px;
+  padding: 1px 6px;
   border-radius: 6px;
+  background: rgba(10, 12, 15, 0.8);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.road__gap-label {
+  transform: translateX(-50%);
+}
+
+.road__odo {
+  right: 8px;
+  bottom: 6px;
+  color: var(--text-muted);
+}
+
+.road__contact {
+  left: 8px;
+  bottom: 6px;
+  color: var(--critical-text);
+}
+
+.drive__assist-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  min-height: 18px;
+  margin: -8px 2px 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+.drive__assist-note strong {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.drive__assist-note--good strong {
+  color: var(--good-text);
+}
+
+.drive__assist-note--warning strong {
+  color: var(--warning);
+}
+
+.drive__assist-note--critical strong {
+  color: var(--critical-text);
 }
 
 .drive__controls {
@@ -2609,6 +2755,9 @@ small {
   .drive__center {
     grid-column: 1 / -1;
     order: 2;
+  }
+  .drive__assist {
+    grid-template-columns: minmax(0, 1fr);
   }
   .drive__cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));
