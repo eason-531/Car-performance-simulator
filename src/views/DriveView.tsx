@@ -226,7 +226,7 @@ export function DriveView() {
             <Light on={s.speedLimited} label="LIM" tone="warning" title="Speed limiter" />
             <Light on={s.fuelCut} label="REV" tone="critical" title="Rev limiter" />
             <Light on={s.autoHold} label="HOLD" tone="good" title="Auto Hold (released by the throttle)" />
-            <Light on={s.coupling === 'locked'} label={vehicle.transmission.torqueConverter ? 'L/U' : 'CLU'} tone="good" title={vehicle.transmission.torqueConverter ? 'Converter lock-up' : 'Clutch closed'} />
+            <Light on={s.coupling === 'locked' && !s.clutchOpen} label={vehicle.transmission.torqueConverter ? 'L/U' : 'CLU'} tone="good" title={vehicle.transmission.torqueConverter ? 'Converter lock-up' : 'Clutch closed'} />
           </div>
         </div>
       </div>

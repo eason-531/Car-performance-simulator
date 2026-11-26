@@ -22,6 +22,8 @@ export interface DriveSnapshot {
   speedLimited: boolean;
   fuelCut: boolean;
   coupling: CouplingState;
+  /** Clutch disengaged during a clutch-open shift (manual or automated manual). */
+  clutchOpen: boolean;
   distanceM: number;
   /** Auto Hold is keeping the car stationary until the throttle is pressed. */
   autoHold: boolean;
@@ -58,6 +60,7 @@ function snapshotOf(
     speedLimited: s.speedLimited,
     fuelCut: s.fuelCut,
     coupling: s.coupling,
+    clutchOpen: s.clutchOpen,
     distanceM: s.distance,
     autoHold,
     timer: timer.view,

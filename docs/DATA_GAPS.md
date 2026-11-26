@@ -430,8 +430,8 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2012 Lexus LFA
 
-- Also missing: Car and Driver timing procedure for the 2010/2011 runs (needed before fitting grip); Launch-control rpm; Frontal area; US curb mass basis (Lexus Europe gives a 1,480–1,580 kg range; Car and Driver weighed 3,583 lb)
-- Consulted: [Lexus Europe](https://prensa.lexusauto.es/wp-content/uploads/2009/10/Dossier%20Lexus_LFA%20ingles.pdf) · [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [PakWheels forum (Car and Driver reprint)](https://www.pakwheels.com/forums/t/lexus-fan-club/119439?page=8)
+- Also missing: How Car and Driver's legacy 3 mph timing maps onto the simulator's bases (needed before fitting grip); An exact test of a US production LFA (both Car and Driver runs are equivalent: prototype short take; UK-based comparison car); High-speed drag with the active rear wing raised (it rises from 80 km/h depending on mode; only the retracted Cd 0.31 is published); Frontal area; US curb mass basis (Lexus Europe gives a 1,480–1,580 kg range; Car and Driver weighed 3,583 lb and 3,569 lb); A hard fuel cut distinct from the published 9,000 rpm maximum engine speed; ASG idle creep behaviour
+- Consulted: [Lexus Europe](https://prensa.lexusauto.es/wp-content/uploads/2009/10/Dossier%20Lexus_LFA%20ingles.pdf) · [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [Car and Driver](https://www.caranddriver.com/reviews/comparison-test/a15128593/2011-ferrari-599-hgte-vs-2012-lexus-lfa-comparison-test/)
 
 ### 2018 McLaren 720S Coupe
 

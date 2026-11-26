@@ -97,6 +97,44 @@ describe('top speed boundary and binding constraint', () => {
     expect(speed).not.toBe(cap);
   });
 
+  it('stops at a force dip narrower than the 0.5 km/h scan even when force recovers after it (Codex repro)', () => {
+    const base = flatCar([2.0]);
+    const r = base.wheelRadiusM;
+    const rpmOf = (kmh: number) => ((kmhToMs(kmh) / r) * 2.0 * 60) / (2 * Math.PI);
+    const startKmh = ((base.engine.idleRpm * 1.001 * 2 * Math.PI * r) / (60 * 2.0)) * 3.6;
+    const c = startKmh + 82.25;
+    const torque = new Curve(
+      [[500, 400], [rpmOf(c - 0.1), 400], [rpmOf(c), 0], [rpmOf(c + 0.1), 400], [7000, 400]],
+      65536,
+    );
+    const v: SimVehicle = { ...base, engine: { ...base.engine, torque } };
+    // The dip is real (net force negative at its centre) and force recovers after it.
+    expect(wheelForce({ ...v, engine: { ...v.engine, torque: new Curve([[500, 0], [7000, 0]]) } }, 2.0)).toBe(0);
+    expect((torque.at(rpmOf(c)) * 2.0 * v.drivetrain.efficiency) / r - roadLoad(v, c)).toBeLessThan(0);
+    expect((torque.at(rpmOf(c + 0.5)) * 2.0 * v.drivetrain.efficiency) / r - roadLoad(v, c + 0.5)).toBeGreaterThan(0);
+    const t = topSpeedBreakdown(v);
+    expect(t.unlimitedKmh).toBeGreaterThan(c - 0.1);
+    expect(t.unlimitedKmh).toBeLessThan(c);
+    expect(t.binding).toBe('drag');
+  });
+
+  it('stops at a gear-change gap even when the next gear pulls again higher up', () => {
+    // Torque that climbs steeply with rpm: 2nd is too weak just past 1st's cut but recovers later.
+    // 1st cuts at 7,000 rpm where 2nd turns only 5,600 rpm (300 Nm, too weak there); 2nd reaches 900 Nm from 6,400 rpm.
+    const base = flatCar([3.0, 2.4]);
+    const torque = new Curve([[500, 300], [5800, 300], [6400, 900], [7000, 900]]);
+    const v: SimVehicle = { ...base, engine: { ...base.engine, torque } };
+    const cut1 = cutKmh(v, 3.0);
+    const net2 = (kmh: number) => (torque.at(((kmhToMs(kmh) / v.wheelRadiusM) * 2.4 * 60) / (2 * Math.PI)) * 2.4 * v.drivetrain.efficiency) / v.wheelRadiusM - roadLoad(v, kmh);
+    expect(net2(cut1 + 0.01)).toBeLessThan(0);
+    const later = [cut1 + 30, cut1 + 40, cut1 + 50].some((k) => net2(k) > 0);
+    expect(later).toBe(true);
+    const t = topSpeedBreakdown(v);
+    expect(t.unlimitedKmh).toBeCloseTo(cut1, 1);
+    expect(t.binding).toBe('rev-limit');
+    expect(t.gear).toBe(1);
+  });
+
   it('holds a binding limiter (Chiron Super Sport)', () => {
     const t = topSpeedBreakdown(stock('2022-bugatti-chiron-super-sport-us-coupe-awd-7dct'));
     expect(t.binding).toBe('limiter');

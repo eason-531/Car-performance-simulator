@@ -67,6 +67,37 @@ describe('single-clutch automated manual (AMT / ASG)', () => {
     expect(Math.min(...dctMid)).toBeGreaterThan(0);
   });
 
+  it('reports the clutch open through the shift envelope and closed again after re-engagement', () => {
+    const lfa = VEHICLES.find((x) => x.transmission.type === 'automated-manual')!;
+    const s = new VehicleSimulator(sim(lfa), 'auto');
+    let seen = false;
+    for (let i = 0; i < 20000 && !seen; i++) {
+      s.step(0.001, { throttle: 1, brake: 0 });
+      const sh = s.state.shift;
+      if (sh && sh.from === 2 && sh.to === 3 && Math.abs(sh.elapsed - sh.duration / 2) < 0.0006) {
+        seen = true;
+        // Mid-shift (0.100 s of the 0.2 s 2→3 upshift): torque interrupted, clutch indicated open.
+        expect(s.state.clutchOpen).toBe(true);
+        expect(s.state.accel).toBeLessThan(0);
+      }
+    }
+    expect(seen).toBe(true);
+    s.advance(0.15, { throttle: 1, brake: 0 });
+    expect(s.state.shift).toBeNull();
+    expect(s.state.clutchOpen).toBe(false);
+    expect(s.state.coupling).toBe('locked');
+  });
+
+  it('never reports a dual-clutch or converter car with its clutch open', () => {
+    for (const spec of VEHICLES.filter((x) => x.transmission.type === 'dual-clutch' || x.transmission.type === 'torque-converter-automatic').slice(0, 6)) {
+      const s = new VehicleSimulator(sim(spec), 'auto');
+      for (let i = 0; i < 8000; i++) {
+        s.step(0.001, { throttle: 1, brake: 0 });
+        expect(s.state.clutchOpen).toBe(false);
+      }
+    }
+  });
+
   it('is slower than the same car with a dual-clutch box, but still completes every split', () => {
     const a = runAccelerationRun(sim(amt), { launch: 'brake-boost' }).metrics;
     const d = runAccelerationRun(sim(dct), { launch: 'brake-boost' }).metrics;

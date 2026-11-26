@@ -91,74 +91,91 @@ export interface TopSpeedBreakdown {
 }
 
 const rpmAt = (v: SimVehicle, ratio: number, ms: number) => ((ms / v.wheelRadiusM) * ratio * 60) / (2 * Math.PI);
+const msAtRpm = (v: SimVehicle, ratio: number, rpm: number) => (rpm * 2 * Math.PI * v.wheelRadiusM) / (60 * ratio);
 const roadLoadN = (v: SimVehicle, ms: number) => aeroDragN(v, ms) + rollingResistanceN(v, ms);
 
-/** Net full-load force in one gear (wheel force − road load), or null outside the gear's idle–cut range. */
-function netForceInGear(v: SimVehicle, ratio: number, ms: number): number | null {
-  const rpm = rpmAt(v, ratio, ms);
-  if (rpm > v.engine.revLimitRpm || rpm < v.engine.idleRpm) return null;
-  return (v.engine.torque.at(rpm) * ratio * v.drivetrain.efficiency) / v.wheelRadiusM - roadLoadN(v, ms);
+/** Full-load wheel force minus road load in one gear, ignoring the gear's rpm window. */
+function netForce(v: SimVehicle, ratio: number, ms: number): number {
+  return (v.engine.torque.at(rpmAt(v, ratio, ms)) * ratio * v.drivetrain.efficiency) / v.wheelRadiusM - roadLoadN(v, ms);
 }
 
-/** Gears (0-based) that still out-pull the road load at this speed. */
-function pullingGears(v: SimVehicle, ms: number): number[] {
-  const out: number[] = [];
-  v.transmission.overallRatios.forEach((ratio, i) => {
-    const net = netForceInGear(v, ratio, ms);
-    if (net !== null && net > 0) out.push(i);
-  });
-  return out;
+/** Root of a decreasing-through-zero net force between lo (> 0) and hi (≤ 0). */
+function lastPositive(v: SimVehicle, ratio: number, lo: number, hi: number): number {
+  for (let i = 0; i < 60 && hi - lo > 1e-7; i++) {
+    const mid = (lo + hi) / 2;
+    if (netForce(v, ratio, mid) > 0) lo = mid;
+    else hi = mid;
+  }
+  return lo;
 }
 
 /**
- * Force/gearing-limited top speed and what ends it. Acceleration must be
- * continuous from low speed, so the first speed at which no gear out-pulls the
- * road load is the limit; it is located on a 0.5 km/h scan and then bisected to
- * 0.01 km/h. The gear that pulls just below the limit decides the cause: its
- * rev cut when the limit sits on that gear's cut speed, otherwise the
- * force/road-load crossing. A lower gear can set the limit when a stretched top
- * gear cannot pull at that speed.
+ * Force/gearing-limited top speed and what ends it, exactly for the model's
+ * torque lookup. The full-load torque is linear between lookup-table samples
+ * and road load is convex in speed, so between consecutive breakpoints (every
+ * gear's torque samples and its idle and cut speeds) each gear's net force is
+ * concave: positive at both ends means positive throughout, and a positive
+ * stretch ends at a single root. Acceleration is continuous only while some
+ * gear out-pulls the road load, so the limit is the end of the covered stretch
+ * that starts at low speed; a dip of any width, however narrow, ends it. A
+ * lower gear sets the limit when a stretched top gear cannot pull at that speed.
  */
 function forceGearingLimit(v: SimVehicle): { kmh: number; gear: number; binding: 'rev-limit' | 'drag'; tied: boolean } {
-  // Start just above idle in the lowest gear (below that no gear is engaged).
-  const lowest = Math.max(...v.transmission.overallRatios);
-  const startKmh = msToKmh((v.engine.idleRpm * 1.001 * 2 * Math.PI * v.wheelRadiusM) / (60 * lowest));
-  let lo = kmhToMs(startKmh);
-  if (pullingGears(v, lo).length === 0) return { kmh: 0, gear: 1, binding: 'drag', tied: false };
-  let hi = lo;
-  for (let kmh = startKmh + 0.5; kmh <= 600; kmh += 0.5) {
-    const ms = kmhToMs(kmh);
-    if (pullingGears(v, ms).length === 0) {
-      hi = ms;
-      break;
-    }
-    lo = ms;
-    hi = ms;
-  }
-  for (let i = 0; i < 40 && msToKmh(hi - lo) > 0.002; i++) {
-    const mid = (lo + hi) / 2;
-    if (pullingGears(v, mid).length > 0) lo = mid;
-    else hi = mid;
-  }
-  const limitMs = lo;
-  const gears = pullingGears(v, limitMs);
   const ratios = v.transmission.overallRatios;
-  // Of the gears still pulling at the limit, the one that would carry on furthest.
-  const revKmhOf = (i: number) => msToKmh((v.engine.revLimitRpm * 2 * Math.PI * v.wheelRadiusM) / (60 * ratios[i]));
-  const g = gears.reduce((best, i) => (revKmhOf(i) > revKmhOf(best) ? i : best), gears[0]);
-  const kmh = msToKmh(limitMs);
-  const revKmh = revKmhOf(g);
-  const atCut = revKmh - kmh <= 0.01;
-  let tied: boolean;
-  if (atCut) {
-    // Hold the force at the cut constant and see how soon road load would have caught it.
-    const cutMs = kmhToMs(revKmh);
-    const forceAtCut = (v.engine.torque.at(v.engine.revLimitRpm) * ratios[g] * v.drivetrain.efficiency) / v.wheelRadiusM;
-    tied = forceAtCut <= roadLoadN(v, kmhToMs(revKmh + TOP_SPEED_TIE_KMH)) && forceAtCut > roadLoadN(v, cutMs) - 1e-9;
-  } else {
-    tied = revKmh - kmh <= TOP_SPEED_TIE_KMH;
+  const e = v.engine;
+  const lowest = Math.max(...ratios);
+  const startMs = msAtRpm(v, lowest, e.idleRpm * 1.001);
+  const cuts = ratios.map((r) => msAtRpm(v, r, e.revLimitRpm));
+  const idles = ratios.map((r) => msAtRpm(v, r, e.idleRpm));
+  const speeds = new Set<number>([startMs, ...cuts, ...idles]);
+  ratios.forEach((r) => {
+    for (const rpm of e.torque.knotsWithin(e.idleRpm, e.revLimitRpm)) speeds.add(msAtRpm(v, r, rpm));
+  });
+  const xs = [...speeds].filter((x) => x >= startMs).sort((a, b) => a - b);
+  const inWindow = (g: number, ms: number) => {
+    const rpm = rpmAt(v, ratios[g], ms);
+    return rpm >= e.idleRpm - 1e-6 && rpm <= e.revLimitRpm + 1e-6;
+  };
+  const result = (ms: number, g: number) => {
+    const kmh = msToKmh(ms);
+    const revKmh = msToKmh(cuts[g]);
+    const atCut = revKmh - kmh <= 0.01;
+    let tied: boolean;
+    if (atCut) {
+      // Hold the force at the cut constant and see how soon road load would have caught it.
+      const forceAtCut = (e.torque.at(e.revLimitRpm) * ratios[g] * v.drivetrain.efficiency) / v.wheelRadiusM;
+      tied = forceAtCut <= roadLoadN(v, kmhToMs(revKmh + TOP_SPEED_TIE_KMH));
+    } else {
+      tied = revKmh - kmh <= TOP_SPEED_TIE_KMH;
+    }
+    return { kmh: Math.round(kmh * 100) / 100, gear: g + 1, binding: (atCut ? 'rev-limit' : 'drag') as 'rev-limit' | 'drag', tied };
+  };
+  if (!ratios.some((r, g) => inWindow(g, startMs) && netForce(v, r, startMs) > 0)) return { kmh: 0, gear: 1, binding: 'drag', tied: false };
+
+  let covered = startMs;
+  let lastGear = ratios.indexOf(lowest);
+  for (let i = 0; i + 1 < xs.length; i++) {
+    const a = xs[i];
+    const b = xs[i + 1];
+    if (b - a < 1e-9) continue;
+    const mid = (a + b) / 2;
+    // Extend the covered stretch through [a, b] gear by gear.
+    let extended = true;
+    while (covered < b && extended) {
+      extended = false;
+      for (let g = 0; g < ratios.length; g++) {
+        if (!inWindow(g, mid) || netForce(v, ratios[g], covered) <= 0) continue;
+        const end = netForce(v, ratios[g], b) > 0 ? b : lastPositive(v, ratios[g], covered, b);
+        if (end > covered + 1e-9 || (end === b && covered < b)) {
+          covered = end;
+          lastGear = g;
+          extended = true;
+        }
+      }
+    }
+    if (covered < b) return result(covered, lastGear);
   }
-  return { kmh: Math.round(kmh * 100) / 100, gear: g + 1, binding: atCut ? 'rev-limit' : 'drag', tied };
+  return result(covered, lastGear);
 }
 
 /**

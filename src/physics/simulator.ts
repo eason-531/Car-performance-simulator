@@ -13,7 +13,11 @@ export interface ShiftRequestResult {
 
 const MIN_ENGINE_RPM = 300;
 
-/** Manual / single-clutch shift: drive torque drops out while the clutch is open. */
+/**
+ * Manual / single-clutch shift envelope: drive torque ramps out over the first
+ * 12 % of the shift as the clutch opens, is zero while it is open, and ramps
+ * back in over the last 20 % as it re-engages.
+ */
 function interruptFactor(p: number): number {
   if (p < 0.12) return 1 - p / 0.12;
   if (p > 0.8) return (p - 0.8) / 0.2;
@@ -31,6 +35,7 @@ export function initialState(vehicle: SimVehicle): SimState {
     gear: 1,
     shift: null,
     coupling: 'slipping',
+    clutchOpen: false,
     manifoldBar: 0.35,
     engineTorqueNm: 0,
     driveForceN: 0,
@@ -159,6 +164,7 @@ export class VehicleSimulator {
       torqueFactor = tr.shiftProfile === 'interrupt' ? interruptFactor(p) : 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
       if (p >= 1) s.shift = null;
     }
+    s.clutchOpen = tr.shiftProfile === 'interrupt' && s.shift !== null && torqueFactor < 1;
     const inputOmega = wheelOmega * ratio;
     const inputRpm = radSToRpm(inputOmega);
 

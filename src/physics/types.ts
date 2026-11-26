@@ -115,6 +115,12 @@ export interface SimState {
   gear: number;
   shift: ShiftState | null;
   coupling: CouplingState;
+  /**
+   * True while a clutch-open (manual or single-clutch automated-manual) shift
+   * has the clutch disengaged: drive torque ramps out over the first 12 % of
+   * the shift, is zero in the middle and ramps back in over the last 20 %.
+   */
+  clutchOpen: boolean;
   /** Intake manifold pressure, bar absolute. */
   manifoldBar: number;
   engineTorqueNm: number;
