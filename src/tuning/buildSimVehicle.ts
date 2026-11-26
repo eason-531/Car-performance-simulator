@@ -167,5 +167,27 @@ function buildSimElectric(spec: VehicleSpec, tuning: TuningConfig): SimElectric 
         }
       : null,
     creep: el.creep,
+    virtualShift: el.virtualShift
+      ? {
+          label: el.virtualShift.label,
+          idleRpm: el.virtualShift.idleRpm,
+          redlineRpm: el.virtualShift.redlineRpm,
+          revLimitRpm: el.virtualShift.revLimitRpm,
+          transmission: {
+            type: 'dual-clutch',
+            gearRatios: [...el.virtualShift.ratios],
+            finalDrive: el.virtualShift.ratios.map(() => 1),
+            overallRatios: [...el.virtualShift.ratios],
+            upshiftTimeS: el.virtualShift.upshiftTimeS,
+            downshiftTimeS: el.virtualShift.downshiftTimeS,
+            shiftTorqueDip: 1,
+            shiftProfile: 'interrupt',
+            maxAutoUpshiftRpm: el.virtualShift.redlineRpm,
+            // Motor output does not depend on the virtual gear, so the best
+            // full-throttle change is at the virtual redline.
+            wotUpshiftRpm: el.virtualShift.ratios.map((_, i, a) => (i < a.length - 1 ? el.virtualShift!.redlineRpm : el.virtualShift!.revLimitRpm)),
+          },
+        }
+      : null,
   };
 }

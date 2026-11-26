@@ -9,6 +9,15 @@ const MT = 'https://www.motortrend.com/reviews/2025-hyundai-ioniq-5-n-first-test
 /** Overall reduction from the EPA N/V of 128.5 rpm/mph with the 275/35 R21 rolling radius (0.35206 m). */
 const REDUCTION = 10.6;
 
+/**
+ * N e-Shift virtual gears (estimated; Hyundai publishes none): the 8-speed N DCT
+ * overall ratios (Elantra N: gears × 3.800 / 2.714 finals) scaled so the virtual
+ * 8th reaches the 260 km/h top speed at the 6,850 rpm virtual limiter.
+ */
+const N_DCT = [3.714 * 3.8, 2.261 * 3.8, 2.174 * 2.714, 1.621 * 2.714, 0.927 * 3.8, 0.767 * 3.8, 0.878 * 2.714, 0.698 * 2.714];
+const ESHIFT_SCALE = 6850 / ((260 / 3.6 / 0.35206) * (60 / (2 * Math.PI)) * N_DCT[7]);
+const ESHIFT_RATIOS = N_DCT.map((r) => Math.round(r * ESHIFT_SCALE * 1000) / 1000);
+
 /** Roster #68: 2025 Hyundai Ioniq 5 N Ioniq 5 N (US). */
 export const entry: CatalogEntry = {
   id: "2025-hyundai-ioniq-5-n-us-cuv-awd-ev",
@@ -163,11 +172,12 @@ export const entry: CatalogEntry = {
     "Drag coefficient (only the EPA road-load coefficients are sourced)",
     "Front reduction (assumed equal to the EPA-derived overall reduction)",
     "Power curve above base speed (Hyundai publishes peak ratings only)",
-    "Drive mode of the published tests (N Grin Boost / N e-Shift not stated)"
+    "Drive mode of the published tests (N Grin Boost / N e-Shift not stated)",
+    "N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping"
   ],
   simCaveats: [
     "Electric model: each motor holds its rated torque to base speed (rated power ÷ rated torque) and then rated power up to its 21,000 rpm limit; Hyundai publishes no curve above base speed, so high-speed power may be optimistic.",
-    "N Grin Boost is modelled as a driver-armed 10 s boost (off by default, toggle in Tuning); N e-Shift's simulated shifts are a Live Drive option, off by default."
+    "N Grin Boost is modelled as a driver-armed 10 s boost (off by default, toggle in Tuning). N e-Shift is a separate Live Drive option, off by default: its virtual gear ratios, rpm range and shift timing are estimates, it keeps full motor output between changes and has no simulated engine braking (regeneration is not modelled)."
   ],
   notes: [
     "N Grin Boost raises output to 478 kW (641 hp) for 10 s; the published tests do not state whether it was used, so stock figures run without it and the boost is a tuning toggle."
@@ -192,6 +202,7 @@ export const entry: CatalogEntry = {
     systemTorqueNm: 740,
     boost: { systemPowerKw: 478, systemTorqueNm: 770, durationS: 10, trigger: 'driver', label: 'N Grin Boost', armedByDefault: false },
     creep: true,
+    virtualShift: { label: 'N e-Shift', ratios: ESHIFT_RATIOS, idleRpm: 750, redlineRpm: 6750, revLimitRpm: 6850, upshiftTimeS: 0.15, downshiftTimeS: 0.25 },
     drivetrain: { layout: 'AWD', efficiency: 0.94, description: 'Dual-motor AWD with variable front/rear torque distribution and electronic rear limited-slip differential' },
     chassis: { curbMassKg: 2200, frontWeightFraction: 0.5, cgHeightM: 0.55, wheelbaseM: 3.0, lengthMm: 4715, widthMm: 1940, heightMm: 1585 },
     aero: { dragCoefficient: 0.347, frontalAreaM2: 2.58 },
@@ -204,6 +215,8 @@ export const entry: CatalogEntry = {
       { parameter: 'Motor maximum speed', value: '21,000 rpm', status: 'verified', source: 'Hyundai IONIQ 5 N press information (motors running at up to 21,000 rpm)', url: KIT },
       { parameter: 'Gear ratios', value: `Single-speed overall reduction ${REDUCTION} (both axles)`, status: 'reported', source: 'Derived from the EPA N/V of 128.5 rpm/mph (MY2025 Ioniq 5 N) with the simulator rolling radius; Hyundai gives "single-stage reduction"; the front axle is assumed to match', url: EPA },
       { parameter: 'N Grin Boost', value: '478 kW for 10 s, driver-armed (off by default)', status: 'verified', source: 'Hyundai press information (ten seconds) and technical data (478 kW)', url: KIT },
+      { parameter: 'N e-Shift', value: 'Simulated 8-speed DCT with manual and automatic shifts, a hard rev limiter and a jolt on each change', status: 'verified', source: 'Hyundai IONIQ 5 N press information. Live Drive option, off by default; tests, drag runs and the dyno never use it', url: KIT },
+      { parameter: 'N e-Shift virtual gearing', value: `Virtual ratios ${ESHIFT_RATIOS.map((r) => r.toFixed(2)).join(' / ')} (virtual rpm per wheel rpm); idle 750, redline 6,750, limiter 6,850 rpm; 0.15 s up / 0.25 s down with torque cut to 20 % then restored in one step`, status: 'estimated', source: 'Not published. Spacing from the Hyundai 8-speed N DCT (Elantra N ratios and finals), scaled so 8th reaches 260 km/h at the limiter; rpm figures from the Elantra N engine; full motor output between changes (Hyundai does not publish how torque is shaped)' },
       { parameter: 'Curb mass', value: '2,200 kg (lower end of Hyundai Europe 2,200–2,230 kg); MotorTrend weighed 4,860 lb', status: 'reported', source: 'Hyundai IONIQ 5 N technical data', url: TECH },
       { parameter: 'Weight distribution', value: '50 % front', status: 'reported', source: 'MotorTrend measured 50/50 on its test car', url: MT },
       { parameter: 'Tire size', value: '275/35 R21 Pirelli P Zero', status: 'verified', source: 'Hyundai IONIQ 5 N press information', url: KIT },

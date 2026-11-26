@@ -77,7 +77,7 @@ function snapshotOf(
  * physics always advances in FIXED_DT steps through a time accumulator, so
  * the simulation is identical at 30, 60 or 120 Hz.
  */
-export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode) {
+export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, virtualShift = false) {
   const simRef = useRef<VehicleSimulator | null>(null);
   const timerRef = useRef(new LiveTimer());
   const targets = useRef({ pointer: { throttle: 0, brake: 0 }, key: { throttle: 0, brake: 0 } });
@@ -91,6 +91,8 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode) {
     hold.current = true;
   }
   simRef.current.shiftMode = shiftMode;
+  // Electric cars with a simulated stepped gearbox (e.g. N e-Shift): Live Drive only, off unless chosen.
+  simRef.current.setVirtualShift(virtualShift);
 
   const [snapshot, setSnapshot] = useState<DriveSnapshot>(() => snapshotOf(simRef.current!, timerRef.current, NO_INPUT, true));
 

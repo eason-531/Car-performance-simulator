@@ -4,7 +4,7 @@ import { electricOutput } from './electric';
 import { aeroDragN, axleLoads, rollingResistanceN, tractionLimitN } from './forces';
 import { autoShiftTarget, manualStallProtection, type ShiftContext } from './gearbox';
 import { torqueConverterTorques } from './torqueConverter';
-import type { DriverInput, ShiftMode, SimState, SimVehicle } from './types';
+import type { DriverInput, ShiftMode, SimElectric, SimState, SimVehicle } from './types';
 import { clamp, lerp, radSToRpm, rpmToRadS, smoothstep } from './units';
 
 export interface ShiftRequestResult {
@@ -23,6 +23,17 @@ function interruptFactor(p: number): number {
   if (p < 0.12) return 1 - p / 0.12;
   if (p > 0.8) return (p - 0.8) / 0.2;
   return 0;
+}
+
+/**
+ * Simulated shift on an electric car (N e-Shift): the controller pulls torque
+ * down to 20 % over the first 15 % of the change and then restores it in one
+ * step at the end — the "jolt" Hyundai describes.
+ */
+export function virtualShiftFactor(p: number): number {
+  if (p >= 1) return 1;
+  if (p < 0.15) return 1 - (0.8 * p) / 0.15;
+  return 0.2;
 }
 
 export function initialState(vehicle: SimVehicle): SimState {
@@ -75,6 +86,8 @@ export class VehicleSimulator {
   shiftMode: ShiftMode;
   state: SimState;
 
+  private virtualOn = false;
+
   constructor(vehicle: SimVehicle, shiftMode: ShiftMode = 'auto') {
     this.vehicle = vehicle;
     this.shiftMode = shiftMode;
@@ -83,16 +96,53 @@ export class VehicleSimulator {
 
   reset(): void {
     this.state = initialState(this.vehicle);
+    if (this.virtualOn) this.state.engineRpm = this.vehicle.electric!.virtualShift!.idleRpm;
+  }
+
+  /** Whether an electric car's simulated stepped gearbox (e.g. N e-Shift) is in use. */
+  get virtualShift(): boolean {
+    return this.virtualOn;
+  }
+
+  /**
+   * Switch an electric car's simulated stepped gearbox on or off (Live Drive only).
+   * Switching on picks the virtual gear that keeps the virtual rpm under redline;
+   * switching off returns to the real reduction. No-op for cars without one.
+   */
+  setVirtualShift(on: boolean): void {
+    const vs = this.vehicle.electric?.virtualShift;
+    const next = on && !!vs;
+    if (next === this.virtualOn) return;
+    this.virtualOn = next;
+    const s = this.state;
+    s.shift = null;
+    s.timeSinceShift = 0;
+    s.fuelCut = false;
+    s.fuelCutTime = 0;
+    if (!next || !vs) {
+      s.gear = 1;
+      return;
+    }
+    const n = vs.transmission.overallRatios.length;
+    let g = 1;
+    while (g < n && this.inputRpmInGear(g) > vs.redlineRpm * 0.95) g++;
+    s.gear = g;
+    s.engineRpm = Math.max(vs.idleRpm, this.inputRpmInGear(g));
+  }
+
+  /** The transmission the driver's gears refer to (virtual gears while simulated shifting is on). */
+  private get gearbox() {
+    return this.virtualOn ? this.vehicle.electric!.virtualShift!.transmission : this.vehicle.transmission;
   }
 
   get gearCount(): number {
-    return this.vehicle.transmission.overallRatios.length;
+    return this.gearbox.overallRatios.length;
   }
 
-  /** Gearbox input-shaft rpm for a gear at the current road speed. */
+  /** Gearbox input-shaft rpm (virtual engine rpm while simulated shifting is on) for a gear at the current road speed. */
   inputRpmInGear(gear: number): number {
     const wheelOmega = this.state.speed / this.vehicle.wheelRadiusM;
-    return radSToRpm(wheelOmega * this.vehicle.transmission.overallRatios[gear - 1]);
+    return radSToRpm(wheelOmega * this.gearbox.overallRatios[gear - 1]);
   }
 
   /** Manual paddle request. Downshifts are refused if they would over-rev the engine. */
@@ -102,7 +152,8 @@ export class VehicleSimulator {
     const target = s.gear + direction;
     if (target < 1) return { ok: false, reason: 'Already in 1st' };
     if (target > this.gearCount) return { ok: false, reason: 'Already in top gear' };
-    if (direction < 0 && this.inputRpmInGear(target) > this.vehicle.engine.revLimitRpm - 100) {
+    const limit = this.virtualOn ? this.vehicle.electric!.virtualShift!.revLimitRpm : this.vehicle.engine.revLimitRpm;
+    if (direction < 0 && this.inputRpmInGear(target) > limit - 100) {
       return { ok: false, reason: 'Over-rev protection' };
     }
     this.startShift(target);
@@ -111,7 +162,7 @@ export class VehicleSimulator {
 
   private startShift(target: number): void {
     const s = this.state;
-    const t = this.vehicle.transmission;
+    const t = this.gearbox;
     const up = target > s.gear;
     const steps = Math.abs(target - s.gear);
     // Skip-shifts take a little longer than single steps.
@@ -324,10 +375,14 @@ export class VehicleSimulator {
     const s = this.state;
     const el = v.electric!;
     const tr = v.transmission;
-    const r = v.wheelRadiusM;
     const throttleCmd = clamp(input.throttle, 0, 1);
     const brake = clamp(input.brake, 0, 1);
     const twoSpeed = el.motors.find((m) => m.reductions.length > 1);
+    const vs = this.virtualOn ? el.virtualShift : null;
+    if (vs) {
+      this.stepVirtualShift(dt, input, vs);
+      return;
+    }
 
     // 1. Two-speed axle schedule (first below the published change speed).
     s.timeSinceShift += dt;
@@ -347,6 +402,70 @@ export class VehicleSimulator {
       if (p >= 1) s.shift = null;
     }
     const gearFrom = s.shift ? s.shift.from : s.gear;
+
+    this.driveElectric(dt, input, throttleCmd, brake, gearFrom, blendTo, torqueFactor);
+    const primary = this.lastElectric!.motors.find((mo) => mo.axle === 'rear') ?? this.lastElectric!.motors[0];
+    s.engineRpm = primary.rpm;
+    s.fuelCut = false;
+    s.fuelCutTime = 0;
+  }
+
+  /**
+   * Electric step with the simulated stepped gearbox (N e-Shift): the virtual
+   * gear sets a virtual engine speed for the tach, shift lights and the hard
+   * limiter; each change interrupts motor torque and restores it with a jolt.
+   * The real single-speed reduction is unchanged.
+   */
+  private stepVirtualShift(dt: number, input: DriverInput, vs: NonNullable<SimElectric['virtualShift']>): void {
+    const s = this.state;
+    const vt = vs.transmission;
+    const throttleCmd = clamp(input.throttle, 0, 1);
+    const brake = clamp(input.brake, 0, 1);
+    s.timeSinceShift += dt;
+    if (!s.shift) {
+      if (s.speed < 0.8 && s.gear !== 1) {
+        s.gear = 1;
+      } else {
+        const ctx: ShiftContext = { gear: s.gear, inputRpm: this.inputRpmInGear(s.gear), throttle: throttleCmd, timeSinceShift: s.timeSinceShift, idleRpm: vs.idleRpm };
+        let target = this.shiftMode === 'auto' ? autoShiftTarget(vt, ctx) : manualStallProtection(ctx);
+        if (this.shiftMode === 'auto' && target === null && s.fuelCutTime > 0.4 && s.gear < this.gearCount) target = s.gear + 1;
+        if (target !== null && target !== s.gear) this.startShift(target);
+      }
+    }
+    let torqueFactor = 1;
+    if (s.shift) {
+      const sh = s.shift;
+      sh.elapsed += dt;
+      const p = Math.min(1, sh.elapsed / sh.duration);
+      torqueFactor = virtualShiftFactor(p);
+      if (p >= 1) s.shift = null;
+    }
+    // Hard limiter at the virtual rev limit (150 rpm hysteresis).
+    const virtualRpm = this.inputRpmInGear(s.gear);
+    if (virtualRpm >= vs.revLimitRpm) s.fuelCut = true;
+    else if (virtualRpm < vs.revLimitRpm - 150) s.fuelCut = false;
+    s.fuelCutTime = s.fuelCut || virtualRpm > vs.revLimitRpm - 160 ? s.fuelCutTime + dt : 0;
+    this.driveElectric(dt, input, s.fuelCut ? 0 : throttleCmd, brake, 1, undefined, torqueFactor);
+    s.engineRpm = Math.max(vs.idleRpm, virtualRpm);
+    s.throttle = throttleCmd;
+  }
+
+  private lastElectric: ReturnType<typeof electricOutput> | null = null;
+
+  /** Shared electric drive: speed limiter, boost, motor output, traction, creep and integration. */
+  private driveElectric(
+    dt: number,
+    input: DriverInput,
+    throttleCmd: number,
+    brake: number,
+    gearFrom: number,
+    blendTo: { gear: number; f: number } | undefined,
+    torqueFactor: number,
+  ): void {
+    const v = this.vehicle;
+    const s = this.state;
+    const el = v.electric!;
+    const r = v.wheelRadiusM;
 
     // 2. Speed limiter.
     let throttle = throttleCmd;
@@ -411,18 +530,16 @@ export class VehicleSimulator {
     s.accel = accel;
     s.accelFiltered += (accel - s.accelFiltered) * (1 - Math.exp(-dt / 0.12));
     const primary = out.motors.find((mo) => mo.axle === 'rear') ?? out.motors[0];
-    s.engineRpm = primary.rpm;
     s.engineTorqueNm = primary.torqueNm;
     s.motorPowerKw = out.powerW / 1000;
     s.coupling = 'locked';
     s.clutchOpen = false;
     s.manifoldBar = ATMOSPHERE_BAR;
-    s.fuelCut = false;
-    s.fuelCutTime = 0;
     s.driveForceN = driveForce;
-    s.throttle = throttleCmd;
+    s.throttle = clamp(input.throttle, 0, 1);
     s.brake = brake;
     s.time += dt;
+    this.lastElectric = out;
   }
 
   /** Boost gauge reading, bar (negative = vacuum). */

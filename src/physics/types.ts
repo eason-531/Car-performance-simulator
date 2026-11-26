@@ -52,6 +52,17 @@ export interface SimElectric {
   systemTorqueNm: number | null;
   boost: { systemPowerW: number; systemTorqueNm: number | null; durationS: number; trigger: 'launch-control' | 'driver'; armed: boolean } | null;
   creep: boolean;
+  /** Simulated stepped gearbox (Live Drive option), or null. */
+  virtualShift: SimVirtualShift | null;
+}
+
+export interface SimVirtualShift {
+  label: string;
+  idleRpm: number;
+  redlineRpm: number;
+  revLimitRpm: number;
+  /** Virtual gearbox: overall ratios are virtual engine rpm per wheel rpm. */
+  transmission: SimTransmission;
 }
 
 export interface SimEngine {

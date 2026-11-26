@@ -415,6 +415,7 @@ export interface ElectricInput {
   systemTorqueNm?: number;
   boost?: ElectricSpec['boost'];
   creep?: boolean;
+  virtualShift?: ElectricSpec['virtualShift'];
   /** Two-speed axles: change time, s (default 0.25) and torque dip (default 0.3). */
   shiftTimeS?: number;
   shiftTorqueDip?: number;
@@ -527,6 +528,7 @@ export function buildElectricSpec(id: Identity, input: ElectricInput): VehicleSp
       systemTorqueNm: input.systemTorqueNm,
       boost: input.boost,
       creep: input.creep ?? true,
+      ...(input.virtualShift ? { virtualShift: input.virtualShift } : {}),
     },
   };
 }

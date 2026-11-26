@@ -103,6 +103,26 @@ export interface ElectricSpec {
   boost?: { systemPowerKw: number; systemTorqueNm?: number; durationS: number; trigger: 'launch-control' | 'driver'; label: string; armedByDefault?: boolean };
   /** Creeps forward off the brake at idle (most EVs do by default). */
   creep: boolean;
+  /** Driver-selectable simulated stepped gearbox (Live Drive only; off by default). */
+  virtualShift?: VirtualShiftSpec;
+}
+
+/**
+ * Simulated stepped gearbox on an electric car (e.g. Hyundai N e-Shift): the
+ * motor controller mimics gear changes with a virtual engine speed, a torque
+ * interruption and "jolt" on each change, and a hard limiter at the virtual rev
+ * limit. The real reduction does not change. Only Live Drive offers it, and only
+ * when the driver switches it on; tests, drag runs and the dyno never use it.
+ */
+export interface VirtualShiftSpec {
+  label: string;
+  /** Virtual engine rpm per wheel rpm, one per virtual gear. */
+  ratios: readonly number[];
+  idleRpm: number;
+  redlineRpm: number;
+  revLimitRpm: number;
+  upshiftTimeS: number;
+  downshiftTimeS: number;
 }
 
 export interface TorqueConverterSpec {

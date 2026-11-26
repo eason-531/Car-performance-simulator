@@ -75,8 +75,9 @@ export function electricOutput(
   const out: ElectricOutput = { front: 0, rear: 0, powerW: 0, motors, reflectedInertiaKgM2: 0 };
   el.motors.forEach((m, i) => {
     const mo = motors[i];
-    mo.torqueNm *= scale;
-    out[mo.axle] += (mo.torqueNm * mo.ratio * v.drivetrain.efficiency * tf) / r;
+    // Shift interruptions act on motor torque, so reported torque and power dip too.
+    mo.torqueNm *= scale * tf;
+    out[mo.axle] += (mo.torqueNm * mo.ratio * v.drivetrain.efficiency) / r;
     out.powerW += mo.torqueNm * ((mo.rpm * 2 * Math.PI) / 60);
     out.reflectedInertiaKgM2 += m.rotorInertiaKgM2 * mo.ratio * mo.ratio;
   });

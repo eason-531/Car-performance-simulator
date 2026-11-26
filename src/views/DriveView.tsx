@@ -5,7 +5,7 @@ import { Paddle } from '../components/Paddle';
 import { Pedal } from '../components/Pedal';
 import { ShiftLights } from '../components/ShiftLights';
 import { CarSwitcher } from '../components/catalog/CarPicker';
-import { Badge, Button, Segmented } from '../components/ui';
+import { Badge, Button, Segmented, Toggle } from '../components/ui';
 import { useDriveSimulation } from '../hooks/useDriveSimulation';
 import { STATUS, seriesColor } from '../lib/colors';
 import { fmt, fmtSeconds } from '../lib/format';
@@ -23,7 +23,17 @@ export function DriveView() {
   const spec = app.activeVehicle;
   const vehicle = app.simVehicle(spec.id);
   const mode = app.settings.shiftMode;
-  const { snapshot: s, setPedal, shift, reset, runSamples } = useDriveSimulation(vehicle, mode);
+  // Simulated stepped gearbox on an electric car (e.g. N e-Shift): off by
+  // default, switched on per car here, and reset when the car changes.
+  const vs = vehicle.electric?.virtualShift ?? null;
+  const [virtualFor, setVirtualFor] = useState<string | null>(null);
+  const [carId, setCarId] = useState(spec.id);
+  if (carId !== spec.id) {
+    setCarId(spec.id);
+    setVirtualFor(null);
+  }
+  const virtual = !!vs && virtualFor === spec.id;
+  const { snapshot: s, setPedal, shift, reset, runSamples } = useDriveSimulation(vehicle, mode, virtual);
   const color = seriesColor(spec.colorSlot ?? 0);
   const [flash, setFlash] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,14 +101,16 @@ export function DriveView() {
   // Electric cars: motor speed, a power gauge in place of boost, and no
   // shift controls on a single-speed drive.
   const ev = vehicle.electric;
-  const singleSpeed = !!ev && electricGearCount(ev) === 1;
+  const singleSpeed = !!ev && electricGearCount(ev) === 1 && !virtual;
   const powerMax = ev ? Math.ceil(((ev.boost?.systemPowerW ?? ev.systemPowerW) / 1000) / 100) * 100 : 0;
   const e = vehicle.engine;
-  const tachMax = Math.ceil((e.revLimitRpm + 300) / 1000);
-  const tachZones = useMemo<GaugeZone[]>(() => [{ from: e.redlineRpm / 1000, to: tachMax, color: STATUS.critical }], [e.redlineRpm, tachMax]);
+  const redlineRpm = virtual ? vs.redlineRpm : e.redlineRpm;
+  const tachMax = Math.ceil(((virtual ? vs.revLimitRpm : e.revLimitRpm) + 300) / 1000);
+  const tachZones = useMemo<GaugeZone[]>(() => [{ from: redlineRpm / 1000, to: tachMax, color: STATUS.critical }], [redlineRpm, tachMax]);
   const boostMax = Math.max(2, Math.ceil(dyno.peakBoostBar + 0.4));
   const boostZones = useMemo<GaugeZone[]>(() => [{ from: BOOST_MIN, to: 0, color: '#3a3f46' }], []);
-  const shiftRpm = mode === 'auto' ? vehicle.transmission.wotUpshiftRpm[Math.min(s.gear, s.gearCount) - 1] : e.redlineRpm;
+  const wot = virtual ? vs.transmission.wotUpshiftRpm : vehicle.transmission.wotUpshiftRpm;
+  const shiftRpm = mode === 'auto' ? wot[Math.min(s.gear, s.gearCount, wot.length) - 1] : redlineRpm;
   const fmtTach = useCallback((v: number) => String(v), []);
   const fmtBoost = useCallback((v: number) => (v > 0 ? `+${v}` : String(v)), []);
   const fmtSpeed = useCallback((v: number) => String(v), []);
@@ -113,7 +125,7 @@ export function DriveView() {
       vehicleId: spec.id,
       vehicleName: spec.shortName,
       colorSlot: spec.colorSlot ?? -1,
-      tuningLabel: describeTuning(spec, app.tuningFor(spec.id)),
+      tuningLabel: describeTuning(spec, app.tuningFor(spec.id)) + (virtual ? ` · ${vs.label}` : ''),
       tuning: app.tuningFor(spec.id),
       launch: 'driver',
       powerPs: dyno.peakPowerPs,
@@ -133,6 +145,16 @@ export function DriveView() {
       <div className="view__bar">
         <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Active car" />
         <div className="view__bar-actions">
+          {vs && (
+            <div className="drive__virtual-shift">
+              <Toggle
+                checked={virtual}
+                onChange={(on) => setVirtualFor(on ? spec.id : null)}
+                label={vs.label}
+                description={`Simulated ${vs.transmission.overallRatios.length}-speed shifts`}
+              />
+            </div>
+          )}
           {!singleSpeed && (
             <Segmented
               ariaLabel="Gear-shift mode"
@@ -182,16 +204,16 @@ export function DriveView() {
             labelFormat={fmtTach}
             zones={tachZones}
             color={color}
-            ariaLabel={ev ? 'Motor speed' : 'Engine speed'}
+            ariaLabel={virtual ? 'Simulated engine speed' : ev ? 'Motor speed' : 'Engine speed'}
             ariaValueText={`${Math.round(s.rpm)} rpm`}
           >
             <div className="readout readout--gear">
-              <span className="readout__mode">{ev ? 'EV' : mode === 'auto' ? 'D' : 'M'}</span>
+              <span className="readout__mode">{ev && !virtual ? 'EV' : mode === 'auto' ? 'D' : 'M'}</span>
               <span className={`readout__gear ${s.shifting ? 'is-shifting' : ''}`}>{s.gear}</span>
               <span className="readout__rpm">{fmt(Math.round(s.rpm / 10) * 10)} rpm</span>
             </div>
           </ArcGauge>
-          <div className="drive__gauge-title">{ev ? 'Motor rpm ×1000' : 'RPM ×1000'}</div>
+          <div className="drive__gauge-title">{virtual ? 'Simulated RPM ×1000' : ev ? 'Motor rpm ×1000' : 'RPM ×1000'}</div>
           {flash && (
             <div className="drive__flash" role="status">
               <Icon name="warning" size={18} /> {flash}
@@ -256,7 +278,7 @@ export function DriveView() {
           <div className="lights" aria-label="Warning lights">
             <Light on={s.tractionLimited} label="TC" tone="warning" title="Traction control active" />
             <Light on={s.speedLimited} label="LIM" tone="warning" title="Speed limiter" />
-            {!ev && <Light on={s.fuelCut} label="REV" tone="critical" title="Rev limiter" />}
+            {(!ev || virtual) && <Light on={s.fuelCut} label="REV" tone="critical" title={virtual ? 'Simulated rev limiter' : 'Rev limiter'} />}
             {ev?.boost && <Light on={s.boostActive} label="BST" tone="good" title="Published boost active" />}
             <Light on={s.autoHold} label="HOLD" tone="good" title="Auto Hold (released by the throttle)" />
             {!ev && <Light on={s.coupling === 'locked' && !s.clutchOpen} label={vehicle.transmission.torqueConverter ? 'L/U' : 'CLU'} tone="good" title={vehicle.transmission.torqueConverter ? 'Converter lock-up' : 'Clutch closed'} />}
