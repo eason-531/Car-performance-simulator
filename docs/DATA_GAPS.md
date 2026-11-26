@@ -6,13 +6,7 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (10) — need data before they can run
-
-### 2022 Honda Civic Sport Touring 1.5T
-
-- Why: Needs a continuously variable transmission model (ratio control with torque converter); not modeled yet.
-- Missing: MotorTrend first test (roster source); Torque figure; Tire size; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2022-honda-civic-sport-touring-hatchback-cvt-automatic-first-test-review) · [Edmunds](https://www.edmunds.com/car-news/tested-2022-honda-civic-hatchback-loses-speed-but-wins-our-hearts.html)
+## Catalog-only cars (9) — need data before they can run
 
 ### 2023 Toyota Prius Limited AWD
 
@@ -68,7 +62,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
 
-## Playable cars (72) — running on estimates to confirm
+## Playable cars (73) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -140,6 +134,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Unconfirmed inputs: Gear ratios (using 3.643/2.080/1.361/1.024/0.830/0.686); Final drive (using 4.35); Curb mass (using ≈2,906 lb (1,318 kg); Edmunds weighed its test car at 2,944 lb); Tire size (using 235/40 R18)
 - Also missing: Gear ratios and final drive; Curb mass; Tire size; Drag coefficient; Car and Driver trap speed
 - Consulted: [Car and Driver](https://www.caranddriver.com/honda/civic-si-2022) · [TopSpeed (citing Car and Driver)](https://www.topspeed.com/cars/honda/2022-honda-civic-si-ar195286.html) · [Edmunds](https://www.edmunds.com/car-news/tested-honda-civic-si-is-slower-but-great-to-drive.html)
+
+### 2022 Honda Civic Sport Touring 1.5T
+
+- Also missing: Step Shift step ratios, change points and ratio-change rates (Honda describes the behaviour only); Torque converter stall speed and multiplication; Drag coefficient; MotorTrend test drive mode
+- Consulted: [American Honda (Honda Info Center)](https://www.hondainfocenter.com/2022/Civic-Hatchback/Feature-Guide/Civic-Hatchback-Specifications/) · [American Honda (Honda News)](https://hondanews.com/en-US/releases/release-20c92b0d934f0bc63982bd3eee0149e9-2022-honda-civic-hatchback-press-kit) · [US EPA](https://www.epa.gov/system/files/documents/2023-06/22-testcar-2023-06-13.xlsx)
 
 ### 2025 Hyundai Elantra N DCT
 

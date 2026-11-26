@@ -155,6 +155,8 @@ export interface TopSpeedBreakdown {
   tiedWith: TopSpeedConstraint | null;
   /** Electric drive: `rev-limit` then means the motors' maximum speed. */
   electric: boolean;
+  /** CVT: `gear` indexes a fine sampling of the pulley span (the last is the highest ratio). */
+  cvt: boolean;
 }
 
 const rpmAt = (v: SimVehicle, ratio: number, ms: number) => ((ms / v.wheelRadiusM) * ratio * 60) / (2 * Math.PI);
@@ -189,7 +191,7 @@ function lastPositive(v: SimVehicle, ratio: number, lo: number, hi: number): num
  */
 function forceGearingLimit(v: SimVehicle): { kmh: number; gear: number; binding: 'rev-limit' | 'drag'; tied: boolean } {
   if (v.electric) return electricForceLimit(v);
-  const ratios = v.transmission.overallRatios;
+  const ratios = v.transmission.cvt ? cvtRatioLadder(v) : v.transmission.overallRatios;
   const e = v.engine;
   const lowest = Math.max(...ratios);
   const startMs = msAtRpm(v, lowest, e.idleRpm * 1.001);
@@ -306,6 +308,15 @@ export function theoreticalTopSpeedKmh(vehicle: SimVehicle): number {
   return forceGearingLimit(vehicle).kmh;
 }
 
+/** CVT pulley span sampled finely (geometric, 64 ratios) so the per-gear analysis approximates the continuous optimum. */
+export function cvtRatioLadder(v: SimVehicle): number[] {
+  const c = v.transmission.cvt!;
+  const fd = v.transmission.finalDrive[0];
+  const n = CVT_LADDER_SIZE;
+  return Array.from({ length: n }, (_, i) => c.ratioLow * (c.ratioHigh / c.ratioLow) ** (i / (n - 1)) * fd);
+}
+const CVT_LADDER_SIZE = 64;
+
 export function topSpeedBreakdown(vehicle: SimVehicle): TopSpeedBreakdown {
   const f = forceGearingLimit(vehicle);
   const limiterKmh = vehicle.speedLimitMs === null ? null : msToKmh(vehicle.speedLimitMs);
@@ -313,8 +324,13 @@ export function topSpeedBreakdown(vehicle: SimVehicle): TopSpeedBreakdown {
     unlimitedKmh: f.kmh,
     limiterKmh,
     gear: f.gear,
-    gearCount: vehicle.electric ? electricGearCount(vehicle.electric) : vehicle.transmission.overallRatios.length,
+    gearCount: vehicle.electric
+      ? electricGearCount(vehicle.electric)
+      : vehicle.transmission.cvt
+        ? CVT_LADDER_SIZE
+        : vehicle.transmission.overallRatios.length,
     electric: !!vehicle.electric,
+    cvt: !!vehicle.transmission.cvt,
   };
   const other: TopSpeedConstraint = f.binding === 'rev-limit' ? 'drag' : 'rev-limit';
   if (limiterKmh !== null && Math.abs(limiterKmh - f.kmh) <= TOP_SPEED_TIE_KMH) {

@@ -61,7 +61,7 @@ export interface EngineSpec {
  *   shift, is zero while the clutch is open and ramps back in over the last
  *   20 %. The clutch stays open at idle (no creep) unless the car says otherwise.
  */
-export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual' | 'direct-drive';
+export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual' | 'direct-drive' | 'cvt';
 
 /** One traction motor driving one axle through its own fixed (or two-speed) reduction. */
 export interface ElectricMotorSpec {
@@ -190,6 +190,34 @@ export interface TransmissionSpec {
   ratedInputTorqueNm: number;
   torqueConverter?: TorqueConverterSpec;
   launchClutch?: LaunchClutchSpec;
+  /** Belt/chain CVT ratio control (type `cvt`); `gearRatios` then hold the simulated steps. */
+  cvt?: CvtSpec;
+}
+
+/**
+ * Continuously variable transmission behind a torque converter. The pulley
+ * ratio moves continuously within its span at a limited rate; under hard
+ * acceleration a step-shift program holds simulated steps (the `gearRatios`)
+ * and changes between them, then holds the engine speed once past the last
+ * step. Paddle (manual) mode selects the same steps.
+ */
+export interface CvtSpec {
+  /** Pulley ratio span before the final drive: launch (lowest gear) and overdrive. */
+  ratioLow: number;
+  ratioHigh: number;
+  /** Ratio-change rate limits, pulley ratio per second: normal control and a simulated step. */
+  ratioRatePerS: number;
+  stepRatePerS: number;
+  /** Throttle at or above which the step-shift program runs. */
+  stepThrottle: number;
+  /** Engine speed at which the step-shift program changes to the next step. */
+  stepUpshiftRpm: number;
+  /** Engine speed held past the last step at full throttle. */
+  holdRpm: number;
+  /** Engine-speed targets below the step-shift throttle: light throttle and just under it. */
+  partThrottleRpm: readonly [number, number];
+  /** Engine speed targeted while braking (early downshifts). */
+  brakingRpm: number;
 }
 
 export type DriveLayout = 'RWD' | 'FWD' | 'AWD' | '4WD';

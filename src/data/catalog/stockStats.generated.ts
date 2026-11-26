@@ -765,6 +765,57 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 14,
     "cls": "D"
   },
+  "2022-honda-civic-sport-touring-1-5t-us-hatch-fwd-cvt": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 8.141,
+      "zeroTo200KmhS": 38.695,
+      "sixtyFootS": 2.908,
+      "quarterMileS": 16.055,
+      "quarterMileTrapKmh": 144.693,
+      "kilometerS": 28.949,
+      "kilometerTrapKmh": 184.334,
+      "metres400S": 15.997,
+      "metres400TrapKmh": 144.449,
+      "splits": {
+        "30mph": 3.132,
+        "60mph": 7.67,
+        "100mph": 20.291,
+        "130mph": 48.548,
+        "100kmh": 8.141,
+        "160kmh": 20.022,
+        "180kmh": 26.985,
+        "200kmh": 38.695
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 7.776,
+      "zeroTo200KmhS": 38.33,
+      "sixtyFootS": 2.544,
+      "quarterMileS": 15.69,
+      "quarterMileTrapKmh": 144.693,
+      "kilometerS": 28.585,
+      "kilometerTrapKmh": 184.334,
+      "metres400S": 15.632,
+      "metres400TrapKmh": 144.449,
+      "splits": {
+        "30mph": 2.768,
+        "60mph": 7.305,
+        "100mph": 19.927,
+        "130mph": 48.183,
+        "100kmh": 7.776,
+        "160kmh": 19.658,
+        "180kmh": 26.62,
+        "200kmh": 38.33
+      }
+    },
+    "topSpeedKmh": 222,
+    "peakPowerPs": 182,
+    "peakTorqueNm": 240,
+    "testMassKg": 1470,
+    "score": 4,
+    "cls": "D"
+  },
   "2025-hyundai-elantra-n-dct-us-sedan-fwd-8dct": {
     "formula": "SLC-5",
     "brakeRelease": {

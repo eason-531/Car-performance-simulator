@@ -427,6 +427,12 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
             )}
             <h3 className="spec-list__group">Driveline</h3>
             <Spec label="Transmission" value={t.name} />
+            {t.cvt && (
+              <>
+                <Spec label="CVT ratio span" value={`${t.cvt.ratioLow.toFixed(3)}–${t.cvt.ratioHigh.toFixed(3)} · up to ${t.cvt.ratioRatePerS} ratio/s · ${t.gearRatios.length} simulated steps for paddles and Step Shift`} />
+                <Spec label="Step Shift" value={`From ${Math.round(t.cvt.stepThrottle * 100)} % throttle: steps change at ${fmt(t.cvt.stepUpshiftRpm)} rpm (${t.cvt.stepRatePerS} ratio/s); ${fmt(t.cvt.holdRpm)} rpm held past the last step`} />
+              </>
+            )}
             <Spec
               label={t.frontAxleRatio !== undefined ? 'Final drive (rear)' : 'Final drive'}
               value={[...new Set(t.finalDrive)].map((f) => f.toFixed(3)).join(' / ')}
@@ -459,7 +465,7 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
             <table className="table table--numeric">
               <thead>
                 <tr>
-                  <th scope="col">Gear</th>
+                  <th scope="col">{t.cvt ? 'Step' : 'Gear'}</th>
                   <th scope="col">Ratio</th>
                   <th scope="col">Overall</th>
                   <th scope="col">km/h @ limiter</th>
@@ -467,13 +473,13 @@ function SimSpecs({ entry }: { entry: CatalogEntry }) {
                 </tr>
               </thead>
               <tbody>
-                {t.gearRatios.map((g, i) => {
-                  const overall = g * t.finalDrive[i];
+                {(t.cvt ? [...t.gearRatios, t.cvt.ratioHigh] : t.gearRatios).map((g, i) => {
+                  const overall = g * t.finalDrive[Math.min(i, t.finalDrive.length - 1)];
                   const vmax = ((e.revLimitRpm / overall) * 2 * Math.PI * radius * 3.6) / 60;
                   const rpm100 = radSToRpm((kmhToMs(100) / radius) * overall);
                   return (
                     <tr key={i}>
-                      <th scope="row">{i + 1}</th>
+                      <th scope="row">{t.cvt && i === t.gearRatios.length ? 'Top' : i + 1}</th>
                       <td>{g.toFixed(3)}</td>
                       <td>{overall.toFixed(2)}</td>
                       <td>{fmt(vmax)}</td>

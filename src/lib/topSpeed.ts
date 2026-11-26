@@ -16,6 +16,11 @@ function causeText(t: TopSpeedBreakdown): string {
     if (t.tiedWith === 'rev-limit' || t.tiedWith === 'drag') return `motor maximum speed and drag coincide${where}`;
     return t.binding === 'rev-limit' ? `at the motors' maximum speed${where}` : `drag-limited${where}`;
   }
+  if (t.cvt) {
+    const where = t.gear === t.gearCount ? " at the CVT's highest ratio" : ' with the CVT at its best ratio';
+    if (t.tiedWith === 'rev-limit' || t.tiedWith === 'drag') return `rev cut and drag coincide${where}`;
+    return t.binding === 'rev-limit' ? `rev-limited${where}` : `drag-limited${where}`;
+  }
   const top = t.gear === t.gearCount;
   const gear = top ? 'top gear' : `${ordinalGear(t.gear)} gear (${ordinalGear(t.gearCount)} cannot pull past it)`;
   if (t.tiedWith === 'rev-limit' || t.tiedWith === 'drag') return `rev cut and drag coincide in ${gear}`;

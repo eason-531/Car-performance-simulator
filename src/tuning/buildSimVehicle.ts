@@ -63,7 +63,11 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     shiftTorqueDip: t.shiftTorqueDip,
     shiftProfile: t.shiftProfile ?? (t.type === 'manual' || t.type === 'automated-manual' ? 'interrupt' : 'blend'),
     maxAutoUpshiftRpm: t.maxAutoUpshiftRpm,
-    wotUpshiftRpm: computeWotUpshiftRpms(torque, overallRatios, t.maxAutoUpshiftRpm, spec.engine.revLimitRpm),
+    // A CVT's simulated steps change at the step-shift rpm; other gearboxes at the best full-throttle point.
+    wotUpshiftRpm: t.cvt
+      ? overallRatios.map((_, i) => (i < overallRatios.length - 1 ? t.cvt!.stepUpshiftRpm : spec.engine.revLimitRpm))
+      : computeWotUpshiftRpms(torque, overallRatios, t.maxAutoUpshiftRpm, spec.engine.revLimitRpm),
+    ...(t.cvt ? { cvt: t.cvt } : {}),
   };
   if (t.torqueConverter) {
     const stallOmega = rpmToRadS(t.torqueConverter.stallRpm);

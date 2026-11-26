@@ -63,6 +63,8 @@ export function initialState(vehicle: SimVehicle): SimState {
     boostS: 0,
     boostUsed: false,
     launchPrimed: false,
+    cvtRatio: vehicle.transmission.cvt?.ratioLow ?? 1,
+    cvtStepping: false,
   };
 }
 
@@ -149,6 +151,22 @@ export class VehicleSimulator {
   requestShift(direction: 1 | -1): ShiftRequestResult {
     const s = this.state;
     if (s.shift) return { ok: false, reason: 'Shift in progress' };
+    const cvt = this.vehicle.transmission.cvt;
+    if (cvt && !this.virtualOn) {
+      // Paddles select a simulated step, starting from the one nearest the current ratio.
+      const steps = this.vehicle.transmission.gearRatios;
+      let g = 1;
+      steps.forEach((r, i) => {
+        if (Math.abs(r - s.cvtRatio) < Math.abs(steps[g - 1] - s.cvtRatio)) g = i + 1;
+      });
+      const to = g + direction;
+      if (to < 1) return { ok: false, reason: 'Already in 1st' };
+      if (to > steps.length) return { ok: false, reason: 'Already in top gear' };
+      if (direction < 0 && this.inputRpmInGear(to) > this.vehicle.engine.revLimitRpm - 100) return { ok: false, reason: 'Over-rev protection' };
+      s.gear = to;
+      s.timeSinceShift = 0;
+      return { ok: true };
+    }
     const target = s.gear + direction;
     if (target < 1) return { ok: false, reason: 'Already in 1st' };
     if (target > this.gearCount) return { ok: false, reason: 'Already in top gear' };
@@ -192,7 +210,12 @@ export class VehicleSimulator {
     const brake = clamp(input.brake, 0, 1);
     const wheelOmega = s.speed / r;
 
-    // 1. Gearbox decisions --------------------------------------------------
+    // 1. Gearbox decisions (a CVT runs its own ratio control) ----------------
+    let ratio: number;
+    let torqueFactor = 1;
+    if (tr.cvt) {
+      ratio = this.stepCvtRatio(dt, throttleCmd, brake, wheelOmega);
+    } else {
     s.timeSinceShift += dt;
     if (!s.shift) {
       if (s.speed < 0.8 && s.gear !== 1) {
@@ -214,8 +237,7 @@ export class VehicleSimulator {
     }
 
     // 2. Shift progress ------------------------------------------------------
-    let ratio = tr.overallRatios[s.gear - 1];
-    let torqueFactor = 1;
+    ratio = tr.overallRatios[s.gear - 1];
     if (s.shift) {
       const sh = s.shift;
       sh.elapsed += dt;
@@ -223,6 +245,7 @@ export class VehicleSimulator {
       ratio = lerp(tr.overallRatios[sh.from - 1], tr.overallRatios[sh.to - 1], smoothstep(p));
       torqueFactor = tr.shiftProfile === 'interrupt' ? interruptFactor(p) : 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
       if (p >= 1) s.shift = null;
+    }
     }
     s.clutchOpen = tr.shiftProfile === 'interrupt' && s.shift !== null && torqueFactor < 1;
     const inputOmega = wheelOmega * ratio;
@@ -362,6 +385,70 @@ export class VehicleSimulator {
     s.throttle = throttleCmd;
     s.brake = brake;
     s.time += dt;
+  }
+
+  /**
+   * CVT ratio control (Honda LL-CVT style). Returns the overall ratio.
+   * - At rest: the launch (lowest) ratio; the torque converter provides the launch.
+   * - Manual (paddles): the selected simulated step, reached at the step rate.
+   * - Hard acceleration (throttle ≥ the step-shift threshold): the step-shift
+   *   program holds a step while the engine climbs to the step rpm, then moves
+   *   to the next step at the step rate; past the last step it holds the hold
+   *   rpm continuously. Entering the program picks the step that keeps the
+   *   engine under the step rpm (a kickdown).
+   * - Otherwise: a part-throttle engine-speed target (or the braking target)
+   *   reached at the normal ratio rate, within the pulley span.
+   * `gear` reports the nearest simulated step for display.
+   */
+  private stepCvtRatio(dt: number, throttle: number, brake: number, wheelOmega: number): number {
+    const s = this.state;
+    const tr = this.vehicle.transmission;
+    const c = tr.cvt!;
+    const fd = tr.finalDrive[0];
+    const steps = tr.gearRatios;
+    const n = steps.length;
+    const wheelRpm = radSToRpm(wheelOmega);
+    const rpmAt = (pulley: number) => wheelRpm * pulley * fd;
+    s.timeSinceShift += dt;
+    s.shift = null;
+    let target: number;
+    let rate = c.ratioRatePerS;
+    const stepping = this.shiftMode === 'auto' && throttle >= c.stepThrottle && s.speed >= 0.8;
+    if (s.speed < 0.8) {
+      s.gear = 1;
+      target = c.ratioLow;
+    } else if (this.shiftMode === 'manual') {
+      // Stall protection: drop a step before the engine lugs below idle.
+      if (s.gear > 1 && rpmAt(steps[s.gear - 1]) < this.vehicle.engine.idleRpm * 1.05) s.gear -= 1;
+      target = steps[s.gear - 1];
+      rate = c.stepRatePerS;
+    } else if (stepping) {
+      if (!s.cvtStepping) {
+        let g = 1;
+        while (g < n && rpmAt(steps[g - 1]) > c.stepUpshiftRpm * 0.98) g++;
+        s.gear = g;
+      } else if (s.gear < n && rpmAt(steps[s.gear - 1]) >= c.stepUpshiftRpm) {
+        s.gear += 1;
+        s.timeSinceShift = 0;
+      }
+      target = steps[s.gear - 1];
+      if (s.gear === n) target = Math.min(target, Math.max(c.ratioHigh, c.holdRpm / Math.max(rpmAt(1), 1)));
+      rate = c.stepRatePerS;
+    } else {
+      const rpmTarget = brake > 0.1 ? c.brakingRpm : lerp(c.partThrottleRpm[0], c.partThrottleRpm[1], Math.min(1, throttle / c.stepThrottle) ** 1.5);
+      target = clamp(rpmTarget / Math.max(rpmAt(1), 1), c.ratioHigh, c.ratioLow);
+    }
+    s.cvtStepping = stepping;
+    s.cvtRatio = clamp(s.cvtRatio + clamp(target - s.cvtRatio, -rate * dt, rate * dt), c.ratioHigh, c.ratioLow);
+    if (!stepping && this.shiftMode === 'auto' && s.speed >= 0.8) {
+      // Display the nearest simulated step.
+      let best = 1;
+      steps.forEach((r, i) => {
+        if (Math.abs(r - s.cvtRatio) < Math.abs(steps[best - 1] - s.cvtRatio)) best = i + 1;
+      });
+      s.gear = best;
+    }
+    return s.cvtRatio * fd;
   }
 
   /**

@@ -6,6 +6,7 @@ import type {
   Provenance,
   StageTune,
   TireDims,
+  CvtSpec,
   TorqueConverterSpec,
   TransmissionType,
   VehicleSpec,
@@ -160,6 +161,7 @@ export interface SimInput {
     ratedInputTorqueNm?: number;
     torqueConverter?: Partial<TorqueConverterSpec>;
     launchClutch?: Partial<LaunchClutchSpec>;
+    cvt?: CvtSpec;
   };
   drivetrain: {
     layout: DriveLayout;
@@ -260,7 +262,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
     estimate('Turbo response', `τ ≈ ${spool.find(([r]) => r >= 2000)?.[1] ?? 0.45} s @ 2,000 rpm`, 'Generic spool model scaled by turbo layout');
   }
   const liters = e.displacementCc / 1000;
-  const tc = input.transmission.type === 'torque-converter-automatic';
+  const tc = input.transmission.type === 'torque-converter-automatic' || input.transmission.type === 'cvt';
   const inertia =
     e.inertiaKgM2 ?? Math.round(((liters < 2.1 ? 0.17 : liters < 3.1 ? 0.2 : liters < 4.5 ? 0.24 : 0.28) + (tc ? 0.03 : 0)) * 100) / 100;
   if (e.inertiaKgM2 === undefined) estimate('Engine inertia', `${inertia} kg·m²`, 'Displacement class; includes converter pump for automatics');
@@ -375,6 +377,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       ratedInputTorqueNm: t.ratedInputTorqueNm ?? Math.round(tPk * 1.1),
       torqueConverter,
       launchClutch,
+      ...(t.cvt ? { cvt: t.cvt } : {}),
     },
     drivetrain: { layout: d.layout, description: d.description, efficiency, frontShareRange: d.frontShareRange },
     chassis: {

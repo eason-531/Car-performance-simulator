@@ -1,4 +1,4 @@
-import type { DriveLayout, TransmissionType } from '../data/types';
+import type { CvtSpec, DriveLayout, TransmissionType } from '../data/types';
 import type { Curve } from './curve';
 
 /**
@@ -114,6 +114,8 @@ export interface SimTransmission {
   wotUpshiftRpm: number[];
   torqueConverter?: SimTorqueConverter;
   launchClutch?: SimLaunchClutch;
+  /** Belt CVT ratio control; `overallRatios` then hold the simulated steps × final drive. */
+  cvt?: CvtSpec;
 }
 
 export interface DriverInput {
@@ -178,4 +180,7 @@ export interface SimState {
   clutchEngage: number;
   /** Continuous time spent on the rev limiter, s. */
   fuelCutTime: number;
+  /** CVT: pulley ratio (before the final drive) and whether the step-shift program is running. */
+  cvtRatio: number;
+  cvtStepping: boolean;
 }
