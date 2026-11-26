@@ -11,7 +11,7 @@ handoff_executed: origin/main Codex.md (review of 7571153, result changes_reques
 commits:
   - e6efd81: Claude.md reset (header only)
   - e32b5c5: review fixes (P2 r44, P2 h10/h02, P2 h04, P3 GarageView, P3 h06, P3 h01) + legacy-id resolution
-  - <batch-2 commit>: h11 Chiron Pur Sport, h12 Veyron 16.4 Super Sport, h20 McLaren F1 + README + this log
+  - bb49f15: h11 Chiron Pur Sport, h12 Veyron 16.4 Super Sport, h20 McLaren F1 + README + this log
 source_access: direct fetch OK for nissanusa.com brochure PDF, usa.nissannews.com press kit, newsroom.bugatti.com, bugatti-newsroom.imgix.net PDFs, koenigsegg.com, allcarcentral.com (McLaren sheet mirror); refused/unusable: caranddriver.com (fetch tool host refusal; not retried by other means), ferrari.com (CloudFront 403), cdn.ferrari.com F50 dossier (no extractable text), pagani.com Zonda F (no spec text), mclaren.com (JS shell). C/D values used only where Codex verified them.
 
 review_fixes:
