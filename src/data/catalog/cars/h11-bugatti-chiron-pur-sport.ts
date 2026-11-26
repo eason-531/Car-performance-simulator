@@ -75,7 +75,7 @@ export const entry: CatalogEntry = {
   ],
   simCaveats: [
     "Gearing uses effective overall reductions derived from Bugatti's Pur Sport speed-per-gear table at the 6,900 rpm maximum shift speed; the final-drive entry is 1.000. Relative to the Chiron table the gears are 3–24 % shorter (Bugatti: 'all in all' 15 %).",
-    "No measured benchmark: grip and efficiency are the Chiron family's provisional calibration, with grip raised 10 % for the Cup 2 R per Bugatti's lateral-acceleration figure.",
+    "No measured benchmark: grip and efficiency are the Chiron family's provisional calibration, transferred unchanged (Bugatti's +10 % Cup 2 R figure is lateral and is not applied). The simulation reaches 100 km/h in ≈ 2.67 s from brake release against the 2.3 s factory claim; with +10 % grip it would be ≈ 2.25 s.",
     "Provisional AWD approximation: one averaged rolling radius ties engine speed to both axles, and the front coupling uses a generic 0–50 % front-share range."
   ],
   notes: [
@@ -96,7 +96,7 @@ export const entry: CatalogEntry = {
     drivetrain: { layout: 'AWD', efficiency: 0.84, description: 'Permanent AWD: BorgWarner-controlled front longitudinal differential, rear differential with controlled lock', frontShareRange: [0, 0.5] },
     chassis: { curbMassKg: 1945, frontWeightFraction: 0.43, wheelbaseM: 2.711, lengthMm: 4647, widthMm: 2038, heightMm: 1212 },
     aero: { dragCoefficient: 0.38, frontalAreaM2: 2.08 },
-    tires: { sizes: [staggered('r20r21', 'Michelin Sport Cup 2 R 285/30 R20 F · 355/25 R21 R', { widthMm: 285, aspectPct: 30, rimIn: 20 }, { widthMm: 355, aspectPct: 25, rimIn: 21 }, 'Factory fitment (Bugatti-exclusive Cup 2 R)')], compound: 'uhp', gripScale: 1.1 },
+    tires: { sizes: [staggered('r20r21', 'Michelin Sport Cup 2 R 285/30 R20 F · 355/25 R21 R', { widthMm: 285, aspectPct: 30, rimIn: 20 }, { widthMm: 355, aspectPct: 25, rimIn: 21 }, 'Factory fitment (Bugatti-exclusive Cup 2 R)')], compound: 'uhp', gripScale: 1 },
     speedLimiterKmh: 350,
     factory: { zeroTo100S: 2.3, topSpeedKmh: 350 },
     provenance: [
@@ -116,7 +116,8 @@ export const entry: CatalogEntry = {
       { parameter: 'Creep torque', value: '40 Nm clutch torque off the brake', status: 'estimated', source: 'As the other Chirons; idle creep only' },
       { parameter: 'Weight distribution', value: '43 % front', status: 'estimated', source: 'Mid-engine layout; not published' },
       { parameter: 'AWD split', value: 'Front share 0–0.50', status: 'estimated', source: 'Front-axle controlled longitudinal differential (BorgWarner); no fixed split published' },
-      { parameter: 'Tire grip calibration', value: '×1.10', status: 'estimated', source: 'Provisional: the Chiron family calibration (×1.00, fitted to an equivalent retrofit run) × 1.10 for the Cup 2 R, which Bugatti credits with about ten per cent more lateral acceleration. The track semi-slick class would run 0–100 km/h in ≈ 2.1 s against the 2.3 s claim, so it is not used', url: RELEASE },
+      { parameter: 'Tire grip calibration', value: '×1.00 (neutral, transferred)', status: 'estimated', source: 'Provisional: the Chiron family longitudinal calibration, transferred unchanged. Bugatti credits the Cup 2 R with about ten per cent more lateral acceleration; that is lateral evidence and is not applied to launch grip. Sensitivity: ×1.00 → 0–100 km/h 2.67 s, ¼ mile 9.38 s @ 265.1 km/h; ×1.10 → 2.25 s, 8.96 s @ 266.3 km/h (brake release)' },
+      { parameter: 'Lateral grip (not modelled)', value: '≈ +10 % lateral acceleration with the Cup 2 R', status: 'reported', source: 'Bugatti release; the straight-line model has no lateral dynamics', url: RELEASE },
       { parameter: 'Drivetrain efficiency', value: '84 %', status: 'estimated', source: 'Provisional: the Chiron family calibration (held at the plausible AWD floor)' },
     ],
   }),

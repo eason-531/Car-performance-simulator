@@ -23,9 +23,11 @@ export const LEGACY_IDS: Readonly<Record<string, string>> = {
   '2021-bugatti-chiron-sport-us-coupe-awd-7dct': '2018-bugatti-chiron-sport-us-coupe-awd-7dct',
 };
 
-/** The current id for a possibly retired one. */
+const LEGACY = new Map(Object.entries(LEGACY_IDS));
+
+/** The current id for a possibly retired one (own entries only, so ids such as "constructor" stay as given). */
 export function canonicalId(id: string): string {
-  return LEGACY_IDS[id] ?? id;
+  return LEGACY.get(id) ?? id;
 }
 
 export function findEntry(id: string): CatalogEntry | undefined {

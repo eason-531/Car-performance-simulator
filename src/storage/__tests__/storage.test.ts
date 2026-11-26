@@ -12,7 +12,7 @@ import {
   type NewResult,
 } from '../results';
 import { SETTINGS_KEY, defaultSettings, loadSettings, persistSettings } from '../settings';
-import { LEGACY_IDS, findEntry, getEntry } from '../../data/catalog';
+import { LEGACY_IDS, canonicalId, findEntry, getEntry } from '../../data/catalog';
 import { emptyMetrics } from '../../physics/metrics';
 import { defaultTuning } from '../../tuning/tuning';
 import { lexus } from '../../test-helpers';
@@ -134,5 +134,17 @@ describe('settings storage', () => {
     const r = createResult({ ...sample(), vehicleId: oldId }, new Date('2026-11-01T00:00:00Z'));
     persistResults(store, [r]);
     expect(loadResults(store)[0].vehicleId).toBe(newId);
+  });
+
+  it('keeps unknown ids, including inherited object names, as the same string', () => {
+    for (const id of ['constructor', 'toString', '__proto__', 'hasOwnProperty', 'no-such-car']) {
+      expect(canonicalId(id)).toBe(id);
+      expect(findEntry(id)).toBeUndefined();
+    }
+    const store = createMemoryStore();
+    persistResults(store, [createResult({ ...sample(), vehicleId: 'constructor' }, new Date('2026-11-01T00:00:00Z'))]);
+    const [loaded] = loadResults(store);
+    expect(typeof loaded.vehicleId).toBe('string');
+    expect(loaded.vehicleId).toBe('constructor');
   });
 });

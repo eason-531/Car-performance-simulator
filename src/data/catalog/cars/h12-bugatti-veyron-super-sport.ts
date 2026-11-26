@@ -74,7 +74,7 @@ export const entry: CatalogEntry = {
     "Speed-per-gear cross-check against the EPA N/V (as the 16.4 coupé)"
   ],
   simCaveats: [
-    "Provisional AWD approximation: one averaged rolling radius (0.337 m) ties engine speed to both axles; the EPA N/V of 24.85 rpm/mph implies 0.353 m, so modelled road speed per rpm runs about 4.7 % low and 7th cannot reach the 415 km/h limit before the estimated rev limit.",
+    "Provisional AWD approximation: one averaged rolling radius (0.337 m) ties engine speed to both axles; the EPA N/V of 24.85 rpm/mph implies 0.353 m, so modelled road speed per rpm runs about 4.7 % low. The model is drag-limited at ≈ 410 km/h in 7th (its rev cut would be ≈ 414 km/h), both below the 415 km/h limiter; with the EPA-implied radius the force limit rises to ≈ 417.5 km/h and the 415 km/h limiter binds.",
     "No measured benchmark: grip is the calibrated-AWD median and efficiency is transferred from the Veyron 16.4's trap fit (same driveline and tires)."
   ],
   notes: [
