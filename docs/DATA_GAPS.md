@@ -6,7 +6,7 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (16) — need data before they can run
+## Catalog-only cars (15) — need data before they can run
 
 ### 2022 Honda Civic Sport Touring 1.5T
 
@@ -74,12 +74,6 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Motor ratings and battery limits; Two-speed rear gear ratios; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/) · [Car and Driver](https://www.caranddriver.com/reviews/comparison-test/a30799498/2020-porsche-taycan-turbo-s-vs-2020-tesla-model-s-performance/) · [Autocar](https://autocar.co.uk/node/99423)
 
-### 2025 Hyundai Ioniq 5 N
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: MotorTrend trap speed and test mass; Motor ratings and battery limits; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2025-hyundai-ioniq-5-n-first-test-review) · [The Drive (citing MotorTrend)](https://www.thedrive.com/car-reviews/2025-hyundai-ioniq-5-n-review-a-racing-sim-you-can-drive-on-the-road) · [Car and Driver (syndicated on Yahoo)](https://uk.news.yahoo.com/2025-hyundai-ioniq-5-n-180000719.html)
-
 ### 2021 Tesla Model S Plaid
 
 - Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
@@ -104,7 +98,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
 
-## Playable cars (66) — running on estimates to confirm
+## Playable cars (67) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -438,6 +432,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Unconfirmed inputs: Dimensions (using 4,506 × 1,924 × 1,165 mm, WB 2,620 mm)
 - Also missing: Factory confirmation of the LDF gear ratios and final drive (secondary listing only); AWD control map; Drag coefficient; Launch-control rpm
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)
+
+### 2025 Hyundai Ioniq 5 N
+
+- Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift not stated)
+- Consulted: [Hyundai Motor Europe](https://www.hyundai.news/newsroom/dam/eu/press-kits/20240325_ioniq_5_n/hyundai-ioniq-5-n-technical-data-0324.pdf) · [Hyundai Motor Europe](https://www.hyundai.news/eu/models/performance/ioniq-5-n/press-kit/press-information.html) · [US EPA](https://www.epa.gov/system/files/documents/2026-01/25-testcar-2026-01-21.xlsx)
 
 ### 2023 Kia EV6 GT
 

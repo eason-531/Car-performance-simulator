@@ -30,7 +30,7 @@ export interface StockStats {
 
 export const STOCK_STATS: Record<string, StockStats> = {
   "lexus-is200t-2016-tw": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.091,
       "zeroTo200KmhS": 28.143,
@@ -81,7 +81,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "skoda-superb-combi-lk-280": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.658,
       "zeroTo200KmhS": 23.396,
@@ -134,7 +134,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2023-honda-civic-type-r-us-hatch-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.8,
       "zeroTo200KmhS": 19.215,
@@ -187,7 +187,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2024-acura-integra-type-s-us-liftback-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.985,
       "zeroTo200KmhS": 19.077,
@@ -240,7 +240,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2023-toyota-gr-corolla-circuit-edition-us-hatch-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.419,
       "zeroTo200KmhS": 20.556,
@@ -293,7 +293,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2021-toyota-gr-yaris-circuit-pack-uk-hatch-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.284,
       "zeroTo200KmhS": 20.654,
@@ -346,7 +346,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2022-volkswagen-golf-r-us-hatch-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.615,
       "zeroTo200KmhS": 18.877,
@@ -399,7 +399,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-volkswagen-golf-gti-autobahn-us-hatch-fwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.852,
       "zeroTo200KmhS": 23.163,
@@ -452,7 +452,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2019-hyundai-veloster-n-performance-package-us-hatch-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.228,
       "zeroTo200KmhS": 21.676,
@@ -505,7 +505,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "1997-acura-integra-type-r-us-liftback-fwd-5mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.548,
       "zeroTo200KmhS": 31.87,
@@ -556,7 +556,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2018-honda-accord-touring-2-0t-us-sedan-fwd-10at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.107,
       "zeroTo200KmhS": 24.739,
@@ -609,7 +609,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2020-toyota-camry-trd-v6-us-sedan-fwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.27,
       "zeroTo200KmhS": 22.445,
@@ -662,7 +662,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2021-mazda-mazda3-2-5-turbo-premium-plus-us-hatch-awd-6at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.953,
       "zeroTo200KmhS": 27.351,
@@ -715,7 +715,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2022-honda-civic-si-us-sedan-fwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.565,
       "zeroTo200KmhS": 28.996,
@@ -766,7 +766,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2025-hyundai-elantra-n-dct-us-sedan-fwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.278,
       "zeroTo200KmhS": 19.437,
@@ -819,7 +819,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2022-subaru-wrx-limited-us-sedan-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.152,
       "zeroTo200KmhS": 22.852,
@@ -872,7 +872,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2019-subaru-wrx-sti-s209-us-sedan-awd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.18,
       "zeroTo200KmhS": 18.563,
@@ -925,7 +925,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2015-mitsubishi-lancer-evolution-final-edition-us-sedan-awd-5mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.39,
       "zeroTo200KmhS": 20.335,
@@ -976,7 +976,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2016-lexus-gs-350-f-sport-rwd-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.175,
       "zeroTo200KmhS": 22.564,
@@ -1029,7 +1029,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2016-lexus-gs-f-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.763,
       "zeroTo200KmhS": 15.588,
@@ -1082,7 +1082,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-lexus-is-500-f-sport-performance-premium-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.129,
       "zeroTo200KmhS": 15.807,
@@ -1135,7 +1135,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2018-kia-stinger-gt2-3-3t-awd-us-liftback-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.766,
       "zeroTo200KmhS": 17.879,
@@ -1188,7 +1188,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-genesis-g70-3-3t-awd-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.871,
       "zeroTo200KmhS": 18.356,
@@ -1241,7 +1241,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-cadillac-ct4-v-blackwing-us-sedan-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.282,
       "zeroTo200KmhS": 13.889,
@@ -1294,7 +1294,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-cadillac-ct5-v-blackwing-10at-us-sedan-rwd-10at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.796,
       "zeroTo200KmhS": 11.786,
@@ -1347,7 +1347,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-bmw-m5-standard-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.268,
       "zeroTo200KmhS": 10.712,
@@ -1400,7 +1400,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2023-bmw-m3-competition-xdrive-edition-50-jahre-bmw-m-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.29,
       "zeroTo200KmhS": 12.116,
@@ -1453,7 +1453,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2020-bmw-m340i-xdrive-us-sedan-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.514,
       "zeroTo200KmhS": 16.549,
@@ -1506,7 +1506,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2017-alfa-romeo-giulia-quadrifoglio-us-sedan-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.036,
       "zeroTo200KmhS": 12.671,
@@ -1559,7 +1559,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2024-acura-tlx-type-s-us-sedan-awd-10at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.038,
       "zeroTo200KmhS": 20.318,
@@ -1612,7 +1612,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2021-skoda-octavia-combi-rs-2-0-tsi-dsg-de-wagon-fwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.391,
       "zeroTo200KmhS": 24.711,
@@ -1665,7 +1665,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2021-audi-rs-6-avant-us-wagon-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.519,
       "zeroTo200KmhS": 12.495,
@@ -1718,7 +1718,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "1993-toyota-supra-turbo-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.172,
       "zeroTo200KmhS": 19.238,
@@ -1771,7 +1771,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2023-toyota-gr-supra-a91-mt-edition-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.435,
       "zeroTo200KmhS": 15.531,
@@ -1824,7 +1824,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-toyota-gr86-premium-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.584,
       "zeroTo200KmhS": 25.146,
@@ -1877,7 +1877,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2022-subaru-brz-limited-6at-us-coupe-rwd-6at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.627,
       "zeroTo200KmhS": 27.321,
@@ -1928,7 +1928,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2016-mazda-mx-5-miata-club-us-conv-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.295,
       "zeroTo200KmhS": 35.497,
@@ -1979,7 +1979,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2024-mazda-mx-5-miata-rf-club-us-conv-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 7.31,
       "zeroTo200KmhS": 32.924,
@@ -2030,7 +2030,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "D"
   },
   "2000-honda-s2000-us-conv-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 6.725,
       "zeroTo200KmhS": 24.628,
@@ -2083,7 +2083,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "C"
   },
   "2023-nissan-z-performance-9at-us-coupe-rwd-9at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.834,
       "zeroTo200KmhS": 15.933,
@@ -2136,7 +2136,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2018-nissan-gt-r-track-edition-us-coupe-awd-6dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.134,
       "zeroTo200KmhS": 11,
@@ -2189,7 +2189,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-audi-tt-rs-coupe-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.725,
       "zeroTo200KmhS": 13.575,
@@ -2242,7 +2242,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-alpine-a110-premiere-edition-it-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.963,
       "zeroTo200KmhS": 18.095,
@@ -2295,7 +2295,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2023-bmw-m2-carbon-package-6mt-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 4.429,
       "zeroTo200KmhS": 14.207,
@@ -2348,7 +2348,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "A"
   },
   "2022-porsche-718-cayman-gt4-rs-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.285,
       "zeroTo200KmhS": 10.897,
@@ -2401,7 +2401,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2022-porsche-911-gt3-gt3-pdk-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.168,
       "zeroTo200KmhS": 10.252,
@@ -2454,7 +2454,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2021-porsche-911-turbo-s-turbo-s-coupe-us-coupe-awd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.456,
       "zeroTo200KmhS": 8.723,
@@ -2507,7 +2507,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2020-chevrolet-corvette-stingray-z51-fe4-us-coupe-rwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.485,
       "zeroTo200KmhS": 12.021,
@@ -2560,7 +2560,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2023-chevrolet-corvette-z06-z07-carbon-fiber-aero-us-coupe-rwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.977,
       "zeroTo200KmhS": 9.303,
@@ -2613,7 +2613,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2020-ford-mustang-shelby-gt500-carbon-fiber-track-package-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.955,
       "zeroTo200KmhS": 9.837,
@@ -2666,7 +2666,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-chevrolet-camaro-zl1-1le-us-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.462,
       "zeroTo200KmhS": 10.477,
@@ -2719,7 +2719,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2019-dodge-challenger-srt-hellcat-redeye-widebody-us-coupe-rwd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.792,
       "zeroTo200KmhS": 10.528,
@@ -2772,7 +2772,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2022-hyundai-kona-n-us-cuv-fwd-8dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 5.47,
       "zeroTo200KmhS": 21.328,
@@ -2825,7 +2825,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "B"
   },
   "2018-jeep-grand-cherokee-trackhawk-us-suv-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.526,
       "zeroTo200KmhS": 12.922,
@@ -2878,7 +2878,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2018-alfa-romeo-stelvio-quadrifoglio-us-suv-awd-8at": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.689,
       "zeroTo200KmhS": 14.643,
@@ -2931,7 +2931,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2012-lexus-lfa-us-coupe-rwd-6amt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.695,
       "zeroTo200KmhS": 10.886,
@@ -2984,7 +2984,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-mclaren-720s-coupe-us-coupe-rwd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.94,
       "zeroTo200KmhS": 7.656,
@@ -3037,7 +3037,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-lamborghini-huracan-performante-lp-640-4-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.358,
       "zeroTo200KmhS": 8.377,
@@ -3089,8 +3089,61 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 99.9,
     "cls": "S+"
   },
+  "2025-hyundai-ioniq-5-n-us-cuv-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.459,
+      "zeroTo200KmhS": 11.273,
+      "sixtyFootS": 2.063,
+      "quarterMileS": 11.445,
+      "quarterMileTrapKmh": 201.408,
+      "kilometerS": 20.735,
+      "kilometerTrapKmh": 255.616,
+      "metres400S": 11.403,
+      "metres400TrapKmh": 201.066,
+      "splits": {
+        "30mph": 1.562,
+        "60mph": 3.303,
+        "100mph": 7.338,
+        "130mph": 12.442,
+        "150mph": 17.629,
+        "100kmh": 3.459,
+        "160kmh": 7.26,
+        "180kmh": 9.078,
+        "200kmh": 11.273
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.194,
+      "zeroTo200KmhS": 11.008,
+      "sixtyFootS": 1.798,
+      "quarterMileS": 11.179,
+      "quarterMileTrapKmh": 201.408,
+      "kilometerS": 20.469,
+      "kilometerTrapKmh": 255.616,
+      "metres400S": 11.137,
+      "metres400TrapKmh": 201.066,
+      "splits": {
+        "30mph": 1.296,
+        "60mph": 3.038,
+        "100mph": 7.072,
+        "130mph": 12.176,
+        "150mph": 17.363,
+        "100kmh": 3.194,
+        "160kmh": 6.994,
+        "180kmh": 8.812,
+        "200kmh": 11.008
+      }
+    },
+    "topSpeedKmh": 259,
+    "peakPowerPs": 609,
+    "peakTorqueNm": 740,
+    "testMassKg": 2275,
+    "score": 78.3,
+    "cls": "S+"
+  },
   "2023-kia-ev6-gt-us-cuv-awd-ev": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.632,
       "zeroTo200KmhS": 15.503,
@@ -3143,7 +3196,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S"
   },
   "2008-bugatti-veyron-16-4-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.379,
       "zeroTo200KmhS": 7.351,
@@ -3196,7 +3249,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2017-bugatti-chiron-eu-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.677,
       "zeroTo200KmhS": 6.031,
@@ -3249,7 +3302,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2006-koenigsegg-ccx-eu-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.178,
       "zeroTo200KmhS": 7.534,
@@ -3302,7 +3355,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2022-bugatti-chiron-super-sport-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.459,
       "zeroTo200KmhS": 5.688,
@@ -3355,7 +3408,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2005-porsche-carrera-gt-de-convertible-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 3.35,
       "zeroTo200KmhS": 9.756,
@@ -3408,7 +3461,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2018-bugatti-chiron-sport-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.676,
       "zeroTo200KmhS": 6.001,
@@ -3461,7 +3514,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2020-bugatti-chiron-pur-sport-eu-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.671,
       "zeroTo200KmhS": 5.919,
@@ -3514,7 +3567,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "2010-bugatti-veyron-16-4-super-sport-us-coupe-awd-7dct": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.22,
       "zeroTo200KmhS": 6.305,
@@ -3567,7 +3620,7 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "cls": "S+"
   },
   "1994-mclaren-f1-uk-coupe-rwd-6mt": {
-    "formula": "SLC-4",
+    "formula": "SLC-5",
     "brakeRelease": {
       "zeroTo100KmhS": 2.806,
       "zeroTo200KmhS": 8.296,
