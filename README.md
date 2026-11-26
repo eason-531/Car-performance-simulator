@@ -2,8 +2,8 @@
 
 An interactive, physics-based performance simulator built with React,
 TypeScript and Vite. It centres on the owner's two cars (**My Garage**) and adds
-a researched catalog of 73 stock configurations, 56 of which can be driven,
-tested, raced and tuned, plus a growing set of playable hypercars (9 so far). It runs entirely in the browser (no backend, no paid
+a researched catalog of 73 stock configurations, 64 of which can be driven,
+tested, raced and tuned, plus a growing set of playable hypercars (10 so far). It runs entirely in the browser (no backend, no paid
 APIs) and is designed for iPad Safari.
 
 *This project is held by Eason and built mainly with Claude and ChatGPT.*
@@ -18,7 +18,11 @@ APIs) and is designed for iPad Safari.
 
 - **Live drive.** A real-time cockpit with tachometer, speedometer, boost gauge,
   gear indicator, shift lights and warning lights (traction control, speed
-  limiter, rev limiter, Auto Hold, lock-up/clutch).
+  limiter, rev limiter, Auto Hold, lock-up/clutch). Electric cars show motor
+  speed and a motor-power gauge with a boost light, and hide shift controls on a
+  single-speed drive; the Hyundai Ioniq 5 N offers N e-Shift (a simulated
+  8-speed with a hard limiter and a shift jolt) as an explicit switch, off by
+  default and never used by the tests.
   - Touch pedals: press higher for more pedal, and both pedals can be used at
     once for left-foot braking. Shift paddles sit between them.
   - Automatic or manual shifting.
@@ -92,19 +96,22 @@ Playable hypercars added after the original roster live in
 `src/data/catalog/cars/hNN-*.ts`, numbered by their place in the hypercar
 handoff, and carry the **Hypercar** tag (a quick filter in the car browser).
 
-- **Playable (56).** Torque-converter automatics, dual-clutch, single-clutch
-  automated manual (the Lexus LFA's ASG: clutch-open shifts, no idle creep) and
-  manual gearboxes, front, rear and all-wheel drive. Their physics input is built by
+- **Playable (64).** Torque-converter automatics, dual-clutch, single-clutch
+  automated manual (the Lexus LFA's ASG: clutch-open shifts, no idle creep),
+  manual gearboxes and the Honda Civic's LL-CVT, front, rear and all-wheel
+  drive, plus seven battery-electric cars (Taycan Turbo S, Ioniq 5 N, Model S
+  Plaid, Air Sapphire, Model 3 Performance, EV6 GT and R1T). Their physics input is built by
   `buildSpec()` from rated peaks (the curves never exceed the published power or
   torque), and every value that is not sourced is labelled *estimated* with a
   reason.
-- **Hypercars (9).** Bugatti Veyron 16.4 and Veyron Super Sport, Chiron,
+- **Hypercars (10).** Bugatti Veyron 16.4 and Veyron Super Sport, Chiron,
   Chiron Sport, Chiron Super Sport and Chiron Pur Sport, Koenigsegg CCX
-  (6-speed manual), Porsche Carrera GT and McLaren F1, built from Bugatti,
-  Koenigsegg, Porsche and McLaren technical data and the Veyron EPA filing, with
-  Car and Driver results where a test exists.
-- **Catalog-only (17).** CVTs, hybrids, EVs, the AMG MCT and the Raptor's 4WD
-  wait for models of their own, so they are never
+  (6-speed manual), Porsche Carrera GT, McLaren F1 and the electric Rimac
+  Nevera, built from Bugatti, Koenigsegg, Porsche, McLaren and Rimac technical
+  data and the Veyron EPA filing, with Car and Driver results where a test
+  exists.
+- **Catalog-only (9).** Hybrids, the AMG MCT and the Raptor's 4WD wait for
+  models of their own, so they are never
   routed through an incompatible one. Some conventional cars wait for gear
   ratios that no reachable source published. They can still be browsed and
   compared on their measured results.
@@ -124,8 +131,8 @@ handoff, and carry the **Hypercar** tag (a quick filter in the car browser).
   redline maximum), a 0.3 s clutch engagement and 0.3 s shifts with the drive
   interrupted.
 - **Stock classes D, C, B, A, S and S+** come from one standardized stock run
-  per car (formula SLC-4: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
-  km/h). They ignore your tuning. The thresholds (20/36.4/46.5/64/78) sit in wide
+  per car (formula SLC-5: 45 % quarter-mile ET, 40 % trap speed, 15 % 0–100
+  km/h). They ignore your tuning. The thresholds (20/36.4/46.5/64/77) sit in wide
   gaps of the score distribution and are checked against slow, middle and
   fast reference fixtures. The table is generated offline into
   `stockStats.generated.ts` (`npm run generate:stats`), and a test fails if it
@@ -152,6 +159,18 @@ headless tests run the same code.
 - **Dual-clutch launch (Škoda).** The launch clutch is controlled to hold a
   target launch rpm until it synchronises. There is creep at idle and brake-hold
   boosting.
+- **Electric drive.** Each motor holds its peak torque to base speed, then its
+  peak power (optionally falling above a published peak-power band) and fades
+  at its maximum speed, through its own single or two-speed reduction. Shared
+  battery/inverter power and torque limits apply across motors, with a
+  published boost (launch-control overboost or a driver-armed boost). Each
+  axle is limited by its own grip under weight transfer. EVs creep off the
+  brake, and the dyno measures them over road speed.
+- **CVT (Honda LL-CVT).** A torque converter launches and locks up; the
+  pulley ratio moves continuously within the published span at a limited
+  rate, toward a part-throttle engine-speed target. Under hard acceleration a
+  Step Shift program holds simulated steps and changes at a set rpm, then
+  holds the engine speed past the last step; paddles select the steps.
 - **Gearbox.** Per-gear final drives and shift times with a torque dip and a
   ratio blend. The automatic shift schedule computes optimal full-throttle
   upshift points and handles multi-gear kickdown and coasting downshifts. Manual

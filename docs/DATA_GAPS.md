@@ -62,7 +62,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
 
-## Playable cars (73) — running on estimates to confirm
+## Playable cars (74) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -481,3 +481,8 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 - Also missing: Road-car rev limit (7,500 rpm from secondary leads; the record run used a raised limit); Model year of the represented car (production 1993–1998); Measured road test with timing basis (the sheet's 0–60 mph 3.2 s and ¼ mile 11.1 s @ 138 mph are listed without conditions); Frontal area; Gearbox internal stages (listed ratios × 2.37 are ≈ 23 % taller than the sheet's speed-per-1,000-rpm column)
 - Consulted: [McLaren Automotive (mirror)](https://www.allcarcentral.com/McLaren_pdf/McLAREN_F1_ROADCAR-SPECIFICATION.pdf) · [McLaren](https://www.mclaren.com/cars/gl_en/ultimate-models/mclaren-f1)
+
+### 2022 Rimac Nevera Coupé
+
+- Also missing: Gear ratio (derived from Rimac's wheel and motor torque); Motor maximum speed and the power curve above base speed; Weight distribution; Frontal area (Rimac gives Cd 0.3 in low-drag mode only); Magazine road test
+- Consulted: [Rimac Automobili](https://www.rimac-automobili.com/nevera/) · [US EPA](https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx) · [IEEE Spectrum](https://spectrum.ieee.org/rimac-nevera-record)

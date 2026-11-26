@@ -3979,5 +3979,58 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "testMassKg": 1215,
     "score": 101.4,
     "cls": "S+"
+  },
+  "2022-rimac-nevera-eu-coupe-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.133,
+      "zeroTo200KmhS": 4.568,
+      "sixtyFootS": 1.687,
+      "quarterMileS": 8.417,
+      "quarterMileTrapKmh": 295.123,
+      "kilometerS": 14.667,
+      "kilometerTrapKmh": 384.677,
+      "metres400S": 8.389,
+      "metres400TrapKmh": 294.575,
+      "splits": {
+        "30mph": 1.04,
+        "60mph": 2.06,
+        "100mph": 3.489,
+        "130mph": 4.857,
+        "150mph": 5.996,
+        "100kmh": 2.133,
+        "160kmh": 3.466,
+        "180kmh": 3.991,
+        "200kmh": 4.568
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 1.904,
+      "zeroTo200KmhS": 4.34,
+      "sixtyFootS": 1.459,
+      "quarterMileS": 8.189,
+      "quarterMileTrapKmh": 295.123,
+      "kilometerS": 14.439,
+      "kilometerTrapKmh": 384.677,
+      "metres400S": 8.16,
+      "metres400TrapKmh": 294.575,
+      "splits": {
+        "30mph": 0.812,
+        "60mph": 1.831,
+        "100mph": 3.26,
+        "130mph": 4.629,
+        "150mph": 5.767,
+        "100kmh": 1.904,
+        "160kmh": 3.237,
+        "180kmh": 3.762,
+        "200kmh": 4.34
+      }
+    },
+    "topSpeedKmh": 412,
+    "peakPowerPs": 1914,
+    "peakTorqueNm": 2340,
+    "testMassKg": 2375,
+    "score": 151,
+    "cls": "S+"
   }
 };
