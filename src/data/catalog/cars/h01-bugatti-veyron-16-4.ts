@@ -93,7 +93,11 @@ export const entry: CatalogEntry = {
         quarterMileTrapMph: 142
       },
       conditions: {
-        testMass: "4,486 lb as tested"
+        testMass: "4,486 lb as tested",
+        tires: "PAX 265-680 ZR500 F / 365-710 ZR540 R (test car fitment)",
+        other: [
+          "As tested: wheelbase 106.7 in, length 175.7 in, width 78.7 in, height 45.1–47.4 in"
+        ]
       },
       match: "exact",
       verification: "Instrumented results as verified in the Codex hypercar handoff (main 62eca11, 2026-11); the Car and Driver page refuses automated fetches from this session. The earlier 2006 Car and Driver figures (2.9 s, 10.8 s @ 140 mph) are explicitly estimates and are not used."
@@ -101,7 +105,7 @@ export const entry: CatalogEntry = {
   ],
   dataGaps: [
     "Rev limit and redline (not in the OEM release or EPA filing)",
-    "Dimensions and wheelbase",
+    "Exact ride height used for the aero frontal area (Car and Driver lists 45.1–47.4 in)",
     "Weight distribution",
     "Drag coefficient and frontal area split (only the EPA road-load CdA is sourced)",
     "Speed-per-gear table cross-check (period test spec-table scan unreachable)",
@@ -110,7 +114,7 @@ export const entry: CatalogEntry = {
   ],
   simCaveats: [
     "Provisional AWD approximation: one averaged rolling radius (0.337 m from the PAX front and rear sizes) ties engine speed to both axles. The EPA N/V of 24.85 rpm/mph implies 0.353 m, so modelled road speed per rpm runs about 4.7 % low in every gear.",
-    "Launch grip is bounded by the 2008 result rather than fitted to a timing basis (unconfirmed), and efficiency is held at the plausible floor with the trap residual left visible."
+    "Launch grip is the calibrated-AWD median, not fitted: the 2008 Car and Driver run has an unconfirmed timing basis, so the simulation stays quicker to 60 mph (≈ 2.27 s brake release / 2.15 s rollout vs 2.5 s). Efficiency is held at the plausible floor with the trap residual left visible."
   ],
   sim: buildSpec({
   id: "2008-bugatti-veyron-16-4-us-coupe-awd-7dct",
@@ -125,9 +129,9 @@ export const entry: CatalogEntry = {
     engine: { code: 'W16 (BNN / CBXA)', description: '8.0 L quad-turbo W16', displacementCc: 7993, aspiration: 'twin-turbo', idleRpm: 840, redlineRpm: 6400, revLimitRpm: 6500, power: { value: 736, unit: 'kW', rpm: [6000, 6000] }, torque: { value: 1250, unit: 'Nm', rpm: [2200, 5500] } },
     transmission: { type: 'dual-clutch', name: '7-speed DSG dual-clutch', gearRatios: [3.176, 2.263, 1.667, 1.29, 1.057, 0.878, 0.795], finalDrive: 2.585, launchClutch: { creepTorqueNm: 40 } },
     drivetrain: { layout: 'AWD', efficiency: 0.84, description: 'Permanent AWD with a controlled front coupling (rear-biased)', frontShareRange: [0, 0.5] },
-    chassis: { curbMassKg: 2047, frontWeightFraction: 0.44, wheelbaseM: 2.71, lengthMm: 4462, widthMm: 1998, heightMm: 1204 },
+    chassis: { curbMassKg: 2047, frontWeightFraction: 0.44, wheelbaseM: 2.71, lengthMm: 4463, widthMm: 1999, heightMm: 1204 },
     aero: { dragCoefficient: 0.339, frontalAreaM2: 2.02 },
-    tires: { sizes: [staggered('pax', 'PAX 265-680 ZR500A F · 365-710 ZR540A R', { widthMm: 265, aspectPct: 33.96, rimIn: 19.685 }, { widthMm: 365, aspectPct: 23.29, rimIn: 21.26 }, 'Michelin PAX run-flat fitment (EPA filing); metric 680/710 mm diameters on 500/540 mm rims')], compound: 'uhp', gripScale: 1 },
+    tires: { sizes: [staggered('pax', 'PAX 265-680 ZR500A F · 365-710 ZR540A R', { widthMm: 265, aspectPct: 33.96, rimIn: 19.685 }, { widthMm: 365, aspectPct: 23.29, rimIn: 21.26 }, 'Michelin PAX run-flat fitment (EPA filing); metric 680/710 mm diameters on 500/540 mm rims')], compound: 'uhp', gripScale: 1.11 },
     speedLimiterKmh: 375,
     factory: { topSpeedKmh: 407 },
     provenance: [
@@ -142,10 +146,10 @@ export const entry: CatalogEntry = {
       { parameter: 'Drag coefficient', value: 'Cd 0.339 × 2.02 m² (CdA ≈ 0.684 m²)', status: 'estimated', source: 'CdA from the EPA target road-load C coefficient 0.0185 lbf/mph² at 1.204 kg/m³; split using area ≈ 0.84 × width × height. Normal ride level (up to 220 km/h)', url: EPA },
       { parameter: 'Creep torque', value: '40 Nm clutch torque off the brake', status: 'estimated', source: 'Dual-clutch creep sized for a ≈ 2-tonne car (the generic 25 Nm barely moves it); affects idle creep only, not launches' },
       { parameter: 'Rev limit', value: '6,400 rpm redline / 6,500 rpm limit', status: 'estimated', source: 'Not published in the reachable sources; set just above the 6,000 rpm power peak' },
-      { parameter: 'Dimensions', value: '4,462 × 1,998 × 1,204 mm, WB 2,710 mm', status: 'estimated', source: 'Commonly published figures; not confirmed from a fetched Bugatti document' },
+      { parameter: 'Dimensions', value: '4,463 × 1,999 mm, WB 2,710 mm; height modelled at 1,204 mm', status: 'reported', source: 'C/D test car: WB 106.7 in, length 175.7 in, width 78.7 in, height 45.1–47.4 in (2,710 × 4,463 × 1,999 mm; 1,146–1,204 mm). The model takes the upper height (normal ride level) for the frontal-area split, an assumption', url: 'https://www.caranddriver.com/reviews/a15152105/bugatti-veyron-164-road-test/' },
       { parameter: 'Weight distribution', value: '44 % front', status: 'estimated', source: 'Mid-engine layout; secondary sources only' },
       { parameter: 'AWD split', value: 'Front share 0–0.50', status: 'estimated', source: 'Controlled front coupling; no fixed split published, so a rear-biased range is assumed' },
-      { parameter: 'Tire grip calibration', value: '×1.00', status: 'estimated', source: 'Bounded, not basis-fitted: the 2008 result (2.5 s to 60 mph) needs grip ≤ 1.03 on a brake-release basis and the 1.00 floor on a rollout basis; the unconfirmed-basis convention (mean of both) lands on the 1.00 floor. The calibrated-AWD median (1.11) would run 2.27 s / 2.15 s' },
+      { parameter: 'Tire grip calibration', value: '×1.11', status: 'estimated', source: 'Median of the calibrated AWD cars in the original roster; not fitted because the 2008 Car and Driver timing basis is unconfirmed (no cross-basis fit). The previous ×1.00 bound is withdrawn' },
       { parameter: 'Drivetrain efficiency', value: '84 %', status: 'estimated', source: 'A trap fit to 142 mph asked for less than 80 %, below the plausible AWD range; held at 84 % (the lowest accepted AWD value) and the ≈ +3 mph trap residual left visible with no cause attributed' },
       { parameter: 'Turbocharging', value: 'Four turbochargers', status: 'verified', source: 'Bugatti release; modelled with the twin-turbo spool class', url: OEM },
     ],

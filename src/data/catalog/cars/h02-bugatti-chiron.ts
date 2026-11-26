@@ -64,9 +64,9 @@ export const entry: CatalogEntry = {
     },
     {
       id: "src-cd-sport",
-      title: "Bugatti Chiron tested: quickest car ever (Chiron Sport)",
+      title: "2021 Bugatti Chiron Sport by the numbers",
       publisher: "Car and Driver",
-      url: "https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/",
+      url: "https://www.caranddriver.com/reviews/a35353692/2021-bugatti-chiron-sport-by-the-numbers/",
       kind: "road-test",
       date: "2021"
     }
@@ -86,11 +86,13 @@ export const entry: CatalogEntry = {
         rolloutS: 0.2
       },
       conditions: {
-        testMass: "4,544 lb as tested"
+        testMass: "4,544 lb as tested",
+        tires: "Michelin Pilot Sport Cup 2 BG, 285/30ZR20 F / 355/25ZR21 R",
+        launchControl: "Launch control used"
       },
       match: "equivalent",
-      deviation: "Chiron Sport: same engine, gearbox, tires and aero modes; Bugatti states an 18 kg reduction and a sportier chassis tune.",
-      verification: "Chiron Sport result as verified in the Codex hypercar handoff (main 62eca11, 2026-11); the Car and Driver page refuses automated fetches from this session. The exact row lives on the Chiron Sport entry; it is shown here as an equivalent reference only."
+      deviation: "The test car was a 2018 Chiron retrofitted by Bugatti to Chiron Sport specification (Sport lightweight parts, about −18 kg, and chassis tune); published 2021. Same engine, gearbox, tire sizes and aero modes as this Chiron.",
+      verification: "Full instrumented article, test context and conditions as verified in the Codex review of 7571153 (2026-11); the Car and Driver site refuses automated fetches from this session. Equivalent for both the Chiron and the production Chiron Sport."
     }
   ],
   dataGaps: [
@@ -104,7 +106,7 @@ export const entry: CatalogEntry = {
   simCaveats: [
     "Gearing uses effective overall reductions derived from Bugatti's speed-per-gear table; the final-drive entry is 1.000 and the gearbox/axle split is not published.",
     "Provisional AWD approximation: one averaged rolling radius ties engine speed to both axles, and the BorgWarner front coupling uses a generic 0–50 % front-share range.",
-    "Grip and efficiency are transferred from the Chiron Sport fit (same powertrain and tires)."
+    "Provisional calibration: grip and efficiency are transferred from the Chiron Sport fit, itself made to Car and Driver's run of a retrofitted 2018 Chiron (equivalent)."
   ],
   sim: buildSpec({
   id: "2017-bugatti-chiron-eu-coupe-awd-7dct",

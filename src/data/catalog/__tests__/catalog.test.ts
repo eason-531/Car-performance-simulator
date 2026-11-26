@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  LEGACY_IDS,
   measuredResult,
   sortNote,
   CATALOG,
@@ -48,6 +49,15 @@ describe('catalog', () => {
     expect(ext.some((e) => e.make === 'Koenigsegg')).toBe(true);
     // Only extension entries carry the Hypercar tag; the original roster is unchanged.
     for (const e of CATALOG.filter((x) => !x.extension)) expect(e.usage).not.toContain('Hypercar');
+  });
+
+  it('keeps retired ids resolvable and never reuses them', () => {
+    expect(Object.keys(LEGACY_IDS).length).toBeGreaterThan(0);
+    for (const [oldId, newId] of Object.entries(LEGACY_IDS)) {
+      expect(CATALOG.some((e) => e.id === oldId)).toBe(false);
+      expect(findEntry(newId)?.id).toBe(newId);
+      expect(findEntry(oldId)?.id).toBe(newId);
+    }
   });
 
   it('gives every car at least one source link and a reason when it cannot run', () => {

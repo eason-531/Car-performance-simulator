@@ -55,17 +55,49 @@ export const entry: CatalogEntry = {
       publisher: "Porsche (mirror)",
       url: MY05,
       kind: "manufacturer"
+    },
+    {
+      id: "src-cd-2004",
+      title: "Porsche Carrera GT road test",
+      publisher: "Car and Driver",
+      url: "https://www.caranddriver.com/reviews/a15132548/porsche-carrera-gt-road-test/",
+      kind: "road-test",
+      date: "2004-06"
     }
   ],
-  benchmarks: [],
+  benchmarks: [
+    {
+      id: "cd-2004",
+      sourceId: "src-cd-2004",
+      publication: "Car and Driver",
+      date: "2004-06",
+      timing: "unconfirmed",
+      timingNote: "Car and Driver test from June 2004, under its legacy (pre-late-2019) procedure. The timing basis is not confirmed, so both simulator bases are shown and grip is not fitted to this run.",
+      results: {
+        zeroTo60MphS: 3.5,
+        quarterMileS: 11.2,
+        quarterMileTrapMph: 132
+      },
+      conditions: {
+        testMass: "3,146 lb as tested",
+        other: [
+          "Six-speed manual",
+          "Rated 605 hp @ 8,000 rpm as printed by Car and Driver"
+        ]
+      },
+      match: "equivalent",
+      deviation: "US-market Carrera GT as rated and weighed by Car and Driver (605 hp as printed, 3,146 lb as tested); this configuration is the German-specification car (450 kW / 612 PS DIN, 1,380 kg DIN unladen, kept independently).",
+      verification: "Original Car and Driver road test as verified in the Codex review of 7571153 (2026-11): 3.5 s to 60 mph, 11.2 s @ 132 mph. Replaces the unverified secondary lead (11.1 s @ 133 mph). The Car and Driver site refuses automated fetches from this session."
+    }
+  ],
   dataGaps: [
-    "Measured road test (a 2004 Car and Driver result is known only through secondary summaries; verification requested)",
+    "Car and Driver 2004 timing procedure (needed before fitting grip to its run)",
     "Weight distribution",
     "Frontal area",
     "US-market rating (605 hp SAE) and US curb weight"
   ],
   simCaveats: [
-    "No verified measured benchmark: grip is the RWD calibration median. The simulation reaches 100 km/h in ≈ 3.35 s against Porsche's 3.9 s claim (200 km/h ≈ 9.8 s vs 9.9 s claimed)."
+    "Grip is the RWD calibration median, not fitted: the only measured run (Car and Driver 2004, US-market, equivalent) has an unconfirmed timing basis. The simulation reaches 60 mph in ≈ 3.21 s (brake release) / 2.90 s (1-ft rollout) against 3.5 s measured, and 100 km/h in ≈ 3.35 s against Porsche's 3.9 s claim."
   ],
   notes: [
     "Porsche's 0–100 km/h 3.9 s, 0–160 km/h 6.9 s, 0–200 km/h 9.9 s and standing kilometre 20.0 s are factory claims, not measurements."
@@ -100,7 +132,7 @@ export const entry: CatalogEntry = {
       { parameter: 'Drag coefficient', value: 'Cd 0.39', status: 'verified', source: 'Porsche MY05 table (mirrored); rear wing rises at speed', url: MY05 },
       { parameter: 'Weight distribution', value: '42 % front', status: 'estimated', source: 'Mid-engine layout; not in the Porsche tables' },
       { parameter: 'Idle speed', value: '900 rpm', status: 'estimated', source: 'Not published' },
-      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'No verified measured benchmark; RWD layout median of the calibrated cars' },
+      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'RWD layout median of the calibrated cars; not fitted because the Car and Driver 2004 run (equivalent) has an unconfirmed timing basis' },
     ],
   }),
 };

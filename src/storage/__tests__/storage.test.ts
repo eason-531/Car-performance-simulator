@@ -12,6 +12,7 @@ import {
   type NewResult,
 } from '../results';
 import { SETTINGS_KEY, defaultSettings, loadSettings, persistSettings } from '../settings';
+import { LEGACY_IDS, findEntry, getEntry } from '../../data/catalog';
 import { emptyMetrics } from '../../physics/metrics';
 import { defaultTuning } from '../../tuning/tuning';
 import { lexus } from '../../test-helpers';
@@ -105,5 +106,33 @@ describe('settings storage', () => {
     expect(s.tunings['lexus-is200t-2016-tw'].weightDeltaKg).toBe(80);
     expect(s.shiftMode).toBe('manual');
     expect(s.dragLanes.map((l) => l.vehicleId)).toEqual(['lexus-is200t-2016-tw', 'skoda-superb-combi-lk-280']);
+  });
+
+  it('moves settings and results saved under a retired id to the corrected id', () => {
+    const [oldId, newId] = Object.entries(LEGACY_IDS)[0];
+    const spec = getEntry(newId).sim!;
+    expect(findEntry(oldId)?.id).toBe(newId);
+    const store = createMemoryStore();
+    store.set(
+      SETTINGS_KEY,
+      JSON.stringify({
+        activeVehicleId: oldId,
+        tunings: { [oldId]: { ...defaultTuning(spec), weightDeltaKg: -40 } },
+        favorites: [oldId, 'lexus-is200t-2016-tw'],
+        dragLanes: [{ vehicleId: oldId, variant: 'stock' }, { vehicleId: 'lexus-is200t-2016-tw', variant: 'current' }],
+        testCompare: { vehicleId: oldId, variant: 'current' },
+      }),
+    );
+    const s = loadSettings(store);
+    expect(s.activeVehicleId).toBe(newId);
+    expect(Object.keys(s.tunings)).toEqual([newId]);
+    expect(s.tunings[newId].weightDeltaKg).toBe(-40);
+    expect(s.favorites).toEqual([newId, 'lexus-is200t-2016-tw']);
+    expect(s.dragLanes[0]).toEqual({ vehicleId: newId, variant: 'stock' });
+    expect(s.testCompare).toEqual({ vehicleId: newId, variant: 'current' });
+
+    const r = createResult({ ...sample(), vehicleId: oldId }, new Date('2026-11-01T00:00:00Z'));
+    persistResults(store, [r]);
+    expect(loadResults(store)[0].vehicleId).toBe(newId);
   });
 });

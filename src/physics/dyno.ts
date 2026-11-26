@@ -87,8 +87,36 @@ export function theoreticalTopSpeedKmh(vehicle: SimVehicle): number {
   return best;
 }
 
+/** What sets a car's top speed. */
+export type TopSpeedConstraint = 'limiter' | 'rev-limit' | 'drag';
+
+export interface TopSpeedBreakdown {
+  /** Reachable top speed with the vehicle's limiter state, km/h. */
+  kmh: number;
+  /** Force- or gearing-limited top speed ignoring any limiter, km/h. */
+  unlimitedKmh: number;
+  /** Active modelled limiter, km/h, or null when none is modelled or it is switched off. */
+  limiterKmh: number | null;
+  /**
+   * The binding constraint, decided on unrounded values: the limiter only when
+   * it sits below the force/gearing limit; otherwise the rev limit in the
+   * tallest gear (gearing-limited) or road load exceeding wheel force (drag).
+   */
+  binding: TopSpeedConstraint;
+}
+
+export function topSpeedBreakdown(vehicle: SimVehicle): TopSpeedBreakdown {
+  const unlimitedKmh = theoreticalTopSpeedKmh(vehicle);
+  const limiterKmh = vehicle.speedLimitMs === null ? null : msToKmh(vehicle.speedLimitMs);
+  if (limiterKmh !== null && limiterKmh < unlimitedKmh) return { kmh: limiterKmh, unlimitedKmh, limiterKmh, binding: 'limiter' };
+  // Just past the force/gearing limit: if even the tallest gear is beyond the
+  // rev limit there, gearing (not drag) ends the acceleration.
+  const tallest = Math.min(...vehicle.transmission.overallRatios);
+  const rpmPast = ((kmhToMs(unlimitedKmh + 0.5) / vehicle.wheelRadiusM) * tallest * 60) / (2 * Math.PI);
+  return { kmh: unlimitedKmh, unlimitedKmh, limiterKmh, binding: rpmPast > vehicle.engine.revLimitRpm ? 'rev-limit' : 'drag' };
+}
+
 /** Top speed reachable with the limiter state of the vehicle. */
 export function topSpeedKmh(vehicle: SimVehicle): number {
-  const drag = theoreticalTopSpeedKmh(vehicle);
-  return vehicle.speedLimitMs === null ? drag : Math.min(drag, msToKmh(vehicle.speedLimitMs));
+  return topSpeedBreakdown(vehicle).kmh;
 }

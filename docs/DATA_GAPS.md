@@ -341,7 +341,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2023 Nissan Z Performance 9AT
 
-- Also missing: Drag coefficient; Production speed limiter (Car and Driver lists a governed 155 mph estimate; no Nissan US document confirms it, so none is modelled)
+- Also missing: Drag coefficient; Production speed limiter (Car and Driver reports a governed 155 mph; no Nissan US document confirms it, so none is modelled)
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-nissan-z-performance-first-test-review) · [Autoblog](https://www.autoblog.com/2022/07/14/2023-nissan-z-road-test/) · [The Detroit Bureau](https://thedetroitbureau.com/reviews/a-week-with-2023-nissan-z-performance-a-t/)
 
 ### 2018 Nissan GT-R Track Edition
@@ -448,13 +448,13 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2008 Bugatti Veyron 16.4 Coupé
 
-- Also missing: Rev limit and redline (not in the OEM release or EPA filing); Dimensions and wheelbase; Weight distribution; Drag coefficient and frontal area split (only the EPA road-load CdA is sourced); Speed-per-gear table cross-check (period test spec-table scan unreachable); Period Car and Driver timing procedure (needed before fitting launch grip); Launch-control rpm
+- Also missing: Rev limit and redline (not in the OEM release or EPA filing); Exact ride height used for the aero frontal area (Car and Driver lists 45.1–47.4 in); Weight distribution; Drag coefficient and frontal area split (only the EPA road-load CdA is sourced); Speed-per-gear table cross-check (period test spec-table scan unreachable); Period Car and Driver timing procedure (needed before fitting launch grip); Launch-control rpm
 - Consulted: [Bugatti](https://newsroom.bugatti.com/en/press-releases/the-bugatti-veyron-on-the-track-of-the-targa-florio) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/final-bugatti-veyron-16-4-sold-to-a-customer-in-europe) · [US EPA / Bugatti](https://www.autonocion.com/wp-content/uploads/2015/10/Certificado-EPA-Bugatti-Veyron.pdf)
 
 ### 2017 Bugatti Chiron Coupé
 
 - Also missing: Individual gear and axle ratios (only effective reductions derived from the speed-per-gear table); 7th-gear reduction (the listed 420 km/h equals the Top Speed limiter, so 7th is at least this tall); Frontal area; Weight distribution; Rev limit (gear speeds are listed at 6,700 rpm; the Super Sport release implies about 6,800 rpm); Launch-control rpm
-- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) · [Car and Driver](https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/)
+- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) · [Car and Driver](https://www.caranddriver.com/reviews/a35353692/2021-bugatti-chiron-sport-by-the-numbers/)
 
 ### 2006 Koenigsegg CCX Coupé
 
@@ -463,15 +463,15 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2022 Bugatti Chiron Super Sport
 
-- Also missing: Individual gear and axle ratios (effective reductions from the Chiron table plus Bugatti's 3.6 % longer 7th); Frontal area; Weight distribution; Launch-control rpm; Car and Driver drive mode and tires
+- Also missing: Individual gear and axle ratios (effective reductions from the Chiron table plus Bugatti's 3.6 % longer 7th); Frontal area; Weight distribution; Car and Driver drive mode
 - Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673edce31d99cf64fc74087/211122_BU_Chiron%20Super%20Sport_ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/api/en/press-releases/pdf/shaped-by-speed-the-cutting-edge-technology-behind-worlds-fastest-and-most-luxurious-grand-tourisme) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf)
 
 ### 2005 Porsche Carrera GT Roadster
 
-- Also missing: Measured road test (a 2004 Car and Driver result is known only through secondary summaries; verification requested); Weight distribution; Frontal area; US-market rating (605 hp SAE) and US curb weight
-- Consulted: [Porsche](https://newsroom.porsche.com/pdf/17da8703-0d52-4ab7-8630-6e98ff05c194?print=) · [Porsche (mirror)](https://www.ausmotive.com/downloads/Porsche/Carrera-GT-specs.pdf)
+- Also missing: Car and Driver 2004 timing procedure (needed before fitting grip to its run); Weight distribution; Frontal area; US-market rating (605 hp SAE) and US curb weight
+- Consulted: [Porsche](https://newsroom.porsche.com/pdf/17da8703-0d52-4ab7-8630-6e98ff05c194?print=) · [Porsche (mirror)](https://www.ausmotive.com/downloads/Porsche/Carrera-GT-specs.pdf) · [Car and Driver](https://www.caranddriver.com/reviews/a15132548/porsche-carrera-gt-road-test/)
 
-### 2021 Bugatti Chiron Sport
+### 2018 Bugatti Chiron Sport
 
-- Also missing: Individual gear and axle ratios (effective reductions shared with the Chiron); 7th-gear reduction (limiter-bound in the factory table); Frontal area; Weight distribution; Rev limit; Launch-control rpm; Car and Driver test-car model year, drive mode and tires
-- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Car and Driver](https://www.caranddriver.com/news/a35105452/bugatti-chiron-tested-quickest-car-ever/)
+- Also missing: Individual gear and axle ratios (effective reductions shared with the Chiron); 7th-gear reduction (limiter-bound in the factory table); Frontal area; Weight distribution; Rev limit; Launch-control rpm; Instrumented test of a production Chiron Sport (the Car and Driver car was a retrofitted 2018 Chiron); Car and Driver drive mode
+- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/88th-geneva-international-motor-show-2018)
