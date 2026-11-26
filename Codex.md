@@ -10,57 +10,81 @@
 {
   "schema": "codex-review-handoff/v1",
   "branch": "claude/determined-planck-qhjicj",
-  "reviewed_head": "44d84c5e1d10bec7155bd990978371a64349145c",
-  "claude_md_blob": "f64a951521c10de869504338aa4ef6bb4db5c33c",
-  "log_commit": "44d84c5e1d10bec7155bd990978371a64349145c",
+  "reviewed_head": "eb8c295c91dd42497d7122ecab6b7b38587ec442",
+  "claude_md_blob": "4b309ac59834068abee93667a771dc5d75695b9b",
+  "log_commit": "eb8c295c91dd42497d7122ecab6b7b38587ec442",
+  "previous_observed_head": "1b18193e57acfe491fe45e3fd8f979a12243d62a",
   "review_base": "c45b37165376cd0c46baa9111bf6bd902b4079c3",
   "implementation": [
-    "e32b5c5",
-    "bb49f15"
+    "b4ca03d2273d3b99d9620a186b9b3104e1636ecd",
+    "2bb281ac33c48d34c824bb6daf713b5bf68c7cc0"
   ],
   "pull_request": "https://github.com/eason-531/Car-performance-simulator/pull/9",
   "result": "changes_requested_before_merge",
+  "objective": "Bring the single-clutch automated-manual path and provisional Lexus LFA model to a verified state, complete the top-speed correction, and advance the approved playable-hypercar and original catalog backlog where compatible physics and source evidence support it.",
   "observations": [
-    "PR #8 merge is inherited from main. The Claude.md reset is header-only. The new log and pinned diff independently corroborate both Claude implementation commits.",
-    "Nine playable hypercars (+Pur Sport, Veyron Super Sport, McLaren F1). Prior corrections verified in diff: Nissan Z 1,600–5,200 rpm and explicit assumed cut; Chiron Sport retrofit downgraded to equivalent with old-ID migration; Chiron SS 2,500 rpm launch; Carrera GT equivalent and timing unknown; Veyron test fitment/dimensions and timing caveat.",
-    "The previous limiter-presence labeling bug is fixed for the ordinary binding and nonbinding cases. The new drag/rev distinction has boundary and model-consistency gaps."
+    "New round-3 Claude.md entry at the pinned head matches both Claude commits and draft PR #9 at the same head. The prior Codex-only commit is the comparison baseline. The incremental diff spans 19 paths.",
+    "Legacy IDs now use own Map entries; retired Chiron Sport IDs still resolve and inherited object names stay strings. Chiron Pur Sport uses neutral longitudinal grip and records +10% lateral evidence separately. Generated brake-release 0–100 and quarter mile move from 2.25/8.96 s to 2.67/9.38 s. Veyron SS caveat now matches its roughly 410 km/h drag limit versus the modeled 415 km/h limiter.",
+    "AMT has a TCU launch clutch, no idle creep by default, and a torque interruption during shifts. LFA joins the playable original roster (56/73; 17 still catalog-only), keeping nine playable hypercars. Lexus Europe table corroborates ASG ratios and series application of 1.259 and 3.417 via permitted gear speeds. Both owner cars have identical generated rows. Only Pur Sport changes among shared stock rows, and LFA is the sole addition."
   ],
   "findings": [
     {
       "priority": "P2",
-      "path": "src/data/catalog/cars/h11-bugatti-chiron-pur-sport.ts:78,99,119",
-      "impact": "A 10% lateral acceleration improvement is mapped one-to-one into longitudinal launch grip. The 2.25 s simulation vs 2.3 s factory claim cannot independently validate that assumption.",
-      "request": "Use a neutral transferred longitudinal baseline or document an explicitly independent provisional estimate, and publish sensitivity at baseline vs +10%. Keep factory claims separate from measured comparisons.",
-      "acceptance": "Provenance explicitly distinguishes lateral evidence and longitudinal assumptions; rerun generated stats and report 0–100/quarter-mile sensitivity."
+      "path": "src/data/catalog/cars/r62-lexus-lfa.ts:50–118,133–157",
+      "impact": "The 124 mph short take is marked exact but Car and Driver explicitly tested a prototype without launch control. It used a roughly 3,800 rpm neutral engagement in manual SPORT at fastest shift setting; measured curb 3,583 lb. The separate 125 mph comparison has an original article from the December 2010 issue, with launch control, 3,569 lb, and Bridgestone 265/35ZR20 F and 305/30ZR20 R. It took place in England/Wales; the article does not establish US production delivery spec. The code uses a forum quote dated 2011 and fits its trap using 1,480 kg EU minimum curb plus 75 kg driver. Calibration and exact-benchmark readiness can therefore overstate match quality.",
+      "request": "Cite both originals directly, mark the short take equivalent, and establish the comparison car's market/configuration before marking it exact. Update each run's date and test context. C/D documents legacy 3 mph timing before December 2019; note the historical convention and any uncertainty for the specific runs. Keep one-foot and brake release separate and avoid fitting timed splits to an unsupported basis. Separate stock curb and test mass and document sensitivity or provisional calibration against the measured mass and setup.",
+      "acceptance": "Garage links and data gaps reflect the original tests and their market, prototype/launch, mass and timing limitations. Exact readiness reflects only supported matching evidence. Residuals and any efficiency fit identify their calibration run, mass convention and assumptions.",
+      "sources": [
+        "https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/",
+        "https://www.caranddriver.com/reviews/comparison-test/a15128593/2011-ferrari-599-hgte-vs-2012-lexus-lfa-comparison-test/",
+        "https://www.caranddriver.com/features/a15128578/car-and-driver-magazine-december-2010-issue-table-of-contents/",
+        "https://www.caranddriver.com/features/a30085446/acceleration-testing-procedure-change-rollout/"
+      ]
     },
     {
       "priority": "P2",
-      "path": "src/physics/dyno.ts:71–87,108–116; src/lib/topSpeed.ts:4–17; src/data/catalog/cars/h12-bugatti-veyron-super-sport.ts:77,93",
-      "impact": "The first infeasible 0.5 km/h grid sample can be beyond both the force crossing and rev cap. The classifier then calls rev limit even if drag bound first. A stretched top gear may be force-infeasible while a lower gear reaches its rev limit. Veyron SS also documents a roughly 410 km/h modeled gearing ceiling while the log reports drag-limited at 410 km/h. Very close cap/speed values can still round equal at one decimal.",
-      "request": "Compare attainable wheel force and rev/gear limits at the actual boundary; make unknown/tied constraints explicit. Reconcile Veyron SS description with computed constraint and EPA rolling-radius sensitivity. Use formatting that preserves the distinction or describe an approximate tie.",
-      "acceptance": "Tests cover force crossing just before cut, a lower gear setting maximum speed, near-equal cap, and existing Chiron SS/GTI/GT-R/Nissan examples. Preserve published 415 km/h vs separate record and simulated result."
+      "path": "src/data/catalog/cars/r62-lexus-lfa.ts:110–118,133–154",
+      "impact": "Production LFA launch control is documented at 4,000 rpm in Lexus US owner's manual OM77006U, printed p.174, and Inside the LFA, printed p.36. Launch and brake hold are configured at 4,500 rpm as an estimate, affecting the stock launch scenario.",
+      "request": "Use the documented production launch setting for the production launch scenario, or make any distinct stock scenario explicit. Keep the prototype run's 3,800 rpm setup separate. Regenerate and report the change in stock launch and quarter-mile metrics.",
+      "acceptance": "The stock production launch basis and evidence are visible in Garage/provenance, 4,000 rpm is represented for the production launch comparison, and the source gap is updated.",
+      "sources": [
+        "https://www.carmanualsonline.info/lexus-lfa-2012-owner-s-manual-lexus-2012-lfa-owners-manual-om77006u/?srch=clutch",
+        "https://www.carmanualsonline.info/lexus-lfa-2012-owner-s-manual-lexus-2012-lfa-inside-the-lfa/?srch=ESP"
+      ]
+    },
+    {
+      "priority": "P2",
+      "path": "src/physics/dyno.ts:113–161",
+      "impact": "The 0.5 km/h scan can miss the first transition to nonpositive force when force recovers before the next sample. Independent synthetic repro: owner-Lexus SimVehicle baseline with limiter off, one 2.0 overall gear, 7,000 rpm cut, 400 Nm flat except a 0 Nm notch centered at scan start +82.25 km/h with 400 Nm shoulders ±0.1 km/h. Net force is +336 N at 122.83, −203 N at 122.88 and +1,562 N at 123.13; the solver returns 258.33 km/h as continuously reachable. This falsifies the stated continuous-positive-force behavior on that input. No stock car regression was observed.",
+      "request": "Make the force/gearing reachability claim match the algorithm across short gaps and gear boundaries. If allowing coasting through transient gaps models the intended behavior, document and verify that behavior. Preserve correct rev, drag and limiter classifications.",
+      "acceptance": "A regression reproduces a sub-step gap plus recovery, validates the intended reachability rule, and preserves the existing boundary/limiter cases and known stock rows unless a verified correction justifies a change."
     },
     {
       "priority": "P3",
-      "path": "src/data/catalog/index.ts:21–29; src/storage/results.ts:115–120",
-      "impact": "The plain-object alias map resolves inherited names such as constructor to a non-string. Saved result sanitation applies this conversion after validation and can emit an invalid vehicleId.",
-      "request": "Use a Map or own-property lookup for canonicalId.",
-      "acceptance": "Old Chiron ID migrates and unknown string IDs, including constructor, retain string semantics."
+      "path": "src/views/DriveView.tsx:224–229; src/physics/simulator.ts:16–20,151–160,214–272",
+      "impact": "At 0.100 s in the LFA's 0.2 s 2→3 shift, the simulator reports coupling locked and −0.344 m/s² despite the modeled torque interruption, so Drive predicates the 'Clutch closed' light as on. The interrupt envelope also ramps at the first 12% and last 20% of the shift, whereas PR text describes full interruption for its entire duration.",
+      "request": "Align clutch indication and published shift description with the implemented state and torque envelope, or adjust the model if the chosen semantics require it. Preserve existing converter lock-up and dual-clutch behavior.",
+      "acceptance": "The AMT display and explanation are accurate during the torque interruption and after re-engagement, with focused evidence for the mid-shift state and existing-car behavior."
     }
   ],
   "unfinished": [
-    "11 more playable hypercars toward 20; all original 18 catalog-only cars still unpromoted. Preserve exact blockers and model validation requirements for AMT/ASG, EV, hybrid, MCT, CVT, 4WD and gearing gaps.",
-    "Source queue: Pur Sport table rpm and launch conditions; Veyron SS production rev cut, dimensions and instrumented run; F1 exact production year, road-car rev cut, bevel-stage ratio and timing basis; CCXR and Agera RS gearing; Nissan Z production US limiter and distinct fuel cut; Chiron production Sport exact run and relevant drive modes."
+    "Nine of the targeted 20 playable hypercars and 17 original catalog-only cars remain in scope. The AMT path removes a model blocker for compatible cars, while Enzo, Huayra BC and Utopia still need defensible gearing evidence for their exact variants. Keep unsupported EV/hybrid/MCT/CVT/4WD and gearing cases gated.",
+    "LFA high-speed aero remains provisional: Lexus Europe describes an active wing rising at 80 km/h and above depending on mode, while the model uses Cd 0.31 for the retracted wing at all speeds. Expose high-speed CdA and 332 vs 325 km/h uncertainty before attributing the residual to a specific cause. The dossier lists 9,000 rpm maximum/redline; treat a distinct hard fuel cut, idle creep and US curb basis as open unless sourced.",
+    "Prior unresolved source queue includes Pur Sport table rpm, Veyron SS rev cut/dimensions/measured run, F1 gearing/timing/rev cut, CCXR and Agera RS gearing, Nissan Z US cut/cap, and production Chiron Sport benchmark and drive modes."
   ],
   "needs": {
-    "claude": "Address findings, attach focused regressions, regenerate both outputs, and keep provisional F1 gearing and acceleration residuals visible.",
-    "eason": "Native iPad Safari smoke when available; exact-market original documents for the outstanding inputs if available. Merge decision remains yours."
+    "eason": "No owner input is required for the verified fixes. Eason owns merging draft PR #9. Native iPad Safari touch/keyboard verification remains open if Eason has the device. A market-specific factory curb or active-aero document would resolve remaining LFA assumptions if available."
   },
   "verification": {
-    "pinned_diff": "Compared main c45b371 to reviewed head, with previous observed 6f6cf33 as an ancestor. git diff --check clean.",
-    "ci": "https://github.com/eason-531/Car-performance-simulator/actions/runs/45738167099 (success for reviewed head)",
-    "reported": "Claude/PR reports 951 tests in 22 files, typecheck/lint/build and iPad-size Chromium smoke.",
-    "limits": "No independent local test rerun, native iPad Safari verification, or fresh comprehensive audit of manufacturer source documents."
-  }
+    "pinned_diff": "Compared prior handoff commit to the pinned head as an ancestor, checked branch-local implementation and log separately, and correlated the draft PR exactly. git diff --check clean.",
+    "ci": "https://github.com/eason-531/Car-performance-simulator/actions/runs/45748843604 (success at reviewed head)",
+    "local": "Independent npm run check passed typecheck, lint, 973 tests across 23 files and Vite build. Both generators reproduced checked-in outputs byte for byte. Independently probed narrow force gap and LFA mid-shift state in scratch.",
+    "limits": "Claude reported iPad-sized Chromium smoke. Native iPad Safari/WebKit not run. LFA sources targeted to the listed claims. No comprehensive re-audit of the earlier hypercar batch."
+  },
+  "execution_policy": [
+    "Own the current objective end to end in this work session. Use the handoff and current branch backlog to choose a substantial, coherent batch. Resolve verified priority findings, independently inspect the affected flow for closely related defects and missing edge cases, and continue into the next highest-value unblocked work within the approved branch scope while capacity remains. Complete the work to a usable and verified state. Avoid arbitrary quotas, unrelated changes, and stopping after the first fix when more relevant work can be completed safely.",
+    "Do all you can within the approved scope, and escalate to Eason only when you hit a genuine blocker. Make routine, reversible engineering decisions independently and log consequential assumptions. Diagnose setbacks, try reasonable authorized alternatives, and keep advancing independent work. If an obstacle still prevents a concrete part of the objective from being completed or verified, record what is pending and surface it in the handoff or review summary with what it blocks, what you already tried, and the exact input, access, decision, or action needed. Flag obstacles that require Eason's intervention, including permissions, consequential product choices, and merging, as soon as they are identified and continue independent work while waiting. Keep recoverable setbacks and ordinary progress in the normal Claude.md and PR records.",
+    "Before wrapping up, review the diff, run the relevant checks (including npm run check when feasible), regenerate affected outputs, and verify compatibility and source provenance where applicable. Record completed work, evidence, checks actually run, and remaining blockers in the branch's Claude.md under its existing rules. Keep measured data and assumptions explicit. Reuse the existing PR workflow."
+  ]
 }
 ```
