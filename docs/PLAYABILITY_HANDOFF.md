@@ -1,12 +1,15 @@
 # Auto Drive, Launch Lab, and 3D Highway
 
-## Goal
+## Start a new implementation session
 
-Start with **Auto Drive**, an opt-in simulator mode for every playable car. Let the player leave the accelerator down hands-free while the car automatically lifts and brakes for traffic, follows a lead car, and returns to full throttle when the lane clears. Deliver the first playable version in Live Drive, then build **Launch Lab** for repeatable launches and **3D Highway** for manual driving, Auto Drive and comparisons of documented factory driver assistance. Complete, verify, and open a draft pull request for Auto Drive before starting Launch Lab or 3D Highway. Work through routine issues independently and report specific blockers with the relevant evidence.
+**Assignment for this session: implement Milestone 1, Auto Drive in Live Drive.** The player can turn it on in any playable car, let the accelerator stay down hands-free, and have the simulator slow for traffic, follow a lead car and return to full throttle when the lane clears. Milestones 2 and 3 define later work. End this session with the verified Auto Drive implementation and a draft pull request.
+
+1. Open `eason-531/Car-performance-simulator` and fetch the current `origin/main`. Start a dedicated Auto Drive feature branch from that tip. Use the session branch if Claude already created it from the current `main`.
+2. Read `README.md` for setup and the headers of `Claude.md` and `Codex.md` for the project's handoff conventions. The inherited log entries capture earlier catalog and drivetrain sessions. Use this document as the implementation brief for the Auto Drive branch.
+3. Trace the current Live Drive controls and fixed-step loop, then implement the Milestone 1 requirements below. Work through routine issues independently. If a check or the draft PR is blocked, report the exact blocker and what you verified.
 
 ## Starting point
 
-- Repository `eason-531/Car-performance-simulator`. `main` was checked at `8d45b47`, the merge of PR #9. Fetch and recheck the current default-branch HEAD and read `README.md`, `Claude.md`, and `Codex.md` before editing. Start a new feature branch from updated `main` and keep this work independent of any parallel catalog or drivetrain changes.
 - This is a client-side React/TypeScript/Vite app designed for iPad Safari and static Vercel deployment. `src/App.tsx` owns the hash navigation. `src/state/AppState.tsx` provides the selected car and resolved specs with tuning. Reuse the shared catalog and car picker. Keep catalog-only cars browsable and outside the playable selection.
 - `src/physics/simulator.ts` provides `VehicleSimulator`, a longitudinal simulator with throttle and brake inputs. `src/hooks/useDriveSimulation.ts` advances it in fixed 1 ms steps from a render-time accumulator and handles pedal smoothing and Auto Hold. `src/views/DriveView.tsx` already has a scrolling road, telemetry and touch and keyboard controls. `src/physics/runners.ts` uses the same simulator for deterministic acceleration and drag runs, with standard and brake-boost launches and brake-release and 1-ft rollout timing. `src/physics/liveTimer.ts` supplies the live driving timer. Retain each mode's timing definition and label it if surfaced in a comparison.
 - Keep the existing default dry-road physics, timing, drivetrain paths, generated stock stats/classes, owner-car calibrations, and saved data compatible. Treat experimental driving conditions as opt-in runtime state, independent of catalog and stock tuning values. Preserve the owner's 2016 Taiwan Lexus IS 200t and Superb Combi L&K 280 4x4 configurations and IDs.
@@ -37,4 +40,5 @@ Start with **Auto Drive**, an opt-in simulator mode for every playable car. Let 
 ## Verification and handoff
 
 - Run `npm run check` on the completed milestone. Confirm the existing stock stats and generated data-gap checks still agree with the checked-in outputs. Run focused scenario tests for deterministic replay, mode isolation and the new driving behavior. Smoke-test the relevant view on a desktop and with touch-sized controls. If native iPad Safari is unavailable, report the tested browser/device setup accurately.
-- Update `README.md` with controls and model assumptions. Log completed changes, checks, source gaps and remaining work in branch-local `Claude.md` using the existing handoff format. Include a short iPad walkthrough. Open a draft pull request for the completed milestone and leave the merge decision to the repository owner.
+- Update `README.md` with controls and model assumptions. Log completed changes, checks, source gaps and remaining work in branch-local `Claude.md` using the existing handoff format. Include a short iPad walkthrough.
+- Push the feature branch and open a draft pull request against `main`. In the session summary, give the branch name, PR link or publishing blocker, checks run, and how to try Auto Drive. Leave the merge decision to the repository owner.
