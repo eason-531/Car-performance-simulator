@@ -2944,6 +2944,11 @@ small {
   animation: view-in 200ms var(--ease);
 }
 
+/* The dialog takes programmatic focus on touch devices (keeps the on-screen keyboard down). */
+.dialog:focus {
+  outline: none;
+}
+
 .dialog {
   width: min(880px, 100%);
   max-height: calc(100dvh - 32px);

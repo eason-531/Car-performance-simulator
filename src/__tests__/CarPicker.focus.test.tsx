@@ -108,3 +108,72 @@ describe.each(MODES)('car picker focus handling (%s)', (_mode, mount) => {
     expect(document.activeElement).toBe(last);
   });
 });
+
+/** Emulate a touch-first device (phone or tablet): no hover, coarse pointer. */
+function mockTouchFirst(on: boolean) {
+  const original = window.matchMedia;
+  window.matchMedia = ((query: string) => ({
+    matches: on && query.includes('pointer: coarse'),
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  })) as typeof window.matchMedia;
+  return () => {
+    window.matchMedia = original;
+  };
+}
+
+describe.each(MODES)('car picker on a touch-first device (%s)', (_mode, mount) => {
+  let restore: () => void = () => {};
+  beforeEach(() => {
+    window.location.hash = '';
+    restore = mockTouchFirst(true);
+  });
+  afterEach(() => {
+    cleanup();
+    restore();
+  });
+
+  it('does not focus the search field on open, so the on-screen keyboard stays down', () => {
+    openDragView(mount);
+    const { dialog, search } = openLaneBPicker();
+    expect(document.activeElement).not.toBe(search);
+    expect(document.activeElement).toBe(dialog);
+    expect(search.autofocus).toBe(false);
+  });
+
+  it('still closes on Escape and returns focus to the opener', () => {
+    openDragView(mount);
+    const { opener } = openLaneBPicker();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it('lets the user focus the search field by tapping it', () => {
+    openDragView(mount);
+    const { dialog, search } = openLaneBPicker();
+    search.focus();
+    fireEvent.change(search, { target: { value: 'lexus' } });
+    expect(document.activeElement).toBe(search);
+    expect(dialog.contains(document.activeElement)).toBe(true);
+  });
+});
+
+describe('car picker on a desktop pointer device', () => {
+  afterEach(cleanup);
+  it('keeps focusing the search field on open', () => {
+    const restore = mockTouchFirst(false);
+    try {
+      openDragView(MODES[0][1]);
+      const { search } = openLaneBPicker();
+      expect(document.activeElement).toBe(search);
+    } finally {
+      restore();
+    }
+  });
+});
