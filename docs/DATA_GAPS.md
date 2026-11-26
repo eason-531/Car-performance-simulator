@@ -6,7 +6,7 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (15) — need data before they can run
+## Catalog-only cars (10) — need data before they can run
 
 ### 2022 Honda Civic Sport Touring 1.5T
 
@@ -68,37 +68,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
 - Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
 
-### 2020 Porsche Taycan Turbo S
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Motor ratings and battery limits; Two-speed rear gear ratios; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30688949/2020-porsche-taycan-turbo-s-testing-acceleration-zero-to-60/) · [Car and Driver](https://www.caranddriver.com/reviews/comparison-test/a30799498/2020-porsche-taycan-turbo-s-vs-2020-tesla-model-s-performance/) · [Autocar](https://autocar.co.uk/node/99423)
-
-### 2021 Tesla Model S Plaid
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver 0–60 and trap speed; Motor ratings and battery limits; Drag coefficient (published but not verified here)
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a38439509/2021-tesla-model-s-plaid-performance-test-comparison/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/tested-2021-tesla-model-plaid-140000565.html) · [Edmunds](https://www.edmunds.com/car-news/2021-tesla-model-s-plaid-track-tested.html)
-
-### 2024 Lucid Air Sapphire
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver test (roster source); Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a46992150/lucid-air-sapphire-quickest-ev-tested/) · [Edmunds](https://www.edmunds.com/car-news/lucid-air-sapphire-vs-tesla-model-s-plaid.html) · [Jalopnik (citing MotorTrend)](https://jalopnik.com/1984093/lucid-air-sapphite-quickest-car-motortrend/)
-
-### 2024 Tesla Model 3 Performance
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a62597386/2024-tesla-model-3-performance-test/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/highland-tesla-model-3-performance-200000182.html) · [Edmunds](https://www.edmunds.com/car-news/2024-tesla-model-3-performance-full-rating.html)
-
-### 2022 Rivian R1T Launch Edition
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
-
-## Playable cars (67) — running on estimates to confirm
+## Playable cars (72) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -433,15 +403,40 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Also missing: Factory confirmation of the LDF gear ratios and final drive (secondary listing only); AWD control map; Drag coefficient; Launch-control rpm
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)
 
+### 2020 Porsche Taycan Turbo S
+
+- Also missing: Overboost duration (not published by Porsche); Exact gear ratios (Porsche gives approximately 15:1 and 8:1); Rear first-to-second change speed; Weight distribution and the Car and Driver test mass; Power curve above base speed (Porsche publishes peak ratings only)
+- Consulted: [Porsche AG](https://newsroom.porsche.com/dam/jcr:36531be5-a8a3-46ec-b146-27272996361d/pag-taycan-turbo-s-td-en.pdf.PDF) · [Porsche Newsroom (Australia)](https://newsroom.porsche.com/pdf/7504e7b5-be34-4bcd-9ea8-5f102d60d9a7) · [Porsche Newsroom](https://newsroom.porsche.com/en/products/taycan/powertrain-18555.html)
+
 ### 2025 Hyundai Ioniq 5 N
 
 - Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift not stated); N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping
 - Consulted: [Hyundai Motor Europe](https://www.hyundai.news/newsroom/dam/eu/press-kits/20240325_ioniq_5_n/hyundai-ioniq-5-n-technical-data-0324.pdf) · [Hyundai Motor Europe](https://www.hyundai.news/eu/models/performance/ioniq-5-n/press-kit/press-information.html) · [US EPA](https://www.epa.gov/system/files/documents/2026-01/25-testcar-2026-01-21.xlsx)
 
+### 2021 Tesla Model S Plaid
+
+- Also missing: Car and Driver 0–60 and trap speed; Per-motor torque and the power split (Tesla publishes ratings only in its China manual, read here through a search summary); Dimensions and weight distribution (not transcribed from a reachable Tesla page); Test-car wheel fitment and drive mode
+- Consulted: [US EPA](https://www.epa.gov/system/files/documents/2025-05/24-testcar-2025-05.xlsx) · [Tesla](https://www.tesla.cn/ownersmanual/models/en_cn/GUID-E414862C-CFA1-4A0B-9548-BE21C32CAA58.html) · [Car and Driver](https://www.caranddriver.com/news/a38439509/2021-tesla-model-s-plaid-performance-test-comparison/)
+
+### 2024 Lucid Air Sapphire
+
+- Also missing: Car and Driver test (roster source); Per-motor power and torque (Lucid publishes system totals only); Motor maximum speed; Weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced)
+- Consulted: [Lucid Motors](https://lucidmotors.com/media/document/lucid-air-sapphire-technical-specs-2024.pdf) · [US EPA](https://www.epa.gov/system/files/documents/2025-05/24-testcar-2025-05.xlsx) · [Car and Driver](https://www.caranddriver.com/news/a46992150/lucid-air-sapphire-quickest-ev-tested/)
+
+### 2024 Tesla Model 3 Performance
+
+- Also missing: Per-motor torque (only the front 3D3 rating and a reported 741 Nm system figure); Motor maximum speed; Drag coefficient (only the EPA road-load coefficients are sourced); Dimensions, wheel fitment and weight distribution (not transcribed from a reachable Tesla page)
+- Consulted: [Tesla](https://www.tesla.com/blog/introducing-new-model-3-performance) · [US EPA](https://www.epa.gov/system/files/documents/2025-05/24-testcar-2025-05.xlsx) · [EVSpecifications](https://www.evspecifications.com/en/model/7c633d9)
+
 ### 2023 Kia EV6 GT
 
 - Also missing: Per-motor torque (derived from the peak-power rpm bands); Motor maximum speed and the power curve above the published peak-power bands; Front reduction (assumed equal to the EPA-derived overall reduction); US curb mass and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced); Test-day drive mode, state of charge and battery temperature
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/) · [Kia Spain](https://press.kia.com/content/dam/kiapress/ES/Kia%20EV6%20GT%20-%20Ficha%20t%C3%A9cnica.pdf) · [Kia Austria](https://press.kia.com/content/dam/kiapress/AT/PDF2022/2822%20Kia%20EV6%20GT%20Marktstart.pdf)
+
+### 2022 Rivian R1T Launch Edition
+
+- Also missing: Car and Driver original page; Per-motor ratings (Rivian publishes system totals only); Motor maximum speed and the power curve above base speed; Test-truck wheel fitment, dimensions and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced)
+- Consulted: [Wikipedia](https://en.wikipedia.org/wiki/Rivian_R1T) · [Motor Authority](https://www.motorauthority.com/news/1143445_2025-rivian-r1t-r1s-quad-motor-acceleration-130-mph) · [US EPA](https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx)
 
 ### 2008 Bugatti Veyron 16.4 Coupé
 

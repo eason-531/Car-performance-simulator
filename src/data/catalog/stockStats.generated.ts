@@ -3089,6 +3089,59 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 99.9,
     "cls": "S+"
   },
+  "2020-porsche-taycan-turbo-s-us-sedan-awd-ev2": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.802,
+      "zeroTo200KmhS": 10.206,
+      "sixtyFootS": 1.836,
+      "quarterMileS": 10.892,
+      "quarterMileTrapKmh": 206.231,
+      "kilometerS": 19.911,
+      "kilometerTrapKmh": 258.783,
+      "metres400S": 10.851,
+      "metres400TrapKmh": 205.869,
+      "splits": {
+        "30mph": 1.232,
+        "60mph": 2.646,
+        "100mph": 6.605,
+        "130mph": 11.233,
+        "150mph": 15.518,
+        "100kmh": 2.802,
+        "160kmh": 6.532,
+        "180kmh": 8.223,
+        "200kmh": 10.206
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.558,
+      "zeroTo200KmhS": 9.961,
+      "sixtyFootS": 1.591,
+      "quarterMileS": 10.647,
+      "quarterMileTrapKmh": 206.231,
+      "kilometerS": 19.666,
+      "kilometerTrapKmh": 258.783,
+      "metres400S": 10.606,
+      "metres400TrapKmh": 205.869,
+      "splits": {
+        "30mph": 0.987,
+        "60mph": 2.401,
+        "100mph": 6.361,
+        "130mph": 10.988,
+        "150mph": 15.273,
+        "100kmh": 2.558,
+        "160kmh": 6.288,
+        "180kmh": 7.978,
+        "200kmh": 9.961
+      }
+    },
+    "topSpeedKmh": 260,
+    "peakPowerPs": 625,
+    "peakTorqueNm": 990,
+    "testMassKg": 2370,
+    "score": 86.4,
+    "cls": "S+"
+  },
   "2025-hyundai-ioniq-5-n-us-cuv-awd-ev": {
     "formula": "SLC-5",
     "brakeRelease": {
@@ -3139,6 +3192,165 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakPowerPs": 609,
     "peakTorqueNm": 740,
     "testMassKg": 2275,
+    "score": 78.3,
+    "cls": "S+"
+  },
+  "2021-tesla-model-s-plaid-us-liftback-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.442,
+      "zeroTo200KmhS": 6.723,
+      "sixtyFootS": 1.788,
+      "quarterMileS": 9.675,
+      "quarterMileTrapKmh": 242.731,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 9.641,
+      "metres400TrapKmh": 242.292,
+      "splits": {
+        "30mph": 1.171,
+        "60mph": 2.35,
+        "100mph": 4.662,
+        "130mph": 7.293,
+        "150mph": 9.571,
+        "100kmh": 2.442,
+        "160kmh": 4.619,
+        "180kmh": 5.6,
+        "200kmh": 6.723
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.206,
+      "zeroTo200KmhS": 6.487,
+      "sixtyFootS": 1.551,
+      "quarterMileS": 9.439,
+      "quarterMileTrapKmh": 242.731,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 9.404,
+      "metres400TrapKmh": 242.292,
+      "splits": {
+        "30mph": 0.934,
+        "60mph": 2.113,
+        "100mph": 4.426,
+        "130mph": 7.056,
+        "150mph": 9.334,
+        "100kmh": 2.206,
+        "160kmh": 4.383,
+        "180kmh": 5.363,
+        "200kmh": 6.487
+      }
+    },
+    "topSpeedKmh": 262,
+    "peakPowerPs": 1033,
+    "peakTorqueNm": 1424,
+    "testMassKg": 2237,
+    "score": 114.7,
+    "cls": "S+"
+  },
+  "2024-lucid-air-sapphire-us-sedan-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.424,
+      "zeroTo200KmhS": 6.422,
+      "sixtyFootS": 1.78,
+      "quarterMileS": 9.542,
+      "quarterMileTrapKmh": 246.907,
+      "kilometerS": 17.056,
+      "kilometerTrapKmh": 318.756,
+      "metres400S": 9.508,
+      "metres400TrapKmh": 246.468,
+      "splits": {
+        "30mph": 1.162,
+        "60mph": 2.334,
+        "100mph": 4.492,
+        "130mph": 6.958,
+        "150mph": 9.122,
+        "100kmh": 2.424,
+        "160kmh": 4.452,
+        "180kmh": 5.368,
+        "200kmh": 6.422
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.192,
+      "zeroTo200KmhS": 6.191,
+      "sixtyFootS": 1.549,
+      "quarterMileS": 9.311,
+      "quarterMileTrapKmh": 246.907,
+      "kilometerS": 16.825,
+      "kilometerTrapKmh": 318.756,
+      "metres400S": 9.277,
+      "metres400TrapKmh": 246.468,
+      "splits": {
+        "30mph": 0.93,
+        "60mph": 2.103,
+        "100mph": 4.26,
+        "130mph": 6.727,
+        "150mph": 8.89,
+        "100kmh": 2.192,
+        "160kmh": 4.22,
+        "180kmh": 5.136,
+        "200kmh": 6.191
+      }
+    },
+    "topSpeedKmh": 330,
+    "peakPowerPs": 1235,
+    "peakTorqueNm": 1940,
+    "testMassKg": 2495,
+    "score": 117.8,
+    "cls": "S+"
+  },
+  "2024-tesla-model-3-performance-us-sedan-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.456,
+      "zeroTo200KmhS": 11.264,
+      "sixtyFootS": 2.063,
+      "quarterMileS": 11.46,
+      "quarterMileTrapKmh": 201.671,
+      "kilometerS": 20.664,
+      "kilometerTrapKmh": 260.173,
+      "metres400S": 11.418,
+      "metres400TrapKmh": 201.316,
+      "splits": {
+        "30mph": 1.556,
+        "60mph": 3.295,
+        "100mph": 7.399,
+        "130mph": 12.378,
+        "150mph": 17.099,
+        "100kmh": 3.456,
+        "160kmh": 7.322,
+        "180kmh": 9.128,
+        "200kmh": 11.264
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.184,
+      "zeroTo200KmhS": 10.992,
+      "sixtyFootS": 1.79,
+      "quarterMileS": 11.187,
+      "quarterMileTrapKmh": 201.671,
+      "kilometerS": 20.392,
+      "kilometerTrapKmh": 260.173,
+      "metres400S": 11.145,
+      "metres400TrapKmh": 201.316,
+      "splits": {
+        "30mph": 1.284,
+        "60mph": 3.023,
+        "100mph": 7.127,
+        "130mph": 12.106,
+        "150mph": 16.827,
+        "100kmh": 3.184,
+        "160kmh": 7.049,
+        "180kmh": 8.856,
+        "200kmh": 10.992
+      }
+    },
+    "topSpeedKmh": 262,
+    "peakPowerPs": 517,
+    "peakTorqueNm": 741,
+    "testMassKg": 1910,
     "score": 78.3,
     "cls": "S+"
   },
@@ -3194,6 +3406,51 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "testMassKg": 2185,
     "score": 66.2,
     "cls": "S"
+  },
+  "2022-rivian-r1t-launch-edition-us-pickup-awd-ev": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.73,
+      "zeroTo200KmhS": null,
+      "sixtyFootS": 2.127,
+      "quarterMileS": 11.853,
+      "quarterMileTrapKmh": 176.729,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 11.806,
+      "metres400TrapKmh": 176.729,
+      "splits": {
+        "30mph": 1.668,
+        "60mph": 3.568,
+        "100mph": 7.704,
+        "100kmh": 3.73,
+        "160kmh": 7.625
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.464,
+      "zeroTo200KmhS": null,
+      "sixtyFootS": 1.86,
+      "quarterMileS": 11.587,
+      "quarterMileTrapKmh": 176.729,
+      "kilometerS": null,
+      "kilometerTrapKmh": null,
+      "metres400S": 11.539,
+      "metres400TrapKmh": 176.729,
+      "splits": {
+        "30mph": 1.401,
+        "60mph": 3.302,
+        "100mph": 7.437,
+        "100kmh": 3.464,
+        "160kmh": 7.358
+      }
+    },
+    "topSpeedKmh": 177,
+    "peakPowerPs": 847,
+    "peakTorqueNm": 1231,
+    "testMassKg": 3317,
+    "score": 62.2,
+    "cls": "A"
   },
   "2008-bugatti-veyron-16-4-us-coupe-awd-7dct": {
     "formula": "SLC-5",

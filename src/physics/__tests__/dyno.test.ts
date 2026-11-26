@@ -5,6 +5,19 @@ import { lexus, sim, skoda, VEHICLES } from '../../test-helpers';
 describe('dyno', () => {
   it.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s stock curve reproduces rated output', (_n, spec) => {
     const d = computeDyno(sim(spec));
+    if (spec.electric) {
+      // Electric cars are measured over road speed: peak output is the shared
+      // limit (no boost), and torque the motors' combined shaft torque.
+      const el = spec.electric;
+      const motorSum = el.motors.reduce((a, m) => a + m.peakTorqueNm, 0);
+      const ratedPs = Math.min(el.systemPowerKw, el.motors.reduce((a, m) => a + m.peakPowerKw, 0)) / 0.73549875;
+      expect(d.axis).toBe('speed');
+      expect(d.peakPowerPs).toBeGreaterThan(ratedPs * 0.985);
+      expect(d.peakPowerPs).toBeLessThan(ratedPs * 1.015);
+      expect(d.peakTorqueNm).toBeCloseTo(Math.min(motorSum, el.systemTorqueNm ?? Infinity), 0);
+      expect(d.peakWheelPowerPs).toBeLessThan(d.peakPowerPs);
+      return;
+    }
     expect(d.peakPowerPs).toBeGreaterThan(spec.engine.rated.powerPs * 0.985);
     expect(d.peakPowerPs).toBeLessThan(spec.engine.rated.powerPs * 1.015);
     expect(d.peakTorqueNm).toBeCloseTo(spec.engine.rated.torqueNm, 0);

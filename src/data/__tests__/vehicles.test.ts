@@ -75,7 +75,7 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
   it('has plausible chassis and aero values', () => {
     const c = v.chassis;
     expect(c.curbMassKg).toBeGreaterThan(900);
-    expect(c.curbMassKg).toBeLessThan(3200);
+    expect(c.curbMassKg).toBeLessThan(3500); // electric pickups (R1T) weigh ≈ 3,250 kg
     expect(c.frontWeightFraction).toBeGreaterThan(0.35); // rear-engine 911s sit near 0.39
     expect(c.frontWeightFraction).toBeLessThan(0.7);
     expect(v.aero.dragCoefficient).toBeGreaterThan(0.2);
