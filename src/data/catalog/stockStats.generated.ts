@@ -3353,5 +3353,164 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "testMassKg": 2052,
     "score": 125,
     "cls": "S+"
+  },
+  "2020-bugatti-chiron-pur-sport-eu-coupe-awd-7dct": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.248,
+      "zeroTo200KmhS": 5.432,
+      "sixtyFootS": 1.604,
+      "quarterMileS": 8.963,
+      "quarterMileTrapKmh": 266.333,
+      "kilometerS": 15.92,
+      "kilometerTrapKmh": 344.164,
+      "metres400S": 8.931,
+      "metres400TrapKmh": 265.826,
+      "splits": {
+        "30mph": 0.977,
+        "60mph": 2.159,
+        "100mph": 3.95,
+        "130mph": 5.837,
+        "150mph": 7.459,
+        "100kmh": 2.248,
+        "160kmh": 3.918,
+        "180kmh": 4.597,
+        "200kmh": 5.432
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.139,
+      "zeroTo200KmhS": 5.323,
+      "sixtyFootS": 1.495,
+      "quarterMileS": 8.854,
+      "quarterMileTrapKmh": 266.333,
+      "kilometerS": 15.811,
+      "kilometerTrapKmh": 344.164,
+      "metres400S": 8.822,
+      "metres400TrapKmh": 265.826,
+      "splits": {
+        "30mph": 0.868,
+        "60mph": 2.05,
+        "100mph": 3.841,
+        "130mph": 5.728,
+        "150mph": 7.35,
+        "100kmh": 2.139,
+        "160kmh": 3.81,
+        "180kmh": 4.488,
+        "200kmh": 5.323
+      }
+    },
+    "topSpeedKmh": 350,
+    "peakPowerPs": 1504,
+    "peakTorqueNm": 1600,
+    "testMassKg": 2020,
+    "score": 132.3,
+    "cls": "S+"
+  },
+  "2010-bugatti-veyron-16-4-super-sport-us-coupe-awd-7dct": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.22,
+      "zeroTo200KmhS": 6.305,
+      "sixtyFootS": 1.6,
+      "quarterMileS": 9.384,
+      "quarterMileTrapKmh": 247.737,
+      "kilometerS": 16.882,
+      "kilometerTrapKmh": 318.963,
+      "metres400S": 9.35,
+      "metres400TrapKmh": 247.284,
+      "splits": {
+        "30mph": 0.972,
+        "60mph": 2.136,
+        "100mph": 4.387,
+        "130mph": 6.852,
+        "150mph": 8.93,
+        "100kmh": 2.22,
+        "160kmh": 4.347,
+        "180kmh": 5.239,
+        "200kmh": 6.305
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.11,
+      "zeroTo200KmhS": 6.196,
+      "sixtyFootS": 1.491,
+      "quarterMileS": 9.275,
+      "quarterMileTrapKmh": 247.737,
+      "kilometerS": 16.772,
+      "kilometerTrapKmh": 318.963,
+      "metres400S": 9.241,
+      "metres400TrapKmh": 247.284,
+      "splits": {
+        "30mph": 0.862,
+        "60mph": 2.026,
+        "100mph": 4.277,
+        "130mph": 6.742,
+        "150mph": 8.82,
+        "100kmh": 2.11,
+        "160kmh": 4.237,
+        "180kmh": 5.129,
+        "200kmh": 6.196
+      }
+    },
+    "topSpeedKmh": 410,
+    "peakPowerPs": 1199,
+    "peakTorqueNm": 1500,
+    "testMassKg": 2122,
+    "score": 119.9,
+    "cls": "S+"
+  },
+  "1994-mclaren-f1-uk-coupe-rwd-6mt": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 2.806,
+      "zeroTo200KmhS": 8.296,
+      "sixtyFootS": 1.974,
+      "quarterMileS": 10.435,
+      "quarterMileTrapKmh": 229.352,
+      "kilometerS": 18.559,
+      "kilometerTrapKmh": 292.361,
+      "metres400S": 10.398,
+      "metres400TrapKmh": 228.881,
+      "splits": {
+        "30mph": 1.391,
+        "60mph": 2.706,
+        "100mph": 5.803,
+        "130mph": 8.937,
+        "150mph": 11.814,
+        "100kmh": 2.806,
+        "160kmh": 5.755,
+        "180kmh": 6.824,
+        "200kmh": 8.296
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 2.482,
+      "zeroTo200KmhS": 7.971,
+      "sixtyFootS": 1.65,
+      "quarterMileS": 10.111,
+      "quarterMileTrapKmh": 229.352,
+      "kilometerS": 18.234,
+      "kilometerTrapKmh": 292.361,
+      "metres400S": 10.074,
+      "metres400TrapKmh": 228.881,
+      "splits": {
+        "30mph": 1.067,
+        "60mph": 2.382,
+        "100mph": 5.479,
+        "130mph": 8.612,
+        "150mph": 11.49,
+        "100kmh": 2.482,
+        "160kmh": 5.431,
+        "180kmh": 6.499,
+        "200kmh": 7.971
+      }
+    },
+    "topSpeedKmh": 362,
+    "peakPowerPs": 627,
+    "peakTorqueNm": 651,
+    "testMassKg": 1215,
+    "score": 101.4,
+    "cls": "S+"
   }
 };

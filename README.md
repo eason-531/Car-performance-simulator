@@ -3,7 +3,7 @@
 An interactive, physics-based performance simulator built with React,
 TypeScript and Vite. It centres on the owner's two cars (**My Garage**) and adds
 a researched catalog of 73 stock configurations, 55 of which can be driven,
-tested, raced and tuned, plus a growing set of playable hypercars (6 so far). It runs entirely in the browser (no backend, no paid
+tested, raced and tuned, plus a growing set of playable hypercars (9 so far). It runs entirely in the browser (no backend, no paid
 APIs) and is designed for iPad Safari.
 
 *This project is held by Eason and built mainly with Claude and ChatGPT.*
@@ -97,9 +97,10 @@ handoff, and carry the **Hypercar** tag (a quick filter in the car browser).
   `buildSpec()` from rated peaks (the curves never exceed the published power or
   torque), and every value that is not sourced is labelled *estimated* with a
   reason.
-- **Hypercars (6).** Bugatti Veyron 16.4, Chiron, Chiron Sport and Chiron
-  Super Sport, Koenigsegg CCX (6-speed manual) and Porsche Carrera GT, built
-  from Bugatti, Koenigsegg and Porsche technical data and the EPA filing, with
+- **Hypercars (9).** Bugatti Veyron 16.4 and Veyron Super Sport, Chiron,
+  Chiron Sport, Chiron Super Sport and Chiron Pur Sport, Koenigsegg CCX
+  (6-speed manual), Porsche Carrera GT and McLaren F1, built from Bugatti,
+  Koenigsegg, Porsche and McLaren technical data and the Veyron EPA filing, with
   Car and Driver results where a test exists.
 - **Catalog-only (18).** CVTs, hybrids, EVs, the AMG MCT, the LFA's automated
   manual and the Raptor's 4WD wait for models of their own, so they are never

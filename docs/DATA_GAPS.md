@@ -116,7 +116,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
 
-## Playable cars (61) — running on estimates to confirm
+## Playable cars (64) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -475,3 +475,18 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 - Also missing: Individual gear and axle ratios (effective reductions shared with the Chiron); 7th-gear reduction (limiter-bound in the factory table); Frontal area; Weight distribution; Rev limit; Launch-control rpm; Instrumented test of a production Chiron Sport (the Car and Driver car was a retrofitted 2018 Chiron); Car and Driver drive mode
 - Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673f255bde16a1e54953020/211122_BU_Chiron%20Sport_ENG-1.pdf) · [Bugatti](https://bugatti-newsroom.imgix.net/66703700d9bf8f4b7ce9211c/211122_BU_Chiron%20ENG.pdf) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/88th-geneva-international-motor-show-2018)
+
+### 2020 Bugatti Chiron Pur Sport
+
+- Also missing: Individual gear and axle ratios (effective reductions derived from the speed-per-gear table); Speed-per-gear table rpm (6,900 rpm maximum shift speed assumed; 7,000 rpm maximum engine speed would make every reduction 1.4 % taller); Measured road test; Frontal area; Weight distribution; Launch-control rpm; 0–200 km/h claim (sheet 5.5 s vs release 5.9 s)
+- Consulted: [Bugatti](https://bugatti-newsroom.imgix.net/6673ed80bde16a1e5495301d/211122_BU_Chiron%20Pur%20Sport_ENG-1.pdf) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/the-technology-of-the-bugatti-chiron-pur-sport-in-detail)
+
+### 2010 Bugatti Veyron 16.4 Super Sport
+
+- Also missing: Measured road test; Rev limit and redline; Dimensions, wheelbase and drag coefficient (EPA road-load target identical to the 16.4 coupé); Weight distribution; Launch-control rpm; Speed-per-gear cross-check against the EPA N/V (as the 16.4 coupé)
+- Consulted: [Bugatti](https://newsroom.bugatti.com/en/press-releases/bugatti-presents-veyron-16-4-super-sport-to-public) · [Bugatti](https://newsroom.bugatti.com/en/press-releases/landspeed-worldrecord-with-the-bugatti-veyron-16-4-super-sport) · [US EPA / Bugatti](https://www.autonocion.com/wp-content/uploads/2015/10/Certificado-EPA-Bugatti-Veyron.pdf)
+
+### 1994 McLaren F1 Road car
+
+- Also missing: Road-car rev limit (7,500 rpm from secondary leads; the record run used a raised limit); Model year of the represented car (production 1993–1998); Measured road test with timing basis (the sheet's 0–60 mph 3.2 s and ¼ mile 11.1 s @ 138 mph are listed without conditions); Frontal area; Gearbox internal stages (listed ratios × 2.37 are ≈ 23 % taller than the sheet's speed-per-1,000-rpm column)
+- Consulted: [McLaren Automotive (mirror)](https://www.allcarcentral.com/McLaren_pdf/McLAREN_F1_ROADCAR-SPECIFICATION.pdf) · [McLaren](https://www.mclaren.com/cars/gl_en/ultimate-models/mclaren-f1)
