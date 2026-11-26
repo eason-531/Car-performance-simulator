@@ -198,7 +198,7 @@ cvt_path:
   tests: physics/__tests__/cvt.test.ts (span/steps/final; WOT ratio within span and non-increasing, lock-up < 40 km/h, ≥ 4 drops > 600 rpm, rpm < 6,700, hold 6,000 ± 200 in step 7; light-throttle cruise < 2,500 rpm ratio < 0.8, kickdown > 5,000 rpm, braking > 1,800 rpm; paddles; determinism)
 ui_misc: StatTile hides the unit after a dash ("—s" for unreachable 0–200)
 verification:
-  npm run check: typecheck, lint, 1,103 tests / 26 files, build ✓ (chunk-size warning only)
+  npm run check: typecheck, lint, 1,103 tests / 25 files, build ✓ (chunk-size warning only)
   generated stats: owner rows unchanged (formula id SLC-5 only); added rows: 7 EVs, r13, h26; 0 changed rows otherwise
   app smoke (Chromium 1194×834 touch, preview build, console errors none): every new car in Garage, Live Drive, Tests, Tuning, Drag and Dyno; EV dyno km/h axis
 counts: original roster playable 64/73 (catalog-only 9: hybrids r14/r35/r36/r65/r66, r34 MCT, r61 4WD, r29/r60 gearing); playable hypercars 10
