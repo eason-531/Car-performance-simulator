@@ -29,6 +29,29 @@ export interface SimVehicle {
   tireMu: number;
   rollingResistance: number;
   speedLimitMs: number | null;
+  /** Battery-electric drive (tuned); when present the simulator uses the electric path. */
+  electric?: SimElectric;
+}
+
+export interface SimMotor {
+  axle: 'front' | 'rear';
+  peakPowerW: number;
+  peakTorqueNm: number;
+  maxRpm: number;
+  /** End of the peak-power band, rpm (power ∝ 1/speed above it), or null. */
+  peakPowerEndRpm: number | null;
+  reductions: readonly number[];
+  upshiftMs: number | null;
+  /** Rotor inertia reflected per unit ratio², kg·m². */
+  rotorInertiaKgM2: number;
+}
+
+export interface SimElectric {
+  motors: readonly SimMotor[];
+  systemPowerW: number;
+  systemTorqueNm: number | null;
+  boost: { systemPowerW: number; systemTorqueNm: number | null; durationS: number; trigger: 'launch-control' | 'driver'; armed: boolean } | null;
+  creep: boolean;
 }
 
 export interface SimEngine {
@@ -129,6 +152,14 @@ export interface SimState {
   fuelCut: boolean;
   tractionLimited: boolean;
   speedLimited: boolean;
+  /** Electric drive: motor output after shared limits, kW (0 for combustion cars). */
+  motorPowerKw: number;
+  /** Electric drive: seconds of published boost remaining (0 when inactive). */
+  boostS: number;
+  /** Electric drive: the boost has been used on this run. */
+  boostUsed: boolean;
+  /** Electric drive: a launch-control hold (brake + full throttle) has primed the launch boost. */
+  launchPrimed: boolean;
   throttle: number;
   brake: number;
   timeSinceShift: number;

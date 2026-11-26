@@ -11,6 +11,11 @@ const kmhPair = (a: number, b: number): [string, string] =>
 
 /** The force/gearing constraint in words, naming the gear when it is not the top one. */
 function causeText(t: TopSpeedBreakdown): string {
+  if (t.electric) {
+    const where = t.gearCount > 1 ? ` in ${t.gear === t.gearCount ? 'top gear' : `${ordinalGear(t.gear)} gear`}` : '';
+    if (t.tiedWith === 'rev-limit' || t.tiedWith === 'drag') return `motor maximum speed and drag coincide${where}`;
+    return t.binding === 'rev-limit' ? `at the motors' maximum speed${where}` : `drag-limited${where}`;
+  }
   const top = t.gear === t.gearCount;
   const gear = top ? 'top gear' : `${ordinalGear(t.gear)} gear (${ordinalGear(t.gearCount)} cannot pull past it)`;
   if (t.tiedWith === 'rev-limit' || t.tiedWith === 'drag') return `rev cut and drag coincide in ${gear}`;

@@ -61,7 +61,49 @@ export interface EngineSpec {
  *   shift, is zero while the clutch is open and ramps back in over the last
  *   20 %. The clutch stays open at idle (no creep) unless the car says otherwise.
  */
-export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual';
+export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual' | 'direct-drive';
+
+/** One traction motor driving one axle through its own fixed (or two-speed) reduction. */
+export interface ElectricMotorSpec {
+  axle: 'front' | 'rear';
+  /** Peak motor power, kW. */
+  peakPowerKw: number;
+  /** Peak motor torque, Nm (held from standstill to the base speed where power peaks). */
+  peakTorqueNm: number;
+  /** Maximum motor speed, rpm; output fades to zero over the last 3 %. */
+  maxRpm: number;
+  /**
+   * End of the published peak-power band, rpm. Above it power falls as
+   * band-end speed ÷ speed (constant-voltage field weakening). Omit to hold
+   * peak power up to the maximum speed.
+   */
+  peakPowerEndRpm?: number;
+  /** Overall reduction motor → wheel; two entries make a two-speed axle (first, second). */
+  reductions: readonly number[];
+  /** Two-speed axles: road speed at which second engages at full load, km/h. */
+  upshiftKmh?: number;
+}
+
+/**
+ * Battery-electric drive (motors per axle, shared output limit). When present
+ * the simulator bypasses the engine/clutch model; `engine` and `transmission`
+ * then carry equivalent ratings for display.
+ */
+export interface ElectricSpec {
+  motors: readonly ElectricMotorSpec[];
+  /** Shared battery/inverter output limit, kW. */
+  systemPowerKw: number;
+  /** Shared torque ceiling across motors (as published for the system), Nm at the motors; optional. */
+  systemTorqueNm?: number;
+  /**
+   * Temporary boost as published (e.g. Porsche Overboost, Hyundai N Grin Boost):
+   * raised system power for `durationS` once triggered. `launch-control` boosts
+   * engage on a brake-held launch; `driver` boosts only when armed by the driver.
+   */
+  boost?: { systemPowerKw: number; systemTorqueNm?: number; durationS: number; trigger: 'launch-control' | 'driver'; label: string; armedByDefault?: boolean };
+  /** Creeps forward off the brake at idle (most EVs do by default). */
+  creep: boolean;
+}
 
 export interface TorqueConverterSpec {
   /** Stall speed at full throttle, rpm. */
@@ -223,6 +265,8 @@ export interface VehicleSpec {
     gripScale?: number;
   };
   /** Electronic top-speed limiter, km/h (null = none). */
+  /** Battery-electric drive; when set the simulator uses the electric path. */
+  electric?: ElectricSpec;
   speedLimiterKmh: number | null;
   /** Manufacturer performance claims; null where the maker does not publish one. */
   factory: { zeroTo100S: number | null; topSpeedKmh: number | null; zeroTo60MphS?: number | null };

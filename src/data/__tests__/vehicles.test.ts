@@ -26,7 +26,9 @@ describe('vehicle registry', () => {
 describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name, v) => {
   it('has a valid gearbox', () => {
     const t = v.transmission;
-    expect(t.gearRatios.length).toBeGreaterThanOrEqual(5);
+    // Direct-drive EVs have one reduction (or a two-speed axle); stepped boxes at least five.
+    if (t.type === 'direct-drive') expect([1, 2]).toContain(t.gearRatios.length);
+    else expect(t.gearRatios.length).toBeGreaterThanOrEqual(5);
     expect(t.finalDrive).toHaveLength(t.gearRatios.length);
     const overall = t.gearRatios.map((g, i) => g * t.finalDrive[i]);
     for (let i = 1; i < overall.length; i++) expect(overall[i]).toBeLessThan(overall[i - 1]);
@@ -81,7 +83,8 @@ describe.each(VEHICLES.map((v) => [v.shortName, v] as const))('%s data', (_name,
     expect(v.aero.frontalAreaM2).toBeGreaterThan(1.6);
     expect(v.aero.frontalAreaM2).toBeLessThan(3.8);
     expect(v.drivetrain.efficiency).toBeGreaterThan(0.75);
-    expect(v.drivetrain.efficiency).toBeLessThan(0.95);
+    // A single-reduction electric drive loses less than a multi-gear driveline.
+    expect(v.drivetrain.efficiency).toBeLessThan(v.electric ? 0.98 : 0.95);
   });
 
   it('references valid default tires', () => {

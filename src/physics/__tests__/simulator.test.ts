@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { theoreticalTopSpeedKmh } from '../dyno';
 import { VehicleSimulator } from '../simulator';
 import { msToKmh } from '../units';
 import { VEHICLES, lexus, sim, skoda } from '../../test-helpers';
@@ -18,6 +19,11 @@ describe('VehicleSimulator', () => {
     const s = new VehicleSimulator(sim(spec));
     s.advance(3, { throttle: 0, brake: 1 });
     expect(s.state.speed).toBe(0);
+    if (spec.electric) {
+      // No idle: the motors stand still with the car.
+      expect(s.state.engineRpm).toBe(0);
+      return;
+    }
     expect(s.state.engineRpm).toBeGreaterThan(spec.engine.idleRpm * 0.85);
     expect(s.state.engineRpm).toBeLessThan(spec.engine.idleRpm * 1.1);
   });
@@ -70,7 +76,10 @@ describe('VehicleSimulator', () => {
     s.advance(70, { throttle: 1, brake: 0 });
     const kmh = msToKmh(s.state.speed);
     expect(kmh).toBeLessThanOrEqual(spec.speedLimiterKmh! + 0.5);
-    expect(kmh).toBeGreaterThan(spec.speedLimiterKmh! - 6);
+    // Cars that can reach their limiter settle on it; others (a configured cap
+    // above the force/gearing limit) stay under it.
+    const reachable = theoreticalTopSpeedKmh(sim(spec, { speedLimiter: false }));
+    if (reachable > spec.speedLimiterKmh! + 2) expect(kmh).toBeGreaterThan(spec.speedLimiterKmh! - 6);
   });
 
   it('goes faster without the limiter', () => {

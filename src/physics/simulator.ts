@@ -1,6 +1,7 @@
 import { ATMOSPHERE_BAR, FIXED_DT, GRAVITY, MAX_BRAKE_G, TRACTION_CONTROL_EFFICIENCY } from './constants';
 import { engineTorque, idleThrottle, stepManifold } from './engine';
-import { aeroDragN, rollingResistanceN, tractionLimitN } from './forces';
+import { electricOutput } from './electric';
+import { aeroDragN, axleLoads, rollingResistanceN, tractionLimitN } from './forces';
 import { autoShiftTarget, manualStallProtection, type ShiftContext } from './gearbox';
 import { torqueConverterTorques } from './torqueConverter';
 import type { DriverInput, ShiftMode, SimState, SimVehicle } from './types';
@@ -31,10 +32,10 @@ export function initialState(vehicle: SimVehicle): SimState {
     speed: 0,
     accel: 0,
     accelFiltered: 0,
-    engineRpm: vehicle.engine.idleRpm,
+    engineRpm: vehicle.electric ? 0 : vehicle.engine.idleRpm,
     gear: 1,
     shift: null,
-    coupling: 'slipping',
+    coupling: vehicle.electric ? 'locked' : 'slipping',
     clutchOpen: false,
     manifoldBar: 0.35,
     engineTorqueNm: 0,
@@ -47,6 +48,10 @@ export function initialState(vehicle: SimVehicle): SimState {
     timeSinceShift: 10,
     clutchEngage: 0,
     fuelCutTime: 0,
+    motorPowerKw: 0,
+    boostS: 0,
+    boostUsed: false,
+    launchPrimed: false,
   };
 }
 
@@ -123,6 +128,10 @@ export class VehicleSimulator {
   }
 
   step(dt: number, input: DriverInput): void {
+    if (this.vehicle.electric) {
+      this.stepElectric(dt, input);
+      return;
+    }
     const v = this.vehicle;
     const s = this.state;
     const e = v.engine;
@@ -298,6 +307,118 @@ export class VehicleSimulator {
     s.distance += s.speed * dt;
     s.accel = accel;
     s.accelFiltered += (accel - s.accelFiltered) * (1 - Math.exp(-dt / 0.12));
+    s.driveForceN = driveForce;
+    s.throttle = throttleCmd;
+    s.brake = brake;
+    s.time += dt;
+  }
+
+  /**
+   * Battery-electric step: motors per axle (peak torque to base speed, then
+   * constant power, fading at max speed), shared system torque/power limits with
+   * any published boost, per-axle tire limits under weight transfer, creep, the
+   * speed limiter and optional two-speed axles. No clutch, converter or idle.
+   */
+  private stepElectric(dt: number, input: DriverInput): void {
+    const v = this.vehicle;
+    const s = this.state;
+    const el = v.electric!;
+    const tr = v.transmission;
+    const r = v.wheelRadiusM;
+    const throttleCmd = clamp(input.throttle, 0, 1);
+    const brake = clamp(input.brake, 0, 1);
+    const twoSpeed = el.motors.find((m) => m.reductions.length > 1);
+
+    // 1. Two-speed axle schedule (first below the published change speed).
+    s.timeSinceShift += dt;
+    if (!s.shift && twoSpeed && twoSpeed.upshiftMs !== null) {
+      if (s.speed < 0.8) s.gear = 1;
+      else if (s.gear === 1 && s.speed >= twoSpeed.upshiftMs && this.shiftMode === 'auto') this.startShift(2);
+      else if (s.gear === 2 && s.speed < twoSpeed.upshiftMs * 0.6 && this.shiftMode === 'auto' && throttleCmd > 0.5) this.startShift(1);
+    }
+    let torqueFactor = 1;
+    let blendTo: { gear: number; f: number } | undefined;
+    if (s.shift) {
+      const sh = s.shift;
+      sh.elapsed += dt;
+      const p = Math.min(1, sh.elapsed / sh.duration);
+      blendTo = { gear: sh.to, f: smoothstep(p) };
+      torqueFactor = 1 - tr.shiftTorqueDip * Math.sin(Math.PI * p);
+      if (p >= 1) s.shift = null;
+    }
+    const gearFrom = s.shift ? s.shift.from : s.gear;
+
+    // 2. Speed limiter.
+    let throttle = throttleCmd;
+    s.speedLimited = false;
+    if (v.speedLimitMs !== null && s.speed > v.speedLimitMs - 0.5) {
+      const allowed = clamp((v.speedLimitMs - s.speed) / 0.5, 0, 1);
+      if (throttle > allowed) {
+        throttle = allowed;
+        s.speedLimited = true;
+      }
+    }
+    const stationaryHold = s.speed < 0.3 && brake > 0.2;
+
+    // 3. Published boost: launch-control boosts prime on a brake-held full-throttle
+    // launch and fire on release; driver boosts fire when armed.
+    if (el.boost) {
+      if (el.boost.trigger === 'launch-control') {
+        if (stationaryHold && throttle > 0.9) s.launchPrimed = true;
+        else if (s.launchPrimed && !stationaryHold && throttle > 0.9 && !s.boostUsed) {
+          s.boostS = el.boost.durationS;
+          s.boostUsed = true;
+          s.launchPrimed = false;
+        }
+      } else if (el.boost.armed && throttle > 0.9 && !s.boostUsed && s.boostS === 0) {
+        s.boostS = el.boost.durationS;
+        s.boostUsed = true;
+      }
+    }
+    const boosting = s.boostS > 0;
+    if (boosting) s.boostS = Math.max(0, s.boostS - dt);
+
+    // 4. Motor output and per-axle traction.
+    const out = electricOutput(v, el, s.speed, throttle, gearFrom, { boosting, blendTo, torqueFactor });
+    const loads = axleLoads(v, s.accelFiltered);
+    const mu = v.tireMu * TRACTION_CONTROL_EFFICIENCY;
+    let front = Math.min(out.front, mu * loads.front);
+    let rear = Math.min(out.rear, mu * loads.rear);
+    s.tractionLimited = (front < out.front - 1e-6 || rear < out.rear - 1e-6) && !stationaryHold;
+    // Creep off the brake at a walking pace, from whichever axle is driven.
+    if (el.creep && throttleCmd < 0.02 && brake < 0.05 && s.speed < 2) {
+      const creepN = v.massKg * 0.6 * (1 - s.speed / 2);
+      if (el.motors.some((m) => m.axle === 'rear')) rear += creepN;
+      else front += creepN;
+    }
+    const driveForce = stationaryHold ? 0 : front + rear;
+
+    // 5. Resistances and integration.
+    const m = v.massKg;
+    const brakeForce = brake * Math.min(MAX_BRAKE_G, v.tireMu * 1.05) * m * GRAVITY;
+    const resist = aeroDragN(v, s.speed) + rollingResistanceN(v, s.speed) + brakeForce;
+    const mass = m + (v.wheelInertiaKgM2 + out.reflectedInertiaKgM2) / (r * r);
+    let accel: number;
+    if (s.speed <= 1e-6 && driveForce - resist <= 0) {
+      accel = 0;
+      s.speed = 0;
+    } else {
+      accel = (driveForce - resist) / mass;
+      s.speed = Math.max(0, s.speed + accel * dt);
+      if (s.speed === 0) accel = 0;
+    }
+    s.distance += s.speed * dt;
+    s.accel = accel;
+    s.accelFiltered += (accel - s.accelFiltered) * (1 - Math.exp(-dt / 0.12));
+    const primary = out.motors.find((mo) => mo.axle === 'rear') ?? out.motors[0];
+    s.engineRpm = primary.rpm;
+    s.engineTorqueNm = primary.torqueNm;
+    s.motorPowerKw = out.powerW / 1000;
+    s.coupling = 'locked';
+    s.clutchOpen = false;
+    s.manifoldBar = ATMOSPHERE_BAR;
+    s.fuelCut = false;
+    s.fuelCutTime = 0;
     s.driveForceN = driveForce;
     s.throttle = throttleCmd;
     s.brake = brake;

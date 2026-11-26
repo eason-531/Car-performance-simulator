@@ -21,6 +21,11 @@ export interface TuningConfig {
   speedLimiter: boolean;
   /** Overrides for estimated parameters (null = use the vehicle data). */
   overrides: TuningOverrides;
+  /**
+   * Electric cars with a driver-armed boost (e.g. N Grin Boost): armed or not.
+   * Omitted = the car's documented default.
+   */
+  electricBoostArmed?: boolean;
 }
 
 export const TUNING_LIMITS = {
@@ -54,7 +59,8 @@ export function isStock(spec: VehicleSpec, t: TuningConfig): boolean {
     t.speedLimiter === d.speedLimiter &&
     t.overrides.dragCoefficient === null &&
     t.overrides.frontalAreaM2 === null &&
-    t.overrides.drivetrainEfficiency === null
+    t.overrides.drivetrainEfficiency === null &&
+    (t.electricBoostArmed === undefined || t.electricBoostArmed === (spec.electric?.boost?.armedByDefault ?? false))
   );
 }
 
@@ -107,5 +113,6 @@ export function sanitizeTuning(spec: VehicleSpec, raw: unknown): TuningConfig {
       frontalAreaM2: clampOrNull(o.frontalAreaM2, L.frontalAreaM2.min, L.frontalAreaM2.max),
       drivetrainEfficiency: clampOrNull(o.drivetrainEfficiency, L.drivetrainEfficiency.min, L.drivetrainEfficiency.max),
     },
+    ...(spec.electric?.boost?.trigger === 'driver' && typeof r.electricBoostArmed === 'boolean' ? { electricBoostArmed: r.electricBoostArmed } : {}),
   };
 }

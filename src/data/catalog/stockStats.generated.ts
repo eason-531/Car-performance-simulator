@@ -3089,6 +3089,59 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 99.9,
     "cls": "S+"
   },
+  "2023-kia-ev6-gt-us-cuv-awd-ev": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.632,
+      "zeroTo200KmhS": 15.503,
+      "sixtyFootS": 2.131,
+      "quarterMileS": 11.884,
+      "quarterMileTrapKmh": 184.694,
+      "kilometerS": 22.428,
+      "kilometerTrapKmh": 218.067,
+      "metres400S": 11.839,
+      "metres400TrapKmh": 184.461,
+      "splits": {
+        "30mph": 1.675,
+        "60mph": 3.477,
+        "100mph": 8.188,
+        "130mph": 18.512,
+        "150mph": 60.636,
+        "100kmh": 3.632,
+        "160kmh": 8.075,
+        "180kmh": 11.007,
+        "200kmh": 15.503
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.365,
+      "zeroTo200KmhS": 15.236,
+      "sixtyFootS": 1.865,
+      "quarterMileS": 11.618,
+      "quarterMileTrapKmh": 184.694,
+      "kilometerS": 22.161,
+      "kilometerTrapKmh": 218.067,
+      "metres400S": 11.572,
+      "metres400TrapKmh": 184.461,
+      "splits": {
+        "30mph": 1.409,
+        "60mph": 3.21,
+        "100mph": 7.922,
+        "130mph": 18.246,
+        "150mph": 60.369,
+        "100kmh": 3.365,
+        "160kmh": 7.808,
+        "180kmh": 10.74,
+        "200kmh": 15.236
+      }
+    },
+    "topSpeedKmh": 243,
+    "peakPowerPs": 585,
+    "peakTorqueNm": 726,
+    "testMassKg": 2185,
+    "score": 66.2,
+    "cls": "S"
+  },
   "2008-bugatti-veyron-16-4-us-coupe-awd-7dct": {
     "formula": "SLC-4",
     "brakeRelease": {

@@ -1,3 +1,4 @@
+import { electricGearCount, electricOutput } from './electric';
 import { aeroDragN, rollingResistanceN } from './forces';
 import type { SimVehicle } from './types';
 import { kmhToMs, msToKmh, powerKw, kwToPs } from './units';
@@ -10,6 +11,8 @@ export interface DynoPoint {
   wheelPowerPs: number;
   wheelTorqueNm: number;
   boostBar: number;
+  /** Electric cars: road speed of this point, km/h (`rpm` is then the rear/primary motor speed). */
+  speedKmh?: number;
 }
 
 export interface DynoSheet {
@@ -21,6 +24,11 @@ export interface DynoSheet {
   peakWheelPowerPs: number;
   peakWheelTorqueNm: number;
   peakBoostBar: number;
+  /** `speed`: an electric car's output over road speed (best gear); `rpm`: engine speed. */
+  axis: 'rpm' | 'speed';
+  /** Electric cars: road speeds of the peaks, km/h. */
+  peakPowerKmh?: number;
+  peakTorqueKmh?: number;
 }
 
 /**
@@ -29,6 +37,7 @@ export interface DynoSheet {
  * chassis dyno would measure.
  */
 export function computeDyno(vehicle: SimVehicle, stepRpm = 50): DynoSheet {
+  if (vehicle.electric) return computeElectricDyno(vehicle);
   const e = vehicle.engine;
   const eta = vehicle.drivetrain.efficiency;
   const start = Math.ceil(Math.max(1000, e.idleRpm) / stepRpm) * stepRpm;
@@ -61,6 +70,62 @@ export function computeDyno(vehicle: SimVehicle, stepRpm = 50): DynoSheet {
     peakWheelPowerPs: pp.wheelPowerPs,
     peakWheelTorqueNm: pt.wheelTorqueNm,
     peakBoostBar: Math.max(...points.map((p) => p.boostBar)),
+    axis: 'rpm',
+  };
+}
+
+/**
+ * Electric dyno: full-load output over road speed in the best gear at each
+ * speed, after the shared system limits (no boost). `torqueNm` is the sum of the
+ * motor torques; `rpm` is the rear (or primary) motor speed.
+ */
+function computeElectricDyno(vehicle: SimVehicle, stepKmh = 2): DynoSheet {
+  const el = vehicle.electric!;
+  const eta = vehicle.drivetrain.efficiency;
+  const gears = electricGearCount(el);
+  const primaryIdx = Math.max(0, el.motors.findIndex((m) => m.axle === 'rear'));
+  const prim = el.motors[primaryIdx];
+  const topRatio = Math.min(...prim.reductions);
+  const maxKmh = msToKmh((prim.maxRpm * 2 * Math.PI * vehicle.wheelRadiusM) / (60 * topRatio));
+  const points: DynoPoint[] = [];
+  for (let kmh = stepKmh; kmh <= maxKmh + 1e-9; kmh += stepKmh) {
+    let best: ReturnType<typeof electricOutput> | null = null;
+    for (let g = 1; g <= gears; g++) {
+      const o = electricOutput(vehicle, el, kmhToMs(kmh), 1, g);
+      if (!best || o.front + o.rear > best.front + best.rear) best = o;
+    }
+    const o = best!;
+    const torqueNm = o.motors.reduce((a, m) => a + m.torqueNm, 0);
+    const kw = o.powerW / 1000;
+    points.push({
+      rpm: Math.round(o.motors[primaryIdx].rpm),
+      torqueNm,
+      powerKw: kw,
+      powerPs: kwToPs(kw),
+      wheelPowerPs: kwToPs(kw * eta),
+      wheelTorqueNm: torqueNm * eta,
+      boostBar: 0,
+      speedKmh: kmh,
+    });
+  }
+  let pp = points[0];
+  let pt = points[0];
+  for (const p of points) {
+    if (p.powerPs > pp.powerPs) pp = p;
+    if (p.torqueNm > pt.torqueNm + 1e-9) pt = p;
+  }
+  return {
+    points,
+    peakPowerPs: pp.powerPs,
+    peakPowerRpm: pp.rpm,
+    peakTorqueNm: pt.torqueNm,
+    peakTorqueRpm: pt.rpm,
+    peakWheelPowerPs: pp.wheelPowerPs,
+    peakWheelTorqueNm: pt.wheelTorqueNm,
+    peakBoostBar: 0,
+    axis: 'speed',
+    peakPowerKmh: pp.speedKmh,
+    peakTorqueKmh: pt.speedKmh,
   };
 }
 
@@ -88,6 +153,8 @@ export interface TopSpeedBreakdown {
   gearCount: number;
   /** A second constraint within {@link TOP_SPEED_TIE_KMH} of the binding one, or null. */
   tiedWith: TopSpeedConstraint | null;
+  /** Electric drive: `rev-limit` then means the motors' maximum speed. */
+  electric: boolean;
 }
 
 const rpmAt = (v: SimVehicle, ratio: number, ms: number) => ((ms / v.wheelRadiusM) * ratio * 60) / (2 * Math.PI);
@@ -121,6 +188,7 @@ function lastPositive(v: SimVehicle, ratio: number, lo: number, hi: number): num
  * lower gear sets the limit when a stretched top gear cannot pull at that speed.
  */
 function forceGearingLimit(v: SimVehicle): { kmh: number; gear: number; binding: 'rev-limit' | 'drag'; tied: boolean } {
+  if (v.electric) return electricForceLimit(v);
   const ratios = v.transmission.overallRatios;
   const e = v.engine;
   const lowest = Math.max(...ratios);
@@ -179,6 +247,58 @@ function forceGearingLimit(v: SimVehicle): { kmh: number; gear: number; binding:
 }
 
 /**
+ * Electric top speed without the limiter. Each gear's net force (motor wheel
+ * force after the shared limits minus road load) falls monotonically with speed
+ * (constant torque, then constant power, then the max-speed fade), so a scan
+ * plus bisection finds the single crossing. A crossing inside the primary
+ * motor's fade band is the motors' maximum speed (`rev-limit`), otherwise drag.
+ */
+function electricForceLimit(v: SimVehicle): { kmh: number; gear: number; binding: 'rev-limit' | 'drag'; tied: boolean } {
+  const el = v.electric!;
+  const gears = electricGearCount(el);
+  const net = (ms: number, g: number) => {
+    const o = electricOutput(v, el, ms, 1, g);
+    return o.front + o.rear - roadLoadN(v, ms);
+  };
+  const bestGear = (ms: number) => {
+    let g = 0;
+    let n = 0;
+    for (let k = 1; k <= gears; k++) {
+      const x = net(ms, k);
+      if (x > n) {
+        n = x;
+        g = k;
+      }
+    }
+    return g;
+  };
+  let lo = kmhToMs(0.5);
+  if (bestGear(lo) === 0) return { kmh: 0, gear: 1, binding: 'drag', tied: false };
+  let hi = lo;
+  for (let kmh = 0.75; kmh <= 700; kmh += 0.25) {
+    const ms = kmhToMs(kmh);
+    if (bestGear(ms) === 0) {
+      hi = ms;
+      break;
+    }
+    lo = ms;
+    hi = ms;
+  }
+  for (let i = 0; i < 50 && hi - lo > 1e-7; i++) {
+    const mid = (lo + hi) / 2;
+    if (bestGear(mid) > 0) lo = mid;
+    else hi = mid;
+  }
+  const g = Math.max(1, bestGear(lo));
+  const prim = el.motors.find((m) => m.axle === 'rear') ?? el.motors[0];
+  const ratio = prim.reductions[Math.min(prim.reductions.length, g) - 1];
+  const fadeStartKmh = msToKmh((prim.maxRpm * 0.97 * 2 * Math.PI * v.wheelRadiusM) / (60 * ratio));
+  const kmh = msToKmh(lo);
+  const inFade = kmh >= fadeStartKmh - 1e-6;
+  return { kmh: Math.round(kmh * 100) / 100, gear: g, binding: inFade ? 'rev-limit' : 'drag', tied: Math.abs(fadeStartKmh - kmh) <= TOP_SPEED_TIE_KMH };
+}
+
+/**
  * Force/gearing-limited top speed (ignoring the limiter): the highest speed the
  * car can accelerate to continuously in some gear, to 0.01 km/h.
  */
@@ -189,7 +309,13 @@ export function theoreticalTopSpeedKmh(vehicle: SimVehicle): number {
 export function topSpeedBreakdown(vehicle: SimVehicle): TopSpeedBreakdown {
   const f = forceGearingLimit(vehicle);
   const limiterKmh = vehicle.speedLimitMs === null ? null : msToKmh(vehicle.speedLimitMs);
-  const base = { unlimitedKmh: f.kmh, limiterKmh, gear: f.gear, gearCount: vehicle.transmission.overallRatios.length };
+  const base = {
+    unlimitedKmh: f.kmh,
+    limiterKmh,
+    gear: f.gear,
+    gearCount: vehicle.electric ? electricGearCount(vehicle.electric) : vehicle.transmission.overallRatios.length,
+    electric: !!vehicle.electric,
+  };
   const other: TopSpeedConstraint = f.binding === 'rev-limit' ? 'drag' : 'rev-limit';
   if (limiterKmh !== null && Math.abs(limiterKmh - f.kmh) <= TOP_SPEED_TIE_KMH) {
     return { ...base, kmh: Math.min(limiterKmh, f.kmh), binding: f.binding, tiedWith: 'limiter' };

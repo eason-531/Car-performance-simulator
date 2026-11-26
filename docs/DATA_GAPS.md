@@ -6,7 +6,7 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (17) — need data before they can run
+## Catalog-only cars (16) — need data before they can run
 
 ### 2022 Honda Civic Sport Touring 1.5T
 
@@ -98,19 +98,13 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Motor ratings and battery limits; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a62597386/2024-tesla-model-3-performance-test/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/highland-tesla-model-3-performance-200000182.html) · [Edmunds](https://www.edmunds.com/car-news/2024-tesla-model-3-performance-full-rating.html)
 
-### 2023 Kia EV6 GT
-
-- Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
-- Missing: Car and Driver quarter-mile and trap speed (roster source); Curb mass; Motor ratings and battery limits; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/) · [Gear Patrol (citing Car and Driver)](https://gearpatrol.com/cars/g42261748/2023-kia-ev6-gt-review/)
-
 ### 2022 Rivian R1T Launch Edition
 
 - Why: EV motor torque, battery output limits and axle gearing need a dedicated model; not modeled yet.
 - Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
 
-## Playable cars (65) — running on estimates to confirm
+## Playable cars (66) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -444,6 +438,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Unconfirmed inputs: Dimensions (using 4,506 × 1,924 × 1,165 mm, WB 2,620 mm)
 - Also missing: Factory confirmation of the LDF gear ratios and final drive (secondary listing only); AWD control map; Drag coefficient; Launch-control rpm
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)
+
+### 2023 Kia EV6 GT
+
+- Also missing: Per-motor torque (derived from the peak-power rpm bands); Motor maximum speed and the power curve above the published peak-power bands; Front reduction (assumed equal to the EPA-derived overall reduction); US curb mass and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced); Test-day drive mode, state of charge and battery temperature
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/) · [Kia Spain](https://press.kia.com/content/dam/kiapress/ES/Kia%20EV6%20GT%20-%20Ficha%20t%C3%A9cnica.pdf) · [Kia Austria](https://press.kia.com/content/dam/kiapress/AT/PDF2022/2822%20Kia%20EV6%20GT%20Marktstart.pdf)
 
 ### 2008 Bugatti Veyron 16.4 Coupé
 
