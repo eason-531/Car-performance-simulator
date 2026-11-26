@@ -22,7 +22,7 @@ describe('VehicleSimulator', () => {
     expect(s.state.engineRpm).toBeLessThan(spec.engine.idleRpm * 1.1);
   });
 
-  it.each(VEHICLES.filter((v) => v.transmission.type !== 'manual').map((v) => [v.shortName, v] as const))('%s creeps forward off the brake', (_n, spec) => {
+  it.each(VEHICLES.filter((v) => v.transmission.type === 'dual-clutch' || v.transmission.type === 'torque-converter-automatic').map((v) => [v.shortName, v] as const))('%s creeps forward off the brake', (_n, spec) => {
     const s = new VehicleSimulator(sim(spec));
     s.advance(4, { throttle: 0, brake: 0 });
     expect(msToKmh(s.state.speed)).toBeGreaterThan(2);

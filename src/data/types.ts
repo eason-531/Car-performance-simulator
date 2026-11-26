@@ -54,7 +54,13 @@ export interface EngineSpec {
   };
 }
 
-export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'manual';
+/**
+ * - `automated-manual`: single-clutch automated manual (AMT / ASG / SMG): the
+ *   TCU works one clutch like a dual-clutch launch, but every shift opens it,
+ *   so drive torque is interrupted for the whole shift (no blended handover)
+ *   and the clutch stays open at idle (no creep) unless the car says otherwise.
+ */
+export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual';
 
 export interface TorqueConverterSpec {
   /** Stall speed at full throttle, rpm. */
@@ -114,7 +120,7 @@ export interface TransmissionSpec {
   /**
    * `blend`: clutch-to-clutch / planetary shift with a torque dip.
    * `interrupt`: clutch-open shift with no drive torque (manual, single-clutch).
-   * Default: `interrupt` for manuals, otherwise `blend`.
+   * Default: `interrupt` for manuals and automated manuals, otherwise `blend`.
    */
   shiftProfile?: 'blend' | 'interrupt';
   /** Rated input torque of the gearbox (used for tuning warnings). */

@@ -61,7 +61,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     upshiftTimeS: t.upshiftTimeS * shiftScale,
     downshiftTimeS: t.downshiftTimeS * shiftScale,
     shiftTorqueDip: t.shiftTorqueDip,
-    shiftProfile: t.shiftProfile ?? (t.type === 'manual' ? 'interrupt' : 'blend'),
+    shiftProfile: t.shiftProfile ?? (t.type === 'manual' || t.type === 'automated-manual' ? 'interrupt' : 'blend'),
     maxAutoUpshiftRpm: t.maxAutoUpshiftRpm,
     wotUpshiftRpm: computeWotUpshiftRpms(torque, overallRatios, t.maxAutoUpshiftRpm, spec.engine.revLimitRpm),
   };
@@ -80,7 +80,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
       launchRpm: t.launchClutch.launchRpm,
       brakeHoldRpmLimit: t.launchClutch.brakeHoldRpmLimit,
       maxClutchTorqueNm: t.launchClutch.maxClutchTorqueNm,
-      creep: t.launchClutch.creep ?? t.type !== 'manual',
+      creep: t.launchClutch.creep ?? t.type === 'dual-clutch',
       creepTorqueNm: t.launchClutch.creepTorqueNm ?? DEFAULT_CREEP_TORQUE_NM,
       driverEngageS: t.launchClutch.driverEngageS ?? 0,
     };

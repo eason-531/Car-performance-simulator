@@ -2930,6 +2930,59 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 65.8,
     "cls": "S"
   },
+  "2012-lexus-lfa-us-coupe-rwd-6amt": {
+    "formula": "SLC-4",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.835,
+      "zeroTo200KmhS": 11.609,
+      "sixtyFootS": 2.052,
+      "quarterMileS": 11.732,
+      "quarterMileTrapKmh": 201.209,
+      "kilometerS": 20.95,
+      "kilometerTrapKmh": 261.239,
+      "metres400S": 11.69,
+      "metres400TrapKmh": 200.798,
+      "splits": {
+        "30mph": 1.543,
+        "60mph": 3.669,
+        "100mph": 7.762,
+        "130mph": 12.567,
+        "150mph": 17.477,
+        "100kmh": 3.835,
+        "160kmh": 7.694,
+        "180kmh": 9.661,
+        "200kmh": 11.609
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.558,
+      "zeroTo200KmhS": 11.331,
+      "sixtyFootS": 1.775,
+      "quarterMileS": 11.454,
+      "quarterMileTrapKmh": 201.209,
+      "kilometerS": 20.672,
+      "kilometerTrapKmh": 261.239,
+      "metres400S": 11.412,
+      "metres400TrapKmh": 200.798,
+      "splits": {
+        "30mph": 1.266,
+        "60mph": 3.391,
+        "100mph": 7.484,
+        "130mph": 12.289,
+        "150mph": 17.199,
+        "100kmh": 3.558,
+        "160kmh": 7.416,
+        "180kmh": 9.384,
+        "200kmh": 11.331
+      }
+    },
+    "topSpeedKmh": 332,
+    "peakPowerPs": 560,
+    "peakTorqueNm": 480,
+    "testMassKg": 1555,
+    "score": 75.1,
+    "cls": "S"
+  },
   "2018-mclaren-720s-coupe-us-coupe-rwd-7dct": {
     "formula": "SLC-4",
     "brakeRelease": {

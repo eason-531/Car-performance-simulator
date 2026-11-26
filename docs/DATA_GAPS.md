@@ -6,7 +6,7 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (18) — need data before they can run
+## Catalog-only cars (17) — need data before they can run
 
 ### 2022 Honda Civic Sport Touring 1.5T
 
@@ -55,12 +55,6 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Why: Transfer-case 4WD test mode (4A/4H) not modeled yet.
 - Missing: 4WD torque split; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40059355/2021-ford-f-150-raptor-37-performance-package-by-the-numbers/) · [Motor1](https://www.motor1.com/reviews/529834/2021-ford-raptor-first-drive/) · [Edmunds (via Carscoops)](https://www.carscoops.com/2022/05/want-a-fast-ford-f-150-buy-the-hybrid-not-the-raptor/)
-
-### 2012 Lexus LFA
-
-- Why: Single-clutch automated manual (ASG) launch and shift model not added yet.
-- Missing: Drag coefficient; Where the 1.259 counter gear acts in the ASG driveline
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [PakWheels forum (Car and Driver reprint)](https://www.pakwheels.com/forums/t/lexus-fan-club/119439?page=8) · [ClubLexus forum (quote)](https://clublexus.com/forums/lfa-model-2012/533844-hell-has-frozen-over-c-and-d-comparo-lexus-lfa-vs-ferrari-599-hgte-spoiler-2.html)
 
 ### 2017 Acura NSX
 
@@ -116,7 +110,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Missing: Car and Driver original page; Motor ratings and battery limits; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/news/a38943455/2022-rivian-r1t-60-mph-acceleration/) · [InsideEVs (citing Car and Driver)](https://insideevs.com/news/564834/rivian-r1t-quickest-truck-ever/) · [MotorWeek](https://motorweek.org/road_tests/2022-rivian-r1t/)
 
-## Playable cars (64) — running on estimates to confirm
+## Playable cars (65) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -433,6 +427,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Unconfirmed inputs: Power / torque rpm (using 6,500 / 2,500–5,500 rpm); Tire size (using 255/45 R20 F · 285/40 R20 R)
 - Also missing: Power/torque rpm; Tire size; Drag coefficient; Original test pages
 - Consulted: [MotorTrend](https://www.motortrend.com/news/alfa-romeo-stelvio-quadrifoglio-2018-best-drivers-car-contender) · [Autoblog](https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/) · [Yahoo Autos (syndicated; outlet inferred)](https://autos.yahoo.com/2018-alfa-romeo-stelvio-quadrifoglio-204500570.html)
+
+### 2012 Lexus LFA
+
+- Also missing: Car and Driver timing procedure for the 2010/2011 runs (needed before fitting grip); Launch-control rpm; Frontal area; US curb mass basis (Lexus Europe gives a 1,480–1,580 kg range; Car and Driver weighed 3,583 lb)
+- Consulted: [Lexus Europe](https://prensa.lexusauto.es/wp-content/uploads/2009/10/Dossier%20Lexus_LFA%20ingles.pdf) · [Car and Driver](https://www.caranddriver.com/reviews/a15127600/2012-lexus-lfa-instrumented-test/) · [PakWheels forum (Car and Driver reprint)](https://www.pakwheels.com/forums/t/lexus-fan-club/119439?page=8)
 
 ### 2018 McLaren 720S Coupe
 

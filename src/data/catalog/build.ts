@@ -269,11 +269,16 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
   const finalDrive = typeof t.finalDrive === 'number' ? Array<number>(n).fill(t.finalDrive) : [...t.finalDrive];
   const isManual = t.type === 'manual';
   const isDct = t.type === 'dual-clutch';
-  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : 0.3);
-  const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : 0.4);
-  const dip = t.shiftTorqueDip ?? (isManual ? 1 : isDct ? 0.18 : 0.45);
+  const isAmt = t.type === 'automated-manual';
+  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : isAmt ? 0.25 : 0.3);
+  const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : isAmt ? 0.35 : 0.4);
+  const dip = t.shiftTorqueDip ?? (isManual || isAmt ? 1 : isDct ? 0.18 : 0.45);
   if (t.upshiftTimeS === undefined) {
-    estimate('Shift time', `${up} s up / ${down} s down`, isManual ? 'Deterministic test driver: brisk full-throttle clutch shift' : isDct ? 'Typical dual-clutch handover' : 'Typical modern planetary automatic');
+    estimate(
+      'Shift time',
+      `${up} s up / ${down} s down`,
+      isManual ? 'Deterministic test driver: brisk full-throttle clutch shift' : isDct ? 'Typical dual-clutch handover' : isAmt ? 'Typical single-clutch automated manual (clutch open for the whole shift)' : 'Typical modern planetary automatic',
+    );
   }
   const tPk = toNm(e.torque);
   const torqueConverter: TorqueConverterSpec | undefined = tc
@@ -295,7 +300,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
         launchRpm: t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         brakeHoldRpmLimit: t.launchClutch?.brakeHoldRpmLimit ?? t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         maxClutchTorqueNm: t.launchClutch?.maxClutchTorqueNm ?? Math.round(tPk * 1.6),
-        creep: t.launchClutch?.creep ?? !isManual,
+        creep: t.launchClutch?.creep ?? isDct,
         ...(t.launchClutch?.creepTorqueNm !== undefined && { creepTorqueNm: t.launchClutch.creepTorqueNm }),
         driverEngageS: t.launchClutch?.driverEngageS ?? (isManual ? 0.3 : undefined),
       };
