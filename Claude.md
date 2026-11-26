@@ -137,3 +137,79 @@ codex_verification_requests_added:
   - LFA: C/D 2010/2011 timing procedure (would allow a grip fit); launch-control rpm; whether the ASG creeps at idle; US curb definition vs the 1,480–1,580 kg range
   - Huayra BC / Enzo / Utopia: gear ratio sets (the AMT path is ready for them)
 ```
+
+```yaml
+round: 4  # same branch; Codex.md 215dabf = review of eb8c295 (changes_requested_before_merge) + owner_directive (EV then CVT, required)
+user_request_extra: "do not make the keyboard on portable devices pop up immediately after the All cars icon is clicked" (Eason)
+commits:
+  - c592430: picker keyboard fix (touch-first focus to dialog, not search input)
+  - ed02748: review fixes (P2 LFA evidence, P2 LFA 4,000 rpm launch, P2 exact reachability, P3 AMT clutch light)
+  - d9e6394: battery-electric path + r72 Kia EV6 GT
+  - 2d1e47e / e411dda: EV views (Drive, Dyno, Tuning, Garage); e411dda restores hand formatting after an accidental prettier run (net view diff 131+/40-)
+  - 130b20e: r68 Ioniq 5 N + class formula SLC-5
+  - f7ed830: N e-Shift (virtual 8-speed, Live Drive only, off by default) + EV simulator tests
+  - 0864064: r67 Taycan Turbo S, r69 Model S Plaid, r70 Air Sapphire, r71 Model 3 Performance, r73 R1T
+  - 1e252d4: CVT path + r13 Civic Sport Touring 1.5T LL-CVT
+  - 714bda8: h26 Rimac Nevera (EV hypercar extension) + README counts
+keyboard_fix:
+  CarPicker.tsx: isTouchFirst() = matchMedia('(hover: none) and (pointer: coarse)') (guarded); touch-first → CatalogBrowser autoFocus=false, focus moves to dialog panel (tabIndex -1, .dialog:focus outline none); desktop unchanged (search input focused)
+  tests: CarPicker.focus.test.tsx touch-first describe.each (3 × 2) + desktop; 2 fail without the fix
+  smoke: emulated iPad → activeElement DIV[role=dialog]; desktop → INPUT
+review_fixes:
+  P2_lfa_evidence: r62 sources + src-cd-cmp (a15128593, Dec 2010 comparison: 3.6 / 11.7 @ 125, 3,569 lb, Bridgestone 265/35ZR20 F 305/30ZR20 R, launch control, UK) and src-cd-procedure, src-lexus-om (OM77006U p.174), src-lexus-inside (p.36); both C/D rows match equivalent, timing unconfirmed (legacy 3-mph basis noted); prototype short take 3.7 / 11.8 @ 124, 3,583 lb, manual SPORT, ≈3,800 rpm, no launch control
+  P2_lfa_launch: launchClutch { launchRpm 4000, brakeHoldRpmLimit 4000 } (Lexus OM launch-control rpm); efficiency 0.883 (trap fit at the comparison car's 3,569 lb; sensitivity short take 0.867, factory kerb 0.823); aero caveat +11 % CdA would give the 325 km/h claim (sim 332); class S → S+ 79.8; BR 3.54 / 11.515 @ 128.4 mph
+  P2_reachability: Curve.knotsWithin(lo,hi); dyno forceGearingLimit exact over LUT knots + idle/cut speeds per gear (net force concave between breakpoints) → first uncovered speed by bisection; tests: narrow-notch repro (lutSize 65536), gear gap with recovery, drag 0.2 km/h before cut, rev cut, tie, lower-gear binding, limiter tie, catalog cars; generated stats unchanged
+  P3_amt_clutch_light: SimState.clutchOpen = interrupt profile && shift && torqueFactor < 1; DriveView CLU off while open; test LFA 2→3 at 0.1 s open, DCT/converter never open
+ev_path:
+  types: TransmissionType +direct-drive; ElectricMotorSpec {axle, peakPowerKw, peakTorqueNm, maxRpm, peakPowerEndRpm?, reductions[1|2], upshiftKmh?}; ElectricSpec {motors, systemPowerKw, systemTorqueNm?, boost?{systemPowerKw, systemTorqueNm?, durationS, trigger launch-control|driver, label, armedByDefault?}, creep, virtualShift?}
+  physics/electric.ts: motorTorqueNm = min(peakT, P/ω) with P ∝ band-end/ω above peakPowerEndRpm, 3 % linear fade to maxRpm; electricOutput scales motors evenly to shared torque then power caps (boost caps while boosting); torqueFactor applies to motor torque (power dips during shifts); reflected rotor inertia 0.05 kg·m² × ratio²
+  simulator.stepElectric: two-speed schedule (auto: up at upshiftKmh, down < 0.6× at throttle > 0.5) + blend with dip; speed limiter; launch-control boost primes on brake+WOT and fires on release; driver boost when armed (once); per-axle traction min(force, μ·N_axle·TCE) with axleLoads(accelFiltered); creep 0.6 m/s² × (1 − v/2) below 2 m/s off brake; engineRpm = rear motor rpm; motorPowerKw
+  build.buildElectricSpec: equivalent engine curve referred to the primary (rear) motor; transmission direct-drive (primary reductions, final 1); engine-only estimates removed
+  tuning: power adjust scales motors + shared limits; TuningConfig.electricBoostArmed (driver boosts only)
+  dyno: computeElectricDyno over road speed (axis 'speed', speedKmh, peak*Kmh); electricForceLimit scan 0.25 km/h + bisection; rev-limit if in motor fade band; top-speed wording for EVs
+  views: Drive (motor rpm tach, motor-power gauge, BST light, single-speed hides paddles/mode/shift lights, REV/CLU hidden for EVs), Dyno (km/h axis when all EVs, mixed note), Tuning (Electric drive panel, boost toggle), Garage (motors, shared limits, creep; no Stage 1)
+  tests: physics/__tests__/electric.test.ts (per-axle traction bound each step, power cap at 30–220 km/h, creep < 2 m/s and brake hold, driver boost armed-only once 10 s ≤ 478.1 kW, launch-control prime/fire and no fire on rolling start, two-speed change at 90 km/h) + dyno EV rated-output test + vehicles test EV rules (direct-drive 1–2 gears, eff < 0.98, pickup mass < 3,500)
+class_formula: SLC-5 (S+ 78 → 77.0, centred in the 75.6–78.3 gap; Ioniq 5 N landed 78.3); 0 class changes; owner rows differ only in the formula id
+n_e_shift:
+  ElectricSpec.virtualShift {label, ratios (virtual rpm per wheel rpm), idleRpm, redlineRpm, revLimitRpm, upshiftTimeS, downshiftTimeS}; SimElectric.virtualShift with a synthetic dual-clutch SimTransmission (wotUpshift = redline, last = limiter)
+  Simulator.setVirtualShift(on): per instance (runners/drag/dyno never call it); picks gear under 0.95 × redline; off → gear 1; gearCount/inputRpmInGear/requestShift/startShift use the virtual box; stepVirtualShift: auto (autoShiftTarget) or manual (stall protection), torque to 20 % over first 15 % of the change then restored in one step (jolt), hard limiter at revLimit (150 rpm hysteresis) cuts motor torque, tach = max(idle, virtual rpm)
+  r68 data (estimated): ratios = Elantra N DCT overall (3.714×3.8, 2.261×3.8, 2.174×2.714, 1.621×2.714, 0.927×3.8, 0.767×3.8, 0.878×2.714, 0.698×2.714) × scale so 8th = 260 km/h at 6,850 rpm; idle 750, redline 6,750, limiter 6,850; 0.15 s up / 0.25 s down; full motor output between changes; no regen
+  DriveView: N e-Shift switch in the bar (per car, resets on car change), paddles/mode/shift lights/REV shown only when on; saved drive label appends the switch
+  smoke: off → no paddles; on → 8 gears, 4 s WOT auto 103 km/h at 6,307 rpm in 4th; manual 1st holds 35 km/h at 6,844 rpm with REV; switch resets after switching car
+  tests: off by default/absent on EV6; ≥ 6 gears to 200 km/h, tach ≤ 6,900, torque cut mid-shift; manual 1st on limiter 30–38 km/h; switch off → gear 1, motor rpm; runner trace gear 1 and motor rpm > 15,000 at 200 km/h
+ev_cars:  # residuals: sim vs benchmark on the benchmark's basis (RO = 1-ft rollout; BR = standing start)
+  r72_kia_ev6_gt: reduction 10.62 (EPA N/V 126.7); front 160 kW/347 Nm, rear 270 kW/379 Nm, 21,000 rpm, peak-power bands to 9,000/9,400 rpm then P ∝ 1/ω; system 430 kW/740 Nm; 2,110 kg; Cd 0.371 × 2.45 (EPA C); grip 1.00 floor, eff 0.95 held | C/D RO 3.2/11.6 @ 119 → 3.21/11.62 @ 114.8 | score 66.2 S | top 243 km/h drag-limited (claim 260)
+  r68_hyundai_ioniq_5_n: reduction 10.6 (EPA N/V 128.5); caps 175/303 kW, 370/400 Nm; system 448 kW/740 Nm; N Grin Boost 478 kW/770 Nm 10 s driver-armed (off); 2,200 kg 50 %; Cd 0.347 × 2.58 (EPA C); grip 1.30 bound, eff 0.94 | MT RO 2.8/11.0 @ 124.9 (mode not stated) → 3.04/11.18 @ 125.1 (NGB: 2.94/11.00 @ 126.4) | 78.3 S+
+  r67_porsche_taycan_turbo_s: Porsche Technical Feature 2021 (front 190 kW/400 Nm, 440 Nm LC; rear 335 kW/550 Nm; 16,000 rpm; front ≈8:1; rear 1st ≈15:1 → 15.2 from EPA N/V 186 at sim radius 0.34806, 2nd 8.0); caps × 560/525 (202.7/357.3 kW); system 460 kW; overboost 560 kW/1,050 Nm launch-control 2.5 s (duration estimated); upshift 120 km/h (estimated); 2,295 kg DIN; Cd 0.25, CdA 0.583 (Range mode); 265/35 ZR21 / 305/30 ZR21; grip 1.12, eff 0.95 held | C/D RO 2.4/10.5 @ 130 → 2.40/10.65 @ 128.1 (10 s overboost sensitivity 10.26 @ 135.6) | 86.4 S+ | factory 0–100 2.8 → sim BR 2.80 | top 260 rev-limit tied with limiter
+  r69_tesla_model_s_plaid: three motors 295 kW (Tesla CN manual via search summary), 475 Nm each (1,424 Nm reported, even split est.), 20,000 rpm (C/D), reduction 7.56 (EPA axle; N/V 90.3 → 7.25 at sim radius), system 760 kW, 2,162 kg, Cd 0.208 × 2.34 (EPA C 0.0132 agrees), 19-in fitment est.; grip 1.20 (power-limited), eff 0.89 | Edmunds BR 2.3/9.4 @ 150.8 → 2.35/9.68 @ 150.8; C/D RO ¼ 9.4 → 9.44 | 114.7 S+
+  r70_lucid_air_sapphire: Lucid spec sheet (3 motors F1/R2, 7.0/6.8:1, 908 kW/1,940 Nm, 5,336 lb, 205 mph, 265/35R20 / 295/30R21, dims); per-motor 400 kW/647 Nm est.; 20,000 rpm est.; Cd 0.303 × 2.35 (EPA C 0.01926); grip 1.15, eff 0.89 | MT RO 2.1/9.3 @ 153 (second-hand) → 2.10/9.31 @ 153.4; Edmunds BR 2.2/9.2 @ 149.6 → 2.33/9.54 @ 153.4 | 117.8 S+ | top 330 limiter
+  r71_tesla_model_3_performance: front 158 kW/219 Nm, rear 303 kW/522 Nm (EVSpecifications/Carsales via search; 741 Nm reported), system 380 kW (EPA 510 hp), reduction 8.8 (EPA N/V 114), 19,500 rpm est., 1,835 kg (C/D test), Cd 0.225 × 2.35 (EPA C 0.0143); grip 1.00 (torque-limited), eff 0.90 | C/D RO 2.8/11.0 @ 125 → 3.02/11.19 @ 125.3; Edmunds BR 3.0/11.0 @ 123.7 → 3.30/11.46 @ 125.3 | 78.3 S+ | 460 kW sensitivity does not fix the launch
+  r73_rivian_r1t_launch_edition: four motors 156 kW/308 Nm each (623 kW/1,231 Nm even split; Wikipedia), 12.6:1 (Motor Authority, gen-1 quad), 15,500 rpm est., 3,242 kg (Edmunds), Cd 0.297 × 3.07 (EPA C 0.02461), 275/55 R21 touring est., limiter 177 km/h; grip 1.06, eff 0.95 held (trap limiter-capped) | C/D RO 3.3/11.9 @ 110 → 3.30/11.59 @ 109.8; Edmunds BR 3.5 → 3.57 | 62.2 A
+  h26_rimac_nevera: Rimac page (fetched): 2×226 kW/270 Nm F, 2×450 kW/900 Nm R, 1,408 kW, 2,340 Nm motor / 13,430 Nm wheel → reduction 5.74 (EPA axle 5.6), caps × 1,408/1,352, 18,500 rpm est., 2,300 kg, Cd 0.3 (× 2.14 est.), 4745×2052×1240 WB 2745, PS4S 275/35R20 / 315/35R20, 412 km/h; grip 1.30 bound, eff 0.95 held | Rimac RO 0–60 1.74, 0–100 1.81 → 1.83 / 1.90; DragTimes drag-strip 8.582 @ 167.51 → BR 8.42 @ 183.4 (trap +16 mph: power vs speed unpublished) | 151 S+; Origin +Croatia
+cvt_path:
+  types: TransmissionType +cvt; CvtSpec {ratioLow, ratioHigh, ratioRatePerS, stepRatePerS, stepThrottle, stepUpshiftRpm, holdRpm, partThrottleRpm[2], brakingRpm}; TransmissionSpec.cvt / SimTransmission.cvt; gearRatios = simulated steps
+  simulator.stepCvtRatio: at rest → ratioLow; manual → selected step at stepRate (+ stall protection); auto and throttle ≥ stepThrottle → Step Shift (entry picks step with rpm < 0.98 × stepUpshiftRpm = kickdown; change at stepUpshiftRpm; last step: min(step, max(high, holdRpm / wheel·fd))); else part-throttle target rpm lerp(partThrottleRpm, (thr/stepThrottle)^1.5) or brakingRpm when brake > 0.1, at ratioRate; ratio clamped to span; gear = nearest step for display; torque converter launch + lock-up (lockupMinGear 1); requestShift CVT branch selects steps
+  build: CVT gets a torque converter like automatics; buildSimVehicle wotUpshift = stepUpshiftRpm (last = limiter)
+  dyno: top speed over cvtRatioLadder (64 geometric samples of the span × final); TopSpeedBreakdown.cvt; wording "with the CVT at its best ratio" / "at the CVT's highest ratio"
+  garage: CVT ratio span + Step Shift rows; gearing table header Step + Top row (0.405)
+  r13_honda_civic (verified Honda specs page): 180 hp @ 6,000, 177 lb-ft @ 1,700–4,500, 16.5 psi, redline 6,600 (limiter 6,700 est.), 1,498 cc, span 2.645–0.405, final 4.81, 235/40 R18 91W all-season, 179.0×70.9×55.7 in WB 107.7, curb 3,102 lb, 60.2 %; EPA 2022 Civic 5DR 180 hp paddle CVT "# of gears 7"; estimated: steps 2.645/2.223/1.868/1.57/1.319/1.108/0.931 (×1.19), Step Shift ≥ 80 % throttle, change 6,200 rpm at 2.0 ratio/s, hold 6,000, part throttle 1,400–4,500 rpm at 0.8 ratio/s, braking 2,500 rpm, converter stall 2,600 rpm 2.0:1 (stall 2,200–2,600 gives identical results: torque plateau from 1,700); calibrated at MT 3,075 lb 61 %; grip 1.00 floor, eff 0.84 (trap fit)
+  benchmark: MotorTrend first test (fetched, 2021-11-25) RO 7.7 / 15.9 @ 89.8 → sim 7.31 / 15.69 @ 89.9 (0–60 −0.39 s, ET −0.21 s; drive mode not stated); Edmunds BR 7.9 → 7.67 | score 4.0 D
+  smoke: WOT trace 6,059 → 5,538 (step 1→2 at 58 km/h), 6,105 → 5,358 (2→3 at 70 km/h); L/U light; paddle up → manual step 4/7; Tests 0–100 8.14, ¼ 16.05 @ 89.9; Drag vs EV6; Dyno rpm axis
+  tests: physics/__tests__/cvt.test.ts (span/steps/final; WOT ratio within span and non-increasing, lock-up < 40 km/h, ≥ 4 drops > 600 rpm, rpm < 6,700, hold 6,000 ± 200 in step 7; light-throttle cruise < 2,500 rpm ratio < 0.8, kickdown > 5,000 rpm, braking > 1,800 rpm; paddles; determinism)
+ui_misc: StatTile hides the unit after a dash ("—s" for unreachable 0–200)
+verification:
+  npm run check: typecheck, lint, 1,103 tests / 26 files, build ✓ (chunk-size warning only)
+  generated stats: owner rows unchanged (formula id SLC-5 only); added rows: 7 EVs, r13, h26; 0 changed rows otherwise
+  app smoke (Chromium 1194×834 touch, preview build, console errors none): every new car in Garage, Live Drive, Tests, Tuning, Drag and Dyno; EV dyno km/h axis
+counts: original roster playable 64/73 (catalog-only 9: hybrids r14/r35/r36/r65/r66, r34 MCT, r61 4WD, r29/r60 gearing); playable hypercars 10
+source_access: fetched hondainfocenter.com, motortrend.com, newsroom.porsche.com PDFs, rimac-automobili.com, lucidmotors.com PDF, hyundai.news PDF, epa.gov xlsx; refused/unreachable: hondanews.com (403), tesla.com / tesla.cn / evspecifications.com (agent DNS refusal; a direct fetch was blocked by the permission classifier, not retried), caranddriver.com, kiamedia; Tesla/Rivian figures therefore come from search summaries and are labelled reported/estimated
+codex_verification_requests:
+  - Taycan Turbo S: overboost duration with Launch Control; exact gear ratios; C/D test mass and mode
+  - Model 3 Performance / Plaid: Tesla per-motor torque and peak battery power; test-car wheel fitment
+  - Model 3 launch residual (+0.22 s to 60 mph): actual reduction (Tesla 9.04?) vs EPA N/V-derived 8.8
+  - Lucid Sapphire per-motor split; R1T gen-1 per-motor ratings and test-truck tire
+  - Ioniq 5 N: MotorTrend drive mode (NGB?), N e-Shift virtual ratios/rpm if Hyundai published them
+  - Civic: Step Shift step ratios, change rpm and rates; converter stall; MotorTrend drive mode
+  - Nevera: power vs speed (trap residual +16 mph), motor max rpm, magazine test
+open_items: EV and CVT kept open until Codex verification per owner directive; Taycan two-speed live smoke shows gear 1/2 with paddles
+```
