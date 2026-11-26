@@ -8,7 +8,8 @@ import type { SimVehicle } from '../../physics/types';
 import { msToKmh } from '../../physics/units';
 import { VEHICLES, lexus, sim, skoda } from '../../test-helpers';
 import { BRAKE_CANCEL, LiveDriveLoop, PEDAL_RATE, type DriverInput } from '../liveDrive';
-import { ENCOUNTER_INTERVAL_S, TRAFFIC_SPEED_KMH, type TrafficMode } from '../traffic';
+import type { TrafficMode } from '../road';
+import { ENCOUNTER_INTERVAL_S } from '../traffic';
 
 const nevera = VEHICLES.find((v) => v.id === '2022-rimac-nevera-eu-coupe-awd-ev')!;
 const IDLE: DriverInput = { throttle: 0, brake: 0 };
@@ -244,7 +245,7 @@ describe('Auto Drive in traffic', () => {
     expect(loop.sim.state).toEqual(a.state);
   }, 60_000);
 
-  it('generates light traffic: encounters every 12–25 s of driving at 75–125 km/h, with lane changes into and out of the lane', () => {
+  it('generates light Sparse traffic: encounters every 12–25 s of driving near the Taiwan limit, with lane changes into and out of the lane', () => {
     let cutIns = 0;
     let cutOuts = 0;
     for (const seed of [1, 2, 3, 4]) {
@@ -259,10 +260,13 @@ describe('Auto Drive in traffic', () => {
       // The car is moving almost all the time, so encounters track simulation time.
       expect(t.encounters).toBeGreaterThanOrEqual(Math.floor(235 / ENCOUNTER_INTERVAL_S[1]));
       expect(t.encounters).toBeLessThanOrEqual(Math.ceil(240 / ENCOUNTER_INTERVAL_S[0]));
-      for (const e of t.events.filter((x) => x.kind === 'spawn')) {
-        expect(e.speedKmh!).toBeGreaterThanOrEqual(TRAFFIC_SPEED_KMH[0]);
-        expect(e.speedKmh!).toBeLessThanOrEqual(TRAFFIC_SPEED_KMH[1]);
+      // Default road: Taiwan, 110 km/h. Traffic keeps to about 75–125 km/h, mostly at or below the limit.
+      const speeds = t.events.filter((x) => x.kind === 'spawn' && x.role !== 'behind').map((x) => x.speedKmh!);
+      for (const v of speeds) {
+        expect(v).toBeGreaterThanOrEqual(70);
+        expect(v).toBeLessThanOrEqual(110 * 1.1 + 0.1);
       }
+      expect(speeds.filter((v) => v <= 110).length / speeds.length).toBeGreaterThan(0.7);
       const signals = t.events.filter((x) => x.kind === 'signal');
       cutIns += signals.filter((x) => x.to === 1).length;
       cutOuts += signals.filter((x) => x.lane === 1).length;

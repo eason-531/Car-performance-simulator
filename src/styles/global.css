@@ -1229,11 +1229,11 @@ small {
 }
 
 .drive__gauge--main .gauge {
-  max-width: min(340px, 34vh);
+  max-width: min(340px, 27vh);
 }
 
 .drive__gauge--side .gauge {
-  max-width: min(240px, 28vh);
+  max-width: min(240px, 22vh);
 }
 
 .drive__gauge-title {
@@ -1365,20 +1365,23 @@ small {
   color: var(--good-text);
 }
 
-.drive__assist {
-  display: grid;
-  grid-template-columns: minmax(160px, 200px) minmax(0, 1fr);
-  gap: 12px;
-  align-items: stretch;
+.assist-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: -6px;
 }
 
-.assist {
+.assist-bar__group {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
-  padding: 6px;
-  border-radius: var(--radius-md);
+}
+
+.assist-bar .assist__toggle {
+  min-width: 168px;
 }
 
 .assist__toggle {
@@ -1432,16 +1435,9 @@ small {
   color: var(--good-text);
 }
 
-.assist__traffic {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 .assist__select {
-  flex: 1;
   min-width: 0;
-  min-height: 34px;
+  min-height: 40px;
   padding: 0 6px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -1454,7 +1450,7 @@ small {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 34px;
+  min-height: 40px;
   padding: 0 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -1467,7 +1463,8 @@ small {
 
 .road {
   position: relative;
-  min-height: 98px;
+  width: 100%;
+  min-height: 104px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: linear-gradient(180deg, #121519, #0d1013);
@@ -1496,7 +1493,6 @@ small {
 }
 
 .road__gap-label,
-.road__odo,
 .road__contact {
   position: absolute;
   padding: 1px 6px;
@@ -1512,9 +1508,184 @@ small {
   transform: translateX(-50%);
 }
 
-.road__odo {
-  right: 8px;
-  bottom: 6px;
+.road__cue {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 0 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: rgba(10, 12, 15, 0.85);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.road__cue--ahead {
+  right: 4px;
+}
+
+.road__cue--behind {
+  left: 4px;
+  color: var(--warning);
+}
+
+.road__cue.is-lead {
+  font-weight: 800;
+}
+
+.road__gap--short rect {
+  stroke-width: 2;
+}
+
+.limit {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.limit__step,
+.limit__chip {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.limit__step {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+}
+
+.limit__chip.is-active {
+  border-color: var(--series-1);
+  color: var(--text-primary);
+  background: rgba(57, 135, 229, 0.18);
+}
+
+.limit__step:disabled,
+.limit__chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.limit__value {
+  min-width: 64px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.drive__pedal-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.drive__pedal-col .pedal {
+  flex: 1;
+}
+
+.lane-btn {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.lane-btn.is-active {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.cruise {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+}
+
+.cruise.is-active {
+  border-color: rgba(12, 163, 12, 0.6);
+}
+
+.cruise__btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.cruise__readout {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  column-gap: 4px;
+  min-width: 92px;
+  padding: 0 4px;
+  text-align: center;
+  justify-content: center;
+}
+
+.cruise__speed {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.cruise__unit {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cruise__state {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cruise__state--cruise,
+.cruise__state--cap {
+  color: var(--good-text);
+}
+
+.drive__odo {
+  margin-left: auto;
+  font-weight: 700;
   color: var(--text-muted);
 }
 
@@ -1568,7 +1739,7 @@ small {
 
 .pedal {
   position: relative;
-  min-height: clamp(180px, 27vh, 260px);
+  min-height: clamp(160px, 23vh, 260px);
   border-radius: var(--radius-xl);
   background: linear-gradient(180deg, #1d2127, #14171b);
   border: 1px solid var(--border-strong);
@@ -1702,15 +1873,50 @@ small {
 }
 
 .timer {
-  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 12px;
 }
 
 .timer__head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
-  margin-bottom: 10px;
+  gap: 6px 10px;
+}
+
+.timer__grid {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.timer__save {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* Wide center column: the timer on one row (title, results, save). */
+@media (min-width: 1100px) {
+  .timer {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .timer__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .timer__grid {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .timer__save {
+    grid-column: 3;
+  }
+}
+
+.view.drive {
+  gap: 12px;
 }
 
 .timer__title {
@@ -1728,7 +1934,7 @@ small {
 .timer__cell {
   display: flex;
   flex-direction: column;
-  padding: 8px 10px;
+  padding: 5px 9px;
   border-radius: 10px;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -1743,7 +1949,7 @@ small {
 }
 
 .timer__value {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -2706,10 +2912,10 @@ small {
     order: -1;
   }
   .drive__gauge--main .gauge {
-    max-width: min(290px, 25vh);
+    max-width: min(240px, 19vh);
   }
   .drive__gauge--side .gauge {
-    max-width: min(210px, 20vh);
+    max-width: min(180px, 15vh);
   }
   .drive__telemetry {
     grid-column: auto;
@@ -2756,8 +2962,8 @@ small {
     grid-column: 1 / -1;
     order: 2;
   }
-  .drive__assist {
-    grid-template-columns: minmax(0, 1fr);
+  .assist-bar .assist__toggle {
+    flex: 1 1 100%;
   }
   .drive__cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));

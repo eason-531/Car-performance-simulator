@@ -70,6 +70,10 @@ export interface AutoDriveParams {
   releaseJerk: number;
   /** Minimum coasting time between brake release and throttle, s. */
   coastDwellS: number;
+  /** Speed cap (cruise set speed): requested acceleration per m/s below the set speed, 1/s… */
+  capGain: number;
+  /** …and the most deceleration it asks for above the set speed, m/s² (gentle; a lead can ask for more). */
+  capDecel: number;
 }
 
 export const AUTO_DRIVE_DEFAULTS: Readonly<AutoDriveParams> = {
@@ -95,6 +99,8 @@ export const AUTO_DRIVE_DEFAULTS: Readonly<AutoDriveParams> = {
   brakeJerk: 4,
   releaseJerk: 5,
   coastDwellS: 0.4,
+  capGain: 0.4,
+  capDecel: 0.8,
 };
 
 /** What the controller needs to know about the active car (derived from it, not tuned per car). */
@@ -126,7 +132,15 @@ export function plantModel(v: SimVehicle): PlantModel {
   };
 }
 
-export type AutoDriveMode = 'accelerating' | 'following' | 'braking' | 'stopped';
+export type AutoDriveMode = 'accelerating' | 'following' | 'cruising' | 'braking' | 'stopped';
+
+/** Per-step options: a speed cap (cruise set speed) and whether the brake may be used. */
+export interface ControlOptions {
+  /** Maximum speed to target, m/s; null or absent = none (full throttle when nothing limits). */
+  capMs?: number | null;
+  /** Conventional cruise coasts instead of braking. Default true. */
+  allowBrake?: boolean;
+}
 
 export interface EgoState {
   speed: number;
@@ -142,9 +156,11 @@ export interface AutoDriveCommand {
   targetAccel: number | null;
   /** Closing on a slower lead under the approach plan. */
   approaching: boolean;
+  /** What limits the request: the lead, the speed cap, or nothing (full throttle). */
+  limiter: 'lead' | 'cap' | null;
 }
 
-export const IDLE_COMMAND: AutoDriveCommand = { throttle: 0, brake: 0, mode: 'accelerating', targetAccel: null, approaching: false };
+export const IDLE_COMMAND: AutoDriveCommand = { throttle: 0, brake: 0, mode: 'accelerating', targetAccel: null, approaching: false, limiter: null };
 
 export class AutoDriveController {
   readonly params: Readonly<AutoDriveParams>;
@@ -180,6 +196,11 @@ export class AutoDriveController {
 
   get command(): AutoDriveCommand {
     return this.last;
+  }
+
+  /** Throttle that holds a steady speed on this road (rough plant estimate). */
+  holdThrottle(speed: number): number {
+    return clamp(-this.plant.coastAccel(speed) / this.plant.throttleAuthority(speed), 0, 1);
   }
 
   /** Throttle fall rate for this car and speed, 1/s. */
@@ -239,19 +260,37 @@ export class AutoDriveController {
       const safe = (rel * rel) / (2 * Math.max(s - P.standstillGapM, 0.1));
       if (safe > P.comfortDecel) target = Math.min(target ?? Infinity, -safe);
     }
+    // Inside the standstill gap and still rolling (e.g. creeping behind a crawling queue): come to a stop.
+    if (s < P.standstillGapM && v > 0.05 && rel <= 0.5) target = Math.min(target ?? Infinity, -1.5);
     return target;
   }
 
-  update(dt: number, ego: EgoState, lead: LeadInfo | null): AutoDriveCommand {
+  /**
+   * One step. `lead` is null for conventional cruise (or a clear lane); with a
+   * speed cap the request is the lower of the lead's and the cap's, so the
+   * car slows for a slower lead and returns to the set speed when it leaves.
+   */
+  update(dt: number, ego: EgoState, lead: LeadInfo | null, opts: ControlOptions = {}): AutoDriveCommand {
     const P = this.params;
     const v = ego.speed;
     const coast = this.plant.coastAccel(v);
     const kB = this.plant.brakeDecelPerUnit;
+    const allowBrake = opts.allowBrake ?? true;
     const liftRate = this.liftRate(v);
-    let target = this.target(ego, lead, this.throttle / (2 * liftRate));
-    // A lead that asks for more than full throttle can give (far ahead, or pulling away) does not limit the car.
-    if (target !== null && !this.approaching && (target - coast) / this.plant.throttleAuthority(v) >= 1) target = null;
-    const stopped = v < 0.3 && target !== null && target <= 0.05;
+    const leadTarget = this.target(ego, lead, this.throttle / (2 * liftRate));
+    const capTarget = opts.capMs === null || opts.capMs === undefined ? null : Math.max(P.capGain * (opts.capMs - v), -P.capDecel);
+    let target: number | null = leadTarget;
+    let limiter: AutoDriveCommand['limiter'] = leadTarget === null ? null : 'lead';
+    if (capTarget !== null && (target === null || capTarget < target)) {
+      target = capTarget;
+      limiter = 'cap';
+    }
+    // A request for more than full throttle can give (lead far ahead or pulling away, well below the cap) does not limit the car.
+    if (target !== null && !this.approaching && (target - coast) / this.plant.throttleAuthority(v) >= 1) {
+      target = null;
+      limiter = null;
+    }
+    const stopped = allowBrake && v < 0.3 && target !== null && target <= 0.05;
 
     let throttleTarget: number;
     let brakeTarget = 0;
@@ -265,7 +304,9 @@ export class AutoDriveController {
       this.fresh = false;
       const aDes = Math.max(target, -kB);
       urgent = aDes < coast - P.urgentBrake;
-      const wantBrake = stopped || aDes < coast - (this.braking ? P.brakeOff : P.brakeOn);
+      // At walking pace idle creep can push the car on with the throttle closed: brake against it.
+      const creeping = v < 5 && aDes < 0 && this.throttle <= 1e-3 && ego.accel > aDes + 0.25;
+      const wantBrake = allowBrake && (stopped || creeping || aDes < coast - (this.braking ? P.brakeOff : P.brakeOn));
       if (wantBrake && !this.braking && this.throttle <= 1e-3) {
         this.braking = true;
         this.throttle = 0;
@@ -305,19 +346,22 @@ export class AutoDriveController {
     } else if (throttleTarget > this.throttle) {
       if (this.dwellS === 0 && this.brake === 0) this.throttle = Math.min(throttleTarget, this.throttle + P.resumeRate * dt);
     } else {
-      this.throttle = Math.max(throttleTarget, this.throttle - (urgent ? 4 : 1) * liftRate * dt);
+      // At or over the set speed, close the throttle quickly so a SET made while accelerating hard does not overshoot.
+      const atCap = limiter === 'cap' && opts.capMs !== null && opts.capMs !== undefined && v >= opts.capMs - 0.5;
+      this.throttle = Math.max(throttleTarget, this.throttle - (urgent || atCap ? 4 : 1) * liftRate * dt);
     }
 
     let mode: AutoDriveMode;
     if (this.brake > 0.005) mode = v < 0.3 ? 'stopped' : 'braking';
     else if (target === null || (this.throttle >= 0.98 && !this.approaching)) mode = 'accelerating';
-    else mode = 'following';
+    else mode = limiter === 'cap' ? 'cruising' : 'following';
     this.last = {
       throttle: this.throttle,
       brake: this.brake,
       mode,
       targetAccel: target === null ? null : Math.max(target, -kB),
       approaching: this.approaching,
+      limiter,
     };
     return this.last;
   }
