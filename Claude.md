@@ -100,3 +100,40 @@ codex_verification_requests:
   - CCXR: any evidence that it shares the CCX ratios (would enable it).
   - Agera RS (from before): ratios + production engine block.
 ```
+
+```yaml
+round: 3  # same branch; Codex.md 1b18193 = inspection of 44d84c5 (result changes_requested_before_merge); PR #9 open
+commits:
+  - b4ca03d: review fixes (P2 h11 Pur Sport grip, P2 top-speed boundary/classifier + h12 wording, P3 canonicalId Map)
+  - 2bb281a: single-clutch automated-manual path + r62 Lexus LFA promoted (original backlog 18 → 17)
+review_fixes:
+  P3_canonicalId: catalog/index.ts LEGACY (Map from LEGACY_IDS) → canonicalId uses Map.get; storage test "keeps unknown ids, including inherited object names, as the same string" (constructor/toString/__proto__/hasOwnProperty/no-such-car; results vehicleId stays string) — fails on the previous object lookup, passes now
+  P2_top_speed:
+    physics/dyno.ts: forceGearingLimit(): start at 1.001 × idle speed in the lowest gear; 0.5 km/h scan for the first speed at which no gear out-pulls road load (continuous acceleration required); bisect to 0.002 km/h; result rounded to 0.01 km/h. Binding gear = gear still pulling at the limit with the highest cut speed. atCut (gear cut speed − limit ≤ 0.01 km/h) → 'rev-limit', else 'drag'. Tie (TOP_SPEED_TIE_KMH 0.1): drag case when the gear's cut is ≤ 0.1 km/h above; rev case when road load at cut + 0.1 km/h ≥ wheel force at the cut. Limiter tie when |limiter − limit| ≤ 0.1 (binding = physical constraint, tiedWith 'limiter'); limiter binding only if limiter < limit − 0.1.
+    TopSpeedBreakdown +gear, +gearCount, +tiedWith; theoreticalTopSpeedKmh = forceGearingLimit().kmh
+    lib/topSpeed.ts: cause text names the gear ("drag-limited in top gear", "rev-limited in 1st gear (2nd cannot pull past it)", "rev cut and drag coincide in top gear"); limiter tie → "≈ X km/h · the modelled L km/h limiter and the force/gearing limit coincide (within 0.1 km/h; …)"; one decimal only when rounding would equalise distinct values (non-tie gaps > 0.1 always differ at one decimal)
+    tests (lib/__tests__/topSpeed.test.ts, flat-torque synthetic cars + catalog cars): force crossing 0.2 km/h before the cut → drag (old grid classifier called rev); cut 0.3 km/h before crossing → rev; 0.03 km/h → tie; stretched 2nd (ratios 3.0/0.55) → rev-limited in 1st; limiter +0.04 km/h → limiter tie, +0.3 → distinct numbers; Chiron SS binding 380; GTI/GT-R non-binding; Nissan Z uncapped
+    generated stats: 0 rows changed (all rounded top speeds identical); owners identical
+    browser labels: LFA "332 · uncapped prediction, drag-limited in top gear"; Pur Sport "350 · held by … 350 (≈ 355 without it)"; Veyron SS "410 · drag-limited in top gear, below … 415 …"; GT-R "313 · rev-limited in top gear, below … 315 …"; F1 "362 · uncapped prediction, rev-limited in top gear"
+  P2_h12_veyron_ss: computed constraint = drag at 409.95 km/h in 7th (7th cut ≈ 414.4 km/h at 6,700 rpm); simCaveat rewritten to that; EPA-radius sensitivity (r 0.353 vs 0.3371): force limit 417.52 km/h → 415 limiter binds. (h01 Veyron 16.4: 387.75 → 392.91 km/h with the EPA radius; limiter 375 binds either way.) Published 415 km/h limit and 431.072 km/h record remain separate.
+  P2_h11_pur_sport: grip ×1.10 → ×1.00 (neutral, transferred); +provenance 'Lateral grip (not modelled)' (reported, Bugatti ≈ +10 % lateral acceleration); sensitivity (stock stats): ×1.00 BR 0–100 2.671, 0–200 5.919, ¼ 9.376 @ 265.14 km/h, RO 0–100 2.430, ¼ 9.135; ×1.10 BR 2.248 / 5.432 / 8.963 @ 266.33, RO 2.139 / 8.854; score 132.3 → 127.6 (S+). Factory 2.3 s claim stays a factory figure (sim now 0.37 s slower).
+automated_manual_path:
+  data/types.ts TransmissionType +'automated-manual' (single clutch; TCU launch; interrupt shifts; no idle creep by default)
+  defaults: buildSimVehicle shiftProfile interrupt for manual + automated-manual; launchClutch.creep default only for dual-clutch (TC cars have no launch clutch; manual unchanged false); catalog builder: AMT shift 0.25 up / 0.35 down (estimate text "single-clutch automated manual"), dip 1, creep false; DriveView clutch light keyed on torque converter presence (manual cars now show CLU instead of L/U; owners unchanged: Lexus L/U, Škoda CLU)
+  tests (physics/__tests__/automatedManual.test.ts, Škoda converted to AMT vs its DCT): builds with interrupt/no-creep/instant TCU; 4 s idle off brake < 0.5 km/h; slipping at 0.15 s then locked and > 60 km/h; mid-shift (25–75 %) accel max < 0 for AMT vs min > 0 for DCT (gears ≥ 3); ¼ mile slower than DCT by < 1 s; every catalog AMT runs. vehicles.test gearbox rule: AMT dip ≤ 1, launch clutch required, driverEngageS 0. simulator creep test now covers DCT + converter cars only.
+  existing cars: generated stats unchanged (only the LFA row added)
+r62_lexus_lfa:
+  source: Lexus Europe LFA press dossier (prensa.lexusauto.es, 2009-10) — verified: 1LR-GUE 4,805 cc; 412 kW (560 PS EEC) @ 8,700; 480 Nm @ 6,800; max engine speed 9,000; ASG 3.231/2.188/1.609/1.233/0.970/0.795; front counter gear 1.259; final 3.417; max speed per gear 83/123/167/218/277 km/h; 0.2 s upshift (7 stages); 265/35R20 F, 305/30R20 R; 4505×1895×1220, WB 2605; 48:52; Cd 0.31 (wing retracted); kerb 1,480–1,580 kg; 325 km/h; 0–100 3.7
+  counter_gear_resolution: overall = gear × 1.259 × 3.417 (finalDrive 4.302); sim-radius (0.33514) speeds at 9,000 rpm 81.8/120.8/…/272.4 km/h vs Lexus 83/123/…/277 (−1.5 to −1.7 %, radius convention); gear × 3.417 alone → 103 km/h in 1st (rejected)
+  model: type automated-manual; upshift 0.2 (verified); launch 4,500 rpm (estimated); curb 1,480 (reported, lower end; C/D 3,583 lb kept separate); grip 1.30 RWD median NOT fitted (both C/D runs timing unconfirmed); eff: trap fit to the 125 mph comparison row = 0.823; the original 124 mph test asks ≈ 0.80 (< plausible) → held 0.823 (lowest accepted elsewhere: r20 GS F, r21 IS 500)
+  stats: S 75.1; BR 0–60 3.669, 0–100 3.835, ¼ 11.732 @ 125.0 mph; RO 0–60 3.391, ¼ 11.454; vmax 332 km/h drag-limited in 6th (claim 325)
+  residuals (BR | RO vs C/D original 3.7 / 11.8 @ 124): 3.67 | 3.39 ; 11.73 | 11.45 ; 125.0
+  unsupportedReason removed; readiness sim+benchmark; simCaveats added; DATA_GAPS: catalog-only 18 → 17, playable 64 → 65
+counts: playable hypercars 9 (unchanged this round); original catalog-only 17 (r62 promoted)
+blocked_checked_this_round: Pagani Huayra BC (pagani.com: 764 CV @6,200, 1,000 Nm @4,000, 7-speed AMT, 1,218 kg — no ratios) → blocked on gearing despite the new AMT path
+tests: npm run check → typecheck, lint, 973 tests / 23 files, build ✓
+app_smoke (Chromium 1194×834 touch, preview build; console errors none): labels above; LFA readiness "Simulation + measured benchmark · Provisional model", launch "Clutch slip to ≈ 4,500 rpm"; Live Drive LFA 4 s idle off brake → 0 km/h, 6 s WOT → 130 km/h, clutch light CLU; Tests LFA 0–100 3.84 s (factory 3.7, +0.14), ¼ 11.73 s @ 125.0 mph; Drag LFA semi-slick 11.693 vs stock 11.732 s, Save both → reload → Results 3 LFA entries; Dyno LFA 560 PS @ 8,700 / 480 Nm @ 6,800
+codex_verification_requests_added:
+  - LFA: C/D 2010/2011 timing procedure (would allow a grip fit); launch-control rpm; whether the ASG creeps at idle; US curb definition vs the 1,480–1,580 kg range
+  - Huayra BC / Enzo / Utopia: gear ratio sets (the AMT path is ready for them)
+```
