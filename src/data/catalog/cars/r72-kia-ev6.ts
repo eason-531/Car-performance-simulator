@@ -96,15 +96,21 @@ export const entry: CatalogEntry = {
         rolloutS: 0.3
       },
       conditions: {
-        testMass: "4,772 lb as tested"
+        testMass: "4,772 lb curb (as weighed)",
+        tires: "Test-car tires as specified in the original (not re-transcribed here)",
+        driveMode: "Not identified for the timed runs; the article states the 576 hp peak requires GT mode",
+        other: [
+          "The article corroborates motor speeds up to 21,000 rpm",
+          "State of charge and battery temperature not stated"
+        ]
       },
       match: "exact",
-      verification: "Original by-the-numbers test as verified in the Codex handoff (2026-11-26): 3.2 s to 60 mph, 11.6 s @ 119 mph, 0.3 s rollout, 4,772 lb. The Car and Driver site refuses automated fetches from this session; drive mode, state of charge and temperature are not transcribed."
+      verification: "Original by-the-numbers test as verified in the Codex handoffs (2026-11-26): 3.2 s to 60 mph, 11.6 s @ 119 mph, 0.3 s rollout, 4,772 lb curb; up to 21,000 motor rpm; 576 hp needs GT mode, but the timed run's mode is not stated. The Car and Driver site refuses automated fetches from this session, so tire details are not transcribed."
     }
   ],
   dataGaps: [
     "Per-motor torque (derived from the peak-power rpm bands)",
-    "Motor maximum speed and the power curve above the published peak-power bands",
+    "Power curve above the published peak-power bands (motor maximum speed is only press-reported)",
     "Front reduction (assumed equal to the EPA-derived overall reduction)",
     "US curb mass and weight distribution",
     "Drag coefficient (only the EPA road-load coefficients are sourced)",
@@ -151,7 +157,7 @@ export const entry: CatalogEntry = {
       { parameter: 'Dimensions', value: '4,695 × 1,890 × 1,545 mm, WB 2,900 mm', status: 'verified', source: 'Kia Spain technical sheet', url: KIA_ES },
       { parameter: 'Speed limiter', value: '260 km/h', status: 'verified', source: 'Kia Spain technical sheet and Kia Austria release', url: KIA_ES },
       { parameter: 'Drag coefficient', value: 'Cd 0.371 × 2.45 m² (CdA ≈ 0.91 m²)', status: 'estimated', source: 'CdA from the EPA target road-load C coefficient 0.024634 lbf/mph² (EV6 AWD GT) at 1.204 kg/m³; it includes non-aerodynamic speed-squared losses. Split using area ≈ 0.84 × width × height', url: EPA },
-      { parameter: 'Motor maximum speed', value: '21,000 rpm (both)', status: 'estimated', source: 'Not published; the 260 km/h limited top speed needs ≈ 20,500 rpm at the EPA-derived reduction' },
+      { parameter: 'Motor maximum speed', value: '21,000 rpm (both)', status: 'reported', source: 'Car and Driver\'s original test describes motors spinning up to 21,000 rpm (as read in the Codex inspection of PR #9); Kia does not publish it. The 260 km/h limited top speed needs ≈ 20,500 rpm at the EPA-derived reduction', url: CD },
       { parameter: 'System limits', value: '430 kW and 740 Nm shared', status: 'verified', source: 'Kia combined output figures', url: KIA_AT },
       { parameter: 'Weight distribution', value: '50 % front', status: 'estimated', source: 'Dual-motor skateboard layout; not published in the reachable sources' },
       { parameter: 'CG height', value: '0.55 m', status: 'estimated', source: 'Floor battery: lower than a typical crossover; not published' },

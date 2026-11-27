@@ -74,10 +74,12 @@ export interface ElectricMotorSpec {
   maxRpm: number;
   /**
    * End of the published peak-power band, rpm. Above it power falls as
-   * band-end speed ÷ speed (constant-voltage field weakening). Omit to hold
-   * peak power up to the maximum speed.
+   * (band-end speed ÷ speed)^`peakPowerFadeExponent` (1 by default: constant-voltage
+   * field weakening). Omit to hold peak power up to the maximum speed.
    */
   peakPowerEndRpm?: number;
+  /** Steepness of the power fall-off above `peakPowerEndRpm` (default 1). */
+  peakPowerFadeExponent?: number;
   /** Overall reduction motor → wheel; two entries make a two-speed axle (first, second). */
   reductions: readonly number[];
   /** Two-speed axles: road speed at which second engages at full load, km/h. */
@@ -97,10 +99,26 @@ export interface ElectricSpec {
   systemTorqueNm?: number;
   /**
    * Temporary boost as published (e.g. Porsche Overboost, Hyundai N Grin Boost):
-   * raised system power for `durationS` once triggered. `launch-control` boosts
-   * engage on a brake-held launch; `driver` boosts only when armed by the driver.
+   * raised system power for `durationS` once triggered.
+   * - `launch-control`: every brake-held launch-control start fires it (repeatable).
+   * - `driver`: the driver's boost button fires it (Live Drive), then it needs
+   *   `recoveryS` before it can be used again. When linked to launches
+   *   (`armedByDefault` or the Tuning toggle, e.g. N Launch Control on HIGH grip),
+   *   a brake-held launch also fires it at brake release, at most once per
+   *   `launchCooldownS`; timed runs then start with it.
    */
-  boost?: { systemPowerKw: number; systemTorqueNm?: number; durationS: number; trigger: 'launch-control' | 'driver'; label: string; armedByDefault?: boolean };
+  boost?: {
+    systemPowerKw: number;
+    systemTorqueNm?: number;
+    durationS: number;
+    trigger: 'launch-control' | 'driver';
+    label: string;
+    armedByDefault?: boolean;
+    /** Driver boosts: wait after a boost ends before it can be used again, s (default 0). */
+    recoveryS?: number;
+    /** Linked launches: minimum time between two launch-control starts, s (default 0). */
+    launchCooldownS?: number;
+  };
   /** Creeps forward off the brake at idle (most EVs do by default). */
   creep: boolean;
   /** Driver-selectable simulated stepped gearbox (Live Drive only; off by default). */

@@ -437,7 +437,8 @@ function motorTorqueAt(m: ElectricSpec['motors'][number], rpm: number): number {
   const omega = (rpm * 2 * Math.PI) / 60;
   let t = m.peakTorqueNm;
   if (omega > 0) {
-    const power = m.peakPowerEndRpm !== undefined && rpm > m.peakPowerEndRpm ? (m.peakPowerKw * 1000 * m.peakPowerEndRpm) / rpm : m.peakPowerKw * 1000;
+    const power =
+      m.peakPowerEndRpm !== undefined && rpm > m.peakPowerEndRpm ? m.peakPowerKw * 1000 * (m.peakPowerEndRpm / rpm) ** (m.peakPowerFadeExponent ?? 1) : m.peakPowerKw * 1000;
     t = Math.min(t, power / omega);
   }
   const fadeStart = m.maxRpm * 0.97;

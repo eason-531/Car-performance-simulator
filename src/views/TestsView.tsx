@@ -10,6 +10,7 @@ import { usePlayback } from '../hooks/usePlayback';
 import { assignSeries } from '../lib/colors';
 import { fmt, fmtSeconds, fmtSigned } from '../lib/format';
 import { computeDyno } from '../physics/dyno';
+import { electricGearCount } from '../physics/electric';
 import type { TimingBasis } from '../physics/metrics';
 import { runAccelerationRun, sampleAt, type LaunchTechnique, type TraceSample } from '../physics/runners';
 import { useApp } from '../state/AppState';
@@ -93,6 +94,25 @@ export function TestsView() {
     app.notify('Test result saved (brake-release timing)', 'good');
   };
 
+  // Electric cars: motor speed and motor power (with any published boost window) in place of engine speed and turbo boost.
+  const el = vehicle.electric;
+  const boostSpec = spec.electric?.boost;
+  const boostStart = el ? result.trace.find((p) => p.boostActive) : undefined;
+  const boostEnd = boostStart ? [...result.trace].reverse().find((p) => p.boostActive) : undefined;
+  const motorMaxRpm = el ? Math.max(...el.motors.map((mo) => mo.maxRpm)) : 0;
+  const powerMaxKw = el ? Math.ceil(((el.boost?.systemPowerW ?? el.systemPowerW) / 1000) * 1.05 / 100) * 100 : 0;
+  const boostNote = !el
+    ? null
+    : !el.boost || !boostSpec
+      ? 'No published boost on this car.'
+      : el.boost.trigger === 'launch-control'
+        ? launch === 'brake-boost'
+          ? `${boostSpec.label} (${fmt(boostSpec.systemPowerKw)} kW) fires at brake release on this launch-control start for ${fmt(boostSpec.durationS, 1)} s.`
+          : `${boostSpec.label} needs a launch-control (brake-held) start: not used on a standard launch.`
+        : el.boost.armed
+          ? `${boostSpec.label} linked to the launch: ${fmt(boostSpec.systemPowerKw)} kW for ${fmt(boostSpec.durationS)} s from brake release (set in Tuning).`
+          : `${boostSpec.label} not used (stock comparison; whether published tests used it is not stated). Link it to launches in Tuning.`;
+
   const factory100 = spec.factory.zeroTo100S;
   const delta100 = m.zeroTo100KmhS !== null && factory100 !== null ? m.zeroTo100KmhS - factory100 : null;
   const entry = findEntry(spec.id);
@@ -172,7 +192,9 @@ export function TestsView() {
                 <span className="tests__live-unit">km/h</span>
               </div>
               <div className="tests__live-meta">
-                {fmt(live.t, 1)} s · Gear {live.gear} · {fmt(Math.round(live.rpm / 10) * 10)} rpm
+                {el
+                  ? `${fmt(live.t, 1)} s${electricGearCount(el) > 1 ? ` · Gear ${live.gear}` : ''} · motor ${fmt(Math.round(live.rpm / 10) * 10)} rpm · ${fmt(live.powerKw ?? 0)} kW${live.boostActive ? ' · boost' : ''}`
+                  : `${fmt(live.t, 1)} s · Gear ${live.gear} · ${fmt(Math.round(live.rpm / 10) * 10)} rpm`}
               </div>
               <div className="progress">
                 <div className="progress__fill" style={{ transform: `scaleX(${live.t / result.durationS})`, background: main.color }} />
@@ -187,6 +209,7 @@ export function TestsView() {
                 <span>{fmt(vehicle.massKg)} kg</span>
               </div>
               <div className="tests__live-meta">{describeTuning(spec, tuning)} · incl. 75 kg driver</div>
+              {boostNote && <div className="tests__live-meta">{boostNote}</div>}
             </>
           )}
         </div>
@@ -263,14 +286,17 @@ export function TestsView() {
       )}
 
       <div className="grid-2">
-        <Panel title="Engine speed" subtitle="Shift pattern">
+        <Panel
+          title={el ? (el.motors.length > 1 ? 'Rear motor speed' : 'Motor speed') : 'Engine speed'}
+          subtitle={el ? (electricGearCount(el) > 1 ? 'Two-speed axle changes' : 'Single-speed reduction') : 'Shift pattern'}
+        >
           <LineChart
-            ariaLabel="Engine speed versus time"
+            ariaLabel={el ? 'Motor speed versus time' : 'Engine speed versus time'}
             series={[{ id: 'rpm', label: 'rpm', color: main.color, points: toPoints(result.trace, 'rpm', off) }]}
             xLabel="s"
             yLabel="rpm"
             xDomain={xDomain}
-            yDomain={[0, Math.ceil(vehicle.engine.revLimitRpm / 1000) * 1000]}
+            yDomain={[0, Math.ceil((el ? motorMaxRpm : vehicle.engine.revLimitRpm) / 1000) * 1000]}
             height={200}
             xFormat={(v) => fmt(v)}
             yFormat={(v) => fmt(v)}
@@ -281,24 +307,53 @@ export function TestsView() {
             directLabels={false}
           />
         </Panel>
-        <Panel title="Boost" subtitle="Turbo spool and shifts">
-          <LineChart
-            ariaLabel="Boost pressure versus time"
-            series={[{ id: 'boost', label: 'boost', color: main.color, points: toPoints(result.trace, 'boostBar', off) }]}
-            xLabel="s"
-            yLabel="bar"
-            xDomain={xDomain}
-            yDomain={[-1, 2]}
-            height={200}
-            xFormat={(v) => fmt(v)}
-            yFormat={(v) => fmt(v, 1)}
-            valueFormat={(v) => `${fmt(v, 2)} bar`}
-            hoverX={hoverX}
-            onHoverX={setHoverX}
-            revealX={t === null ? undefined : t - off}
-            directLabels={false}
-          />
-        </Panel>
+        {el ? (
+          <Panel title="Motor power" subtitle={boostSpec ? `${boostSpec.label} ${boostStart ? 'window marked' : 'not used on this run'}` : 'Shared output limit'}>
+            <LineChart
+              ariaLabel="Motor power versus time"
+              series={[{ id: 'power', label: 'kW', color: main.color, points: toPoints(result.trace, 'powerKw', off) }]}
+              xLabel="s"
+              yLabel="kW"
+              xDomain={xDomain}
+              yDomain={[0, powerMaxKw]}
+              height={200}
+              xFormat={(v) => fmt(v)}
+              yFormat={(v) => fmt(v)}
+              valueFormat={(v) => `${fmt(v)} kW`}
+              markers={
+                boostStart && boostEnd && boostSpec
+                  ? [
+                      { axis: 'x', value: Math.max(0, boostStart.t - off), label: `${boostSpec.label} ${fmt(boostSpec.durationS, 1)} s` },
+                      { axis: 'x', value: Math.max(0, boostEnd.t - off), label: '' },
+                    ]
+                  : []
+              }
+              hoverX={hoverX}
+              onHoverX={setHoverX}
+              revealX={t === null ? undefined : t - off}
+              directLabels={false}
+            />
+          </Panel>
+        ) : (
+          <Panel title="Boost" subtitle="Turbo spool and shifts">
+            <LineChart
+              ariaLabel="Boost pressure versus time"
+              series={[{ id: 'boost', label: 'boost', color: main.color, points: toPoints(result.trace, 'boostBar', off) }]}
+              xLabel="s"
+              yLabel="bar"
+              xDomain={xDomain}
+              yDomain={[-1, 2]}
+              height={200}
+              xFormat={(v) => fmt(v)}
+              yFormat={(v) => fmt(v, 1)}
+              valueFormat={(v) => `${fmt(v, 2)} bar`}
+              hoverX={hoverX}
+              onHoverX={setHoverX}
+              revealX={t === null ? undefined : t - off}
+              directLabels={false}
+            />
+          </Panel>
+        )}
       </div>
 
       {entry && (

@@ -1555,6 +1555,53 @@ small {
   color: var(--warning);
 }
 
+.boost-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.boost-btn__state {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.boost-btn--slot {
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  padding: 4px 10px;
+  font-size: 14px;
+}
+
+.boost-btn.is-active {
+  border-color: rgba(12, 163, 12, 0.7);
+}
+
+.boost-btn.is-active .boost-btn__state {
+  color: var(--good-text);
+}
+
+.boost-btn.is-recovering .boost-btn__state {
+  color: var(--warning);
+}
+
 .cruise {
   display: flex;
   flex-wrap: wrap;

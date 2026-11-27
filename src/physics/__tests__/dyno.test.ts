@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { computeDyno, theoreticalTopSpeedKmh, topSpeedKmh } from '../dyno';
+import { electricOutput } from '../electric';
+import { VehicleSimulator } from '../simulator';
+import { kmhToMs, msToKmh } from '../units';
 import { lexus, sim, skoda, VEHICLES } from '../../test-helpers';
 
 describe('dyno', () => {
@@ -37,6 +40,43 @@ describe('dyno', () => {
     const d = computeDyno(sim(spec, { ecuStage: 'stage1' }));
     expect(Math.abs(d.peakPowerPs - spec.stage1.claimedPowerPs) / spec.stage1.claimedPowerPs).toBeLessThan(0.03);
     expect(Math.abs(d.peakTorqueNm - spec.stage1.claimedTorqueNm) / spec.stage1.claimedTorqueNm).toBeLessThan(0.03);
+  });
+
+  it('reports electric wheel torque at the wheels, through each motor\'s reduction (Taycan: unequal axles)', () => {
+    const taycan = VEHICLES.find((v) => v.id === '2020-porsche-taycan-turbo-s-us-sedan-awd-ev2')!;
+    const v = sim(taycan);
+    const d = computeDyno(v);
+    expect(d.torqueBasis).toBe('motor-sum');
+    expect(d.wheelTorqueBasis).toBe('at-wheels');
+    const p20 = d.points.find((p) => p.speedKmh === 20)!;
+    // Front 440 Nm × 8.0 + rear 550 Nm × 15.2 (first gear), × 95 %.
+    const expected = (440 * 8.0 + 550 * 15.2) * v.drivetrain.efficiency;
+    expect(p20.wheelTorqueNm).toBeCloseTo(expected, 0);
+    expect(p20.torqueNm).toBeCloseTo(990, 0);
+    // Same basis as the simulator's wheel force: force × radius at the same point, before tire limits.
+    const out = electricOutput(v, v.electric!, kmhToMs(20), 1, 1);
+    expect(p20.wheelTorqueNm).toBeCloseTo((out.front + out.rear) * v.wheelRadiusM, 6);
+    // And consistent with wheel power: P_wheel = T_wheel × wheel speed at every point.
+    for (const p of d.points) {
+      const wheelOmega = kmhToMs(p.speedKmh!) / v.wheelRadiusM;
+      expect((p.wheelTorqueNm * wheelOmega) / 1000).toBeCloseTo(p.wheelPowerPs * 0.73549875, 1);
+    }
+    // The peak is the wheel-torque maximum with its own speed (first gear at low speed).
+    expect(d.peakWheelTorqueNm).toBe(Math.max(...d.points.map((p) => p.wheelTorqueNm)));
+    expect(d.peakWheelTorqueKmh).toBeLessThan(60);
+    // The live full-throttle drive force at 20 km/h never exceeds it.
+    const s = new VehicleSimulator(v);
+    while (msToKmh(s.state.speed) < 20) s.step(0.001, { throttle: 1, brake: 0 });
+    expect(s.state.driveForceN * v.wheelRadiusM).toBeLessThanOrEqual(p20.wheelTorqueNm * 1.01);
+  });
+
+  it('keeps the combustion wheel-equivalent basis: crank torque × efficiency at engine rpm', () => {
+    const v = sim(skoda);
+    const d = computeDyno(v);
+    expect(d.torqueBasis).toBe('crank');
+    expect(d.wheelTorqueBasis).toBe('crank-equivalent');
+    for (const p of d.points) expect(p.wheelTorqueNm).toBeCloseTo(p.torqueNm * v.drivetrain.efficiency, 9);
+    expect(d.peakWheelTorqueNm).toBeCloseTo(d.peakTorqueNm * v.drivetrain.efficiency, 9);
   });
 
   it('scales power with the power adjustment', () => {

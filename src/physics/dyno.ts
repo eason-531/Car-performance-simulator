@@ -5,10 +5,16 @@ import { kmhToMs, msToKmh, powerKw, kwToPs } from './units';
 
 export interface DynoPoint {
   rpm: number;
+  /** Crank torque (combustion) or the sum of the motor shaft torques (electric), Nm. */
   torqueNm: number;
   powerPs: number;
   powerKw: number;
   wheelPowerPs: number;
+  /**
+   * Combustion: crank torque × drivetrain efficiency at engine rpm (wheel-equivalent,
+   * as a chassis dyno reports it). Electric: torque at the wheels — each motor's
+   * torque × its reduction × efficiency, summed over the axles (= wheel force × radius).
+   */
   wheelTorqueNm: number;
   boostBar: number;
   /** Electric cars: road speed of this point, km/h (`rpm` is then the rear/primary motor speed). */
@@ -29,6 +35,11 @@ export interface DynoSheet {
   /** Electric cars: road speeds of the peaks, km/h. */
   peakPowerKmh?: number;
   peakTorqueKmh?: number;
+  /** Electric cars: road speed of the wheel-torque peak (it need not coincide with the motor-torque peak), km/h. */
+  peakWheelTorqueKmh?: number;
+  /** What `torqueNm` and `wheelTorqueNm` measure (see DynoPoint). */
+  torqueBasis: 'crank' | 'motor-sum';
+  wheelTorqueBasis: 'crank-equivalent' | 'at-wheels';
 }
 
 /**
@@ -71,13 +82,17 @@ export function computeDyno(vehicle: SimVehicle, stepRpm = 50): DynoSheet {
     peakWheelTorqueNm: pt.wheelTorqueNm,
     peakBoostBar: Math.max(...points.map((p) => p.boostBar)),
     axis: 'rpm',
+    torqueBasis: 'crank',
+    wheelTorqueBasis: 'crank-equivalent',
   };
 }
 
 /**
  * Electric dyno: full-load output over road speed in the best gear at each
  * speed, after the shared system limits (no boost). `torqueNm` is the sum of the
- * motor torques; `rpm` is the rear (or primary) motor speed.
+ * motor shaft torques; `wheelTorqueNm` is the torque at the wheels (each motor
+ * through its own reduction, after drivetrain efficiency), consistent with the
+ * wheel force and wheel power; `rpm` is the rear (or primary) motor speed.
  */
 function computeElectricDyno(vehicle: SimVehicle, stepKmh = 2): DynoSheet {
   const el = vehicle.electric!;
@@ -103,16 +118,18 @@ function computeElectricDyno(vehicle: SimVehicle, stepKmh = 2): DynoSheet {
       powerKw: kw,
       powerPs: kwToPs(kw),
       wheelPowerPs: kwToPs(kw * eta),
-      wheelTorqueNm: torqueNm * eta,
+      wheelTorqueNm: (o.front + o.rear) * vehicle.wheelRadiusM,
       boostBar: 0,
       speedKmh: kmh,
     });
   }
   let pp = points[0];
   let pt = points[0];
+  let pw = points[0];
   for (const p of points) {
     if (p.powerPs > pp.powerPs) pp = p;
     if (p.torqueNm > pt.torqueNm + 1e-9) pt = p;
+    if (p.wheelTorqueNm > pw.wheelTorqueNm + 1e-9) pw = p;
   }
   return {
     points,
@@ -121,11 +138,14 @@ function computeElectricDyno(vehicle: SimVehicle, stepKmh = 2): DynoSheet {
     peakTorqueNm: pt.torqueNm,
     peakTorqueRpm: pt.rpm,
     peakWheelPowerPs: pp.wheelPowerPs,
-    peakWheelTorqueNm: pt.wheelTorqueNm,
+    peakWheelTorqueNm: pw.wheelTorqueNm,
     peakBoostBar: 0,
     axis: 'speed',
     peakPowerKmh: pp.speedKmh,
     peakTorqueKmh: pt.speedKmh,
+    peakWheelTorqueKmh: pw.speedKmh,
+    torqueBasis: 'motor-sum',
+    wheelTorqueBasis: 'at-wheels',
   };
 }
 

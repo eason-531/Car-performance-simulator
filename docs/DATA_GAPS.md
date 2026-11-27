@@ -429,7 +429,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2023 Kia EV6 GT
 
-- Also missing: Per-motor torque (derived from the peak-power rpm bands); Motor maximum speed and the power curve above the published peak-power bands; Front reduction (assumed equal to the EPA-derived overall reduction); US curb mass and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced); Test-day drive mode, state of charge and battery temperature
+- Also missing: Per-motor torque (derived from the peak-power rpm bands); Power curve above the published peak-power bands (motor maximum speed is only press-reported); Front reduction (assumed equal to the EPA-derived overall reduction); US curb mass and weight distribution; Drag coefficient (only the EPA road-load coefficients are sourced); Test-day drive mode, state of charge and battery temperature
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a42097092/2023-kia-ev6-gt-by-the-numbers/) · [Kia Spain](https://press.kia.com/content/dam/kiapress/ES/Kia%20EV6%20GT%20-%20Ficha%20t%C3%A9cnica.pdf) · [Kia Austria](https://press.kia.com/content/dam/kiapress/AT/PDF2022/2822%20Kia%20EV6%20GT%20Marktstart.pdf)
 
 ### 2022 Rivian R1T Launch Edition
@@ -484,5 +484,5 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2022 Rimac Nevera Coupé
 
-- Also missing: Gear ratio (derived from Rimac's wheel and motor torque); Motor maximum speed and the power curve above base speed; Weight distribution; Frontal area (Rimac gives Cd 0.3 in low-drag mode only); Magazine road test
-- Consulted: [Rimac Automobili](https://www.rimac-automobili.com/nevera/) · [US EPA](https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx) · [IEEE Spectrum](https://spectrum.ieee.org/rimac-nevera-record)
+- Also missing: Gear ratio (derived from Rimac's wheel and motor torque); Motor maximum speed, and the power curve above base speed (a provisional fit to Rimac's 2023 high-speed splits); Quarter-mile trap of the 2023 records (not published), and battery state and temperature on both record days; Weight distribution; Frontal area (Rimac gives Cd 0.3 in low-drag mode only); Magazine road test
+- Consulted: [Rimac Automobili](https://www.rimac-automobili.com/nevera/) · [US EPA](https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx) · [Rimac Newsroom](https://www.rimac-newsroom.com/press-releases/rimac-automobili/rimac-nevera-sets-23-performance-records-in-a-single-day)

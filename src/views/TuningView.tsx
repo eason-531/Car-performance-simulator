@@ -69,14 +69,14 @@ export function TuningView() {
                   <Toggle
                     checked={tuning.electricBoostArmed ?? spec.electric.boost.armedByDefault ?? false}
                     onChange={(electricBoostArmed) => update({ electricBoostArmed })}
-                    label={`${spec.electric.boost.label} (${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s)`}
-                    description="Armed: the boost fires on the next full-throttle pull."
+                    label={`Link ${spec.electric.boost.label} to launches (${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s)`}
+                    description={`Like N Launch Control on HIGH grip: brake-held launches in Live Drive fire it at brake release${spec.electric.boost.launchCooldownS ? ` (once per ${fmt(spec.electric.boost.launchCooldownS / 60)} min)` : ''}, and every timed run starts with it. Off: stock comparison without the boost. The ${spec.electric.boost.label} button in Live Drive works either way${spec.electric.boost.recoveryS ? `, ${spec.electric.boost.recoveryS} s recovery` : ''}.`}
                   />
                 )}
                 {spec.electric.boost?.trigger === 'launch-control' && (
                   <p className="help">
-                    {spec.electric.boost.label}: {fmt(spec.electric.boost.systemPowerKw)} kW for {spec.electric.boost.durationS} s after a launch-control
-                    (brake-held) start.
+                    {spec.electric.boost.label}: {fmt(spec.electric.boost.systemPowerKw)} kW for {spec.electric.boost.durationS} s after every launch-control
+                    (brake-held) start; lifting the accelerator before releasing the brake cancels it.
                   </p>
                 )}
               </>

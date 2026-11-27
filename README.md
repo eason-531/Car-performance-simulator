@@ -178,12 +178,17 @@ headless tests run the same code.
   battery/inverter power and torque limits apply across motors, with a
   published boost (launch-control overboost or a driver-armed boost). Each
   axle is limited by its own grip under weight transfer. EVs creep off the
-  brake, and the dyno measures them over road speed.
+  brake, and the dyno measures them over road speed: motor-side figures are
+  the motor shaft torque and power, wheel-side torque is taken at the wheels
+  through each motor's reduction.
 - **CVT (Honda LL-CVT).** A torque converter launches and locks up; the
   pulley ratio moves continuously within the published span at a limited
   rate, toward a part-throttle engine-speed target. Under hard acceleration a
   Step Shift program holds simulated steps and changes at a set rpm, then
-  holds the engine speed past the last step; paddles select the steps.
+  holds the engine speed past the last step; paddles select the steps. Quick
+  repeated presses step on from the last commanded step while the pulleys
+  catch up (the first press after Auto starts from the step nearest the actual
+  ratio), with over-rev protection on each downshift.
 - **Gearbox.** Per-gear final drives and shift times with a torque dip and a
   ratio blend. The automatic shift schedule computes optimal full-throttle
   upshift points and handles multi-gear kickdown and coasting downshifts. Manual
@@ -442,11 +447,18 @@ No environment variables or secrets are needed.
 | Cruise set speed ± 1 km/h | + / − buttons (hold to repeat) | `+` / `-` |
 | Traffic density and seed | Traffic menu; #seed ↻ for a new seed | — |
 | Road preset and traffic limit | Road menu; − / +, quick limits, Default | — |
+| Boost button (Ioniq 5 N N Grin Boost) | N Grin Boost button | `N` |
 | Reset | Reset button | `R` |
 
 Auto Hold keeps the car still at rest until you press the throttle, so every
 live run is a true standing start. Hold the brake and the throttle together,
-then release the brake, to brake-boost.
+then release the brake, to brake-boost. On electric cars with launch control
+this primes it (the `LC` light): lifting the accelerator cancels it, and
+releasing the brake launches with any published launch boost. The Taycan's
+Overboost fires on every launch-control start; the Ioniq 5 N's N Grin Boost
+runs 10 s from its button, needs 10 s to recover, pauses N e-Shift while it
+runs, and joins brake-held launches only when linked in Tuning (N Launch
+Control on HIGH grip, at most one linked launch per 2 minutes).
 
 ## Scripts
 

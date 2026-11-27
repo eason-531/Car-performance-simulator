@@ -34,8 +34,8 @@ export function motorTorqueNm(m: SimMotor, omega: number): number {
   let t = m.peakTorqueNm;
   const rpm = radSToRpm(omega);
   if (omega > 0) {
-    // Constant power, then (above the published band) power ∝ band end ÷ speed.
-    const power = m.peakPowerEndRpm !== null && rpm > m.peakPowerEndRpm ? (m.peakPowerW * m.peakPowerEndRpm) / rpm : m.peakPowerW;
+    // Constant power, then (above the published band) power ∝ (band end ÷ speed)^exponent.
+    const power = m.peakPowerEndRpm !== null && rpm > m.peakPowerEndRpm ? m.peakPowerW * (m.peakPowerEndRpm / rpm) ** m.peakPowerFadeExponent : m.peakPowerW;
     t = Math.min(t, power / omega);
   }
   const fadeStart = m.maxRpm * (1 - FADE_FRACTION);

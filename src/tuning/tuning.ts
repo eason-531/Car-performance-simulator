@@ -22,8 +22,9 @@ export interface TuningConfig {
   /** Overrides for estimated parameters (null = use the vehicle data). */
   overrides: TuningOverrides;
   /**
-   * Electric cars with a driver-armed boost (e.g. N Grin Boost): armed or not.
-   * Omitted = the car's documented default.
+   * Electric cars with a driver boost (e.g. N Grin Boost): whether it is linked
+   * to launches (N Launch Control on HIGH grip; timed runs start with it).
+   * Omitted = the car's documented default. The boost button works either way.
    */
   electricBoostArmed?: boolean;
 }

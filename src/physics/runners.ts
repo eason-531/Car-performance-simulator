@@ -15,6 +15,10 @@ export interface TraceSample {
   gear: number;
   boostBar: number;
   accelG: number;
+  /** Electric cars: motor output, kW (absent in older saved traces and for combustion cars). */
+  powerKw?: number;
+  /** Electric cars: a published boost is running. */
+  boostActive?: boolean;
 }
 
 export interface AccelerationRunOptions {
@@ -53,6 +57,13 @@ const STAGNATION_WINDOW_S = 6;
  * - `standard`: idle in gear, release brake, floor the throttle.
  * - `brake-boost`: hold the brake and full throttle for 2.5 s first (stall
  *   against the converter / launch clutch preload), then release the brake.
+ *   Electric cars: a launch-control start; any launch-control boost (and a
+ *   driver boost linked to launches) fires at brake release, never during the
+ *   hold.
+ *
+ * Electric cars with a driver boost linked to launches (e.g. N Grin Boost with
+ * N Launch Control on HIGH grip) start the boost at brake release on either
+ * technique (a standard launch presses the boost button at the start).
  *
  * The clock starts when the brake is released (no roll-out applied).
  */
@@ -69,6 +80,9 @@ export function runAccelerationRun(vehicle: SimVehicle, options: AccelerationRun
   const s = sim.state;
   s.time = 0;
   s.distance = 0;
+  const boost = vehicle.electric?.boost;
+  if (launch === 'standard' && boost?.trigger === 'driver' && boost.armed) sim.requestBoost();
+  const ev = !!vehicle.electric;
 
   const tracker = new MetricsTracker();
   const trace: TraceSample[] = [];
@@ -81,6 +95,7 @@ export function runAccelerationRun(vehicle: SimVehicle, options: AccelerationRun
       gear: s.gear,
       boostBar: s.manifoldBar - ATMOSPHERE_BAR,
       accelG: s.accelFiltered / GRAVITY,
+      ...(ev ? { powerKw: s.motorPowerKw, boostActive: s.boostS > 0 } : {}),
     });
   tracker.update({ t: 0, v: 0, x: 0, a: 0 });
   record();
@@ -222,6 +237,8 @@ export function sampleAt(trace: readonly TraceSample[], t: number): TraceSample 
         gear: f < 0.5 ? a.gear : b.gear,
         boostBar: a.boostBar + f * (b.boostBar - a.boostBar),
         accelG: a.accelG + f * (b.accelG - a.accelG),
+        ...(a.powerKw !== undefined && b.powerKw !== undefined ? { powerKw: a.powerKw + f * (b.powerKw - a.powerKw) } : {}),
+        ...(a.boostActive !== undefined ? { boostActive: f < 0.5 ? a.boostActive : !!b.boostActive } : {}),
       };
     }
   }

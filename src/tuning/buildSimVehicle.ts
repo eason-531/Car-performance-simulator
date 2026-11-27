@@ -155,6 +155,7 @@ function buildSimElectric(spec: VehicleSpec, tuning: TuningConfig): SimElectric 
       peakTorqueNm: m.peakTorqueNm * k,
       maxRpm: m.maxRpm,
       peakPowerEndRpm: m.peakPowerEndRpm ?? null,
+      peakPowerFadeExponent: m.peakPowerFadeExponent ?? 1,
       reductions: [...m.reductions],
       upshiftMs: m.upshiftKmh !== undefined ? kmhToMs(m.upshiftKmh) : null,
       rotorInertiaKgM2: MOTOR_ROTOR_INERTIA_KG_M2,
@@ -167,7 +168,9 @@ function buildSimElectric(spec: VehicleSpec, tuning: TuningConfig): SimElectric 
           systemTorqueNm: el.boost.systemTorqueNm !== undefined ? el.boost.systemTorqueNm * k : null,
           durationS: el.boost.durationS,
           trigger: el.boost.trigger,
-          armed: tuning.electricBoostArmed ?? el.boost.armedByDefault ?? el.boost.trigger === 'launch-control',
+          armed: el.boost.trigger === 'launch-control' || (tuning.electricBoostArmed ?? el.boost.armedByDefault ?? false),
+          recoveryS: el.boost.recoveryS ?? 0,
+          launchCooldownS: el.boost.launchCooldownS ?? 0,
         }
       : null,
     creep: el.creep,

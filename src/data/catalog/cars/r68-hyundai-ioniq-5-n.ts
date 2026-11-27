@@ -5,6 +5,10 @@ const TECH = 'https://www.hyundai.news/newsroom/dam/eu/press-kits/20240325_ioniq
 const KIT = 'https://www.hyundai.news/eu/models/performance/ioniq-5-n/press-kit/press-information.html';
 const EPA = 'https://www.epa.gov/system/files/documents/2026-01/25-testcar-2026-01-21.xlsx';
 const MT = 'https://www.motortrend.com/reviews/2025-hyundai-ioniq-5-n-first-test-review';
+/** Hyundai IONIQ 5 N owner's manual (2025, UK edition): N Grin Boost, N Launch Control and N e-Shift pages. */
+const OM_NGB = 'https://ownersmanual.hyundai.com/full_webhelp/NE1N/2025/en_UK/id2362F020YYK.html';
+const OM_LC = 'https://ownersmanual.hyundai.com/full_webhelp/NE1N/2025/en_UK/id2362E0V0UY4.html';
+const OM_ESHIFT = 'https://ownersmanual.hyundai.com/full_webhelp/NE1N/2025/en_UK/id2362E07M0Y4.html';
 
 /** Overall reduction from the EPA N/V of 128.5 rpm/mph with the 275/35 R21 rolling radius (0.35206 m). */
 const REDUCTION = 10.6;
@@ -177,10 +181,12 @@ export const entry: CatalogEntry = {
   ],
   simCaveats: [
     "Electric model: each motor holds its rated torque to base speed (rated power ÷ rated torque) and then rated power up to its 21,000 rpm limit; Hyundai publishes no curve above base speed, so high-speed power may be optimistic.",
-    "N Grin Boost is modelled as a driver-armed 10 s boost (off by default, toggle in Tuning). N e-Shift is a separate Live Drive option, off by default: its virtual gear ratios, rpm range and shift timing are estimates, it keeps full motor output between changes and has no simulated engine braking (regeneration is not modelled)."
+    "N Grin Boost runs 10 s from the Live Drive boost button (N key) and can be used again 10 s after it ends, as the owner's manual describes; N e-Shift pauses while it runs. Linking it to launches (Tuning, off by default) models N Launch Control on HIGH grip: a brake-held launch fires it at brake release (not during the hold), at most once per 2 minutes (the manual asks for at least 2 minutes of cooling between launches; the car's real limit is temperature-based), and every timed run then starts with it. Unlinked, timed runs match MEDIUM grip (pre-torque, no boost); pre-torque, the 8 s brake-release window, battery charge and temperature limits are not modelled.",
+    "N e-Shift is a separate Live Drive option, off by default: its virtual gear ratios, rpm range and shift timing are estimates, it keeps full motor output between changes and has no simulated engine braking (regeneration is not modelled). As in the car, launch control is unavailable while it runs."
   ],
   notes: [
-    "N Grin Boost raises output to 478 kW (641 hp) for 10 s; the published tests do not state whether it was used, so stock figures run without it and the boost is a tuning toggle."
+    "N Grin Boost raises output to 478 kW (641 hp) for 10 s; the published tests do not state whether it was used, so stock figures run without it and the boosted launch is a labelled Tuning option.",
+    "The owner's manual's N Launch Control page says N Grin Boost activates automatically with launch control, but its grip table links it only on HIGH (LOW: no pre-torque, no boost; MEDIUM: pre-torque, no boost); the model follows the table."
   ],
   sim: buildElectricSpec({
   id: "2025-hyundai-ioniq-5-n-us-cuv-awd-ev",
@@ -200,7 +206,7 @@ export const entry: CatalogEntry = {
     ],
     systemPowerKw: 448,
     systemTorqueNm: 740,
-    boost: { systemPowerKw: 478, systemTorqueNm: 770, durationS: 10, trigger: 'driver', label: 'N Grin Boost', armedByDefault: false },
+    boost: { systemPowerKw: 478, systemTorqueNm: 770, durationS: 10, trigger: 'driver', label: 'N Grin Boost', armedByDefault: false, recoveryS: 10, launchCooldownS: 120 },
     creep: true,
     virtualShift: { label: 'N e-Shift', ratios: ESHIFT_RATIOS, idleRpm: 750, redlineRpm: 6750, revLimitRpm: 6850, upshiftTimeS: 0.15, downshiftTimeS: 0.25 },
     drivetrain: { layout: 'AWD', efficiency: 0.94, description: 'Dual-motor AWD with variable front/rear torque distribution and electronic rear limited-slip differential' },
@@ -214,8 +220,9 @@ export const entry: CatalogEntry = {
       { parameter: 'Peak torque', value: 'Front 350 Nm, rear 390 Nm (740 Nm); with N Grin Boost 370 + 400 Nm (770 Nm)', status: 'verified', source: 'Hyundai IONIQ 5 N technical data. Modelled as motor caps at the boosted values with shared 448 kW / 740 Nm limits that lift to 478 kW / 770 Nm while the boost runs', url: TECH },
       { parameter: 'Motor maximum speed', value: '21,000 rpm', status: 'verified', source: 'Hyundai IONIQ 5 N press information (motors running at up to 21,000 rpm)', url: KIT },
       { parameter: 'Gear ratios', value: `Single-speed overall reduction ${REDUCTION} (both axles)`, status: 'reported', source: 'Derived from the EPA N/V of 128.5 rpm/mph (MY2025 Ioniq 5 N) with the simulator rolling radius; Hyundai gives "single-stage reduction"; the front axle is assumed to match', url: EPA },
-      { parameter: 'N Grin Boost', value: '478 kW for 10 s, driver-armed (off by default)', status: 'verified', source: 'Hyundai press information (ten seconds) and technical data (478 kW)', url: KIT },
-      { parameter: 'N e-Shift', value: 'Simulated 8-speed DCT with manual and automatic shifts, a hard rev limiter and a jolt on each change', status: 'verified', source: 'Hyundai IONIQ 5 N press information. Live Drive option, off by default; tests, drag runs and the dyno never use it', url: KIT },
+      { parameter: 'N Grin Boost', value: '478 kW for 10 s from the steering-wheel NGB button; usable again 10 s after it ends', status: 'verified', source: 'Hyundai owner\'s manual (2025 UK edition, N Grin Boost: "increase the output 40 hp for 10 seconds", "reuse after waiting for 10 seconds"), press information and technical data (478 kW). Live Drive boost button (N key); not available below 30 % charge or when cold/hot in the car, which is not modelled', url: OM_NGB },
+      { parameter: 'N Launch Control', value: 'Brake and accelerator at rest, then release the brake; lifting the accelerator cancels. Grip LOW: no pre-torque, no boost; MEDIUM: pre-torque, no boost; HIGH: pre-torque and N Grin Boost. Cool at least 2 minutes between launches', status: 'verified', source: 'Hyundai owner\'s manual (2025 UK edition, N Launch Control). Modelled: the Tuning link = HIGH grip (boost fires at brake release; one linked launch per 2 minutes); unlinked = MEDIUM without boost. Pre-torque and the 8 s window are not modelled', url: OM_LC },
+      { parameter: 'N e-Shift', value: 'Simulated 8-speed DCT with manual and automatic shifts, a hard rev limiter and a jolt on each change; switched off while N Grin Boost runs and back on afterwards; unavailable during launch control', status: 'verified', source: 'Hyundai IONIQ 5 N press information and owner\'s manual (N e-Shift). Live Drive option, off by default; tests, drag runs and the dyno never use it', url: OM_ESHIFT },
       { parameter: 'N e-Shift virtual gearing', value: `Virtual ratios ${ESHIFT_RATIOS.map((r) => r.toFixed(2)).join(' / ')} (virtual rpm per wheel rpm); idle 750, redline 6,750, limiter 6,850 rpm; 0.15 s up / 0.25 s down with torque cut to 20 % then restored in one step`, status: 'estimated', source: 'Not published. Spacing from the Hyundai 8-speed N DCT (Elantra N ratios and finals), scaled so 8th reaches 260 km/h at the limiter; rpm figures from the Elantra N engine; full motor output between changes (Hyundai does not publish how torque is shaped)' },
       { parameter: 'Curb mass', value: '2,200 kg (lower end of Hyundai Europe 2,200–2,230 kg); MotorTrend weighed 4,860 lb', status: 'reported', source: 'Hyundai IONIQ 5 N technical data', url: TECH },
       { parameter: 'Weight distribution', value: '50 % front', status: 'reported', source: 'MotorTrend measured 50/50 on its test car', url: MT },
@@ -225,8 +232,8 @@ export const entry: CatalogEntry = {
       { parameter: 'Drag coefficient', value: 'Cd 0.347 × 2.58 m² (CdA ≈ 0.90 m²)', status: 'estimated', source: 'CdA from the EPA target road-load C coefficient 0.02423 lbf/mph² (Ioniq 5 N) at 1.204 kg/m³; includes non-aerodynamic speed-squared losses. Split using area ≈ 0.84 × width × height', url: EPA },
       { parameter: 'CG height', value: '0.55 m', status: 'estimated', source: 'Floor battery; not published' },
       { parameter: 'Creep', value: 'Creeps off the brake', status: 'estimated', source: 'Default EV behaviour; not documented for this car' },
-      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'Fit to the MotorTrend 0–60 mph 2.8 s (1-ft rollout) reaches the 1.30 upper bound; the simulation stays slower (3.04 s without N Grin Boost, 2.94 s with it). The test\'s drive mode is not stated' },
-      { parameter: 'Drivetrain efficiency', value: '94 %', status: 'estimated', source: 'Trap fit to MotorTrend 124.9 mph without N Grin Boost (sim 125.1 mph). Sensitivity: with the boost armed the same calibration gives 2.94 s, 11.00 s @ 126.4 mph (rollout)' },
+      { parameter: 'Tire grip calibration', value: '×1.30', status: 'estimated', source: 'Fit to the MotorTrend 0–60 mph 2.8 s (1-ft rollout) reaches the 1.30 upper bound; the simulation stays slower (3.04 s without N Grin Boost, 2.94 s with the boost linked to the launch). The test\'s drive mode is not stated' },
+      { parameter: 'Drivetrain efficiency', value: '94 %', status: 'estimated', source: 'Trap fit to MotorTrend 124.9 mph without N Grin Boost (sim 125.1 mph). Sensitivity: with N Grin Boost linked to the launch (starting at brake release, all 10 s used) the same calibration gives 2.94 s, 10.98 s @ 127.3 mph (rollout)' },
     ],
   }),
 };

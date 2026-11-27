@@ -16,6 +16,7 @@ const byId = (id: string): VehicleSpec => {
 };
 const ev6 = byId('2023-kia-ev6-gt-us-cuv-awd-ev');
 const ioniq = byId('2025-hyundai-ioniq-5-n-us-cuv-awd-ev');
+const taycan = byId('2020-porsche-taycan-turbo-s-us-sedan-awd-ev2');
 const FULL = { throttle: 1, brake: 0 };
 
 /** Drive from rest at full throttle until a speed or time is reached. */
@@ -62,35 +63,140 @@ describe('electric drive', () => {
     expect(held.state.speed).toBe(0);
   });
 
-  it('fires a driver boost only when armed, once, for its published duration', () => {
-    const off = new VehicleSimulator(sim(ioniq));
-    pull(off, 120, 10, (s) => expect(s.state.boostS).toBe(0));
-    const on = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }));
-    let peak = 0;
+  it('fires a driver boost from its button for the published 10 s, then needs 10 s to recover', () => {
+    const s = new VehicleSimulator(sim(ioniq));
+    // Unlinked, full-throttle pulls never boost on their own.
+    pull(s, 120, 10, (x) => expect(x.state.boostS).toBe(0));
+    expect(s.requestBoost()).toEqual({ ok: true });
     let seen = 0;
+    let peak = 0;
     for (let i = 0; i < 14000; i++) {
-      on.step(0.001, FULL);
-      if (on.state.boostS > 0) seen += 0.001;
-      peak = Math.max(peak, on.state.motorPowerKw);
+      s.step(0.001, FULL);
+      if (s.state.boostS > 0) seen += 0.001;
+      peak = Math.max(peak, s.state.motorPowerKw);
+      if (i === 5000) expect(s.requestBoost()).toEqual({ ok: false, reason: 'Boost already running' });
     }
-    expect(seen).toBeCloseTo(10, 1);
-    expect(on.state.boostUsed).toBe(true);
+    expect(seen).toBeCloseTo(10, 2);
     expect(peak).toBeGreaterThan(450);
     expect(peak).toBeLessThanOrEqual(478.1);
+    // 4 s after it ended: still recovering, with the time left.
+    expect(s.state.boostRecoveryS).toBeGreaterThan(5.9);
+    expect(s.state.boostRecoveryS).toBeLessThan(6.1);
+    expect(s.requestBoost()).toEqual({ ok: false, reason: `Boost recovering — ready in ${Math.ceil(s.state.boostRecoveryS - 1e-6)} s` });
+    s.advance(6.1, FULL);
+    expect(s.state.boostRecoveryS).toBe(0);
+    expect(s.requestBoost()).toEqual({ ok: true });
+    expect(s.state.boostS).toBeCloseTo(10, 6);
+    // Cars without a boost button refuse it.
+    expect(new VehicleSimulator(sim(ev6)).requestBoost()).toEqual({ ok: false, reason: 'No boost button on this car' });
+    expect(new VehicleSimulator(sim(taycan)).requestBoost().ok).toBe(false);
+  });
+
+  it('keeps a linked boost out of the brake-held preload and fires it at brake release', () => {
+    const linked = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }));
+    linked.advance(2.5, { throttle: 1, brake: 1 });
+    expect(linked.state.boostS).toBe(0);
+    expect(linked.state.boostUsed).toBe(false);
+    expect(linked.state.launchPrimed).toBe(true);
+    linked.step(0.001, FULL);
+    expect(linked.state.boostS).toBeCloseTo(10, 2);
+    expect(linked.state.launchPrimed).toBe(false);
+    // Unlinked (stock comparison, MEDIUM grip): no prime and no boost.
+    const stock = new VehicleSimulator(sim(ioniq));
+    stock.advance(2.5, { throttle: 1, brake: 1 });
+    expect(stock.state.launchPrimed).toBe(false);
+    stock.advance(1, FULL);
+    expect(stock.state.boostUsed).toBe(false);
+  });
+
+  it('starts timed runs with the full linked boost on either launch technique', () => {
+    for (const launch of ['brake-boost', 'standard'] as const) {
+      const run = runAccelerationRun(sim(ioniq, { electricBoostArmed: true }), { launch, targetSpeedKmh: 200, sampleIntervalS: 0.01 });
+      const boosted = run.trace.filter((p) => p.boostActive);
+      expect(boosted[0].t).toBeLessThanOrEqual(0.15);
+      expect(boosted[boosted.length - 1].t).toBeGreaterThan(9.8);
+      expect(boosted[boosted.length - 1].t).toBeLessThan(10.3);
+      const plain = runAccelerationRun(sim(ioniq), { launch, targetSpeedKmh: 200 });
+      expect(plain.trace.every((p) => !p.boostActive)).toBe(true);
+      expect(run.metrics.zeroTo200KmhS!).toBeLessThan(plain.metrics.zeroTo200KmhS!);
+    }
+  });
+
+  it('cancels a launch-control prime when the accelerator lifts, so a later pull gets no stale boost', () => {
+    // Taycan: brake + full throttle 1 s, lift for 2 s with the brake held, release and coast 2 s, then floor it.
+    const s = new VehicleSimulator(sim(taycan));
+    s.advance(1, { throttle: 1, brake: 1 });
+    expect(s.state.launchPrimed).toBe(true);
+    s.advance(2, { throttle: 0, brake: 1 });
+    expect(s.state.launchPrimed).toBe(false);
+    s.advance(2, { throttle: 0, brake: 0 });
+    expect(s.state.speed).toBeGreaterThan(0.3);
+    s.advance(3, FULL);
+    expect(s.state.boostUsed).toBe(false);
+    // A rolling pull never boosts either.
+    const rolling = new VehicleSimulator(sim(taycan));
+    rolling.advance(3, FULL);
+    expect(rolling.state.boostUsed).toBe(false);
+  });
+
+  it('repeats the launch-control overboost on every launch without a reset', () => {
+    const s = new VehicleSimulator(sim(taycan));
+    const launchAndStop = () => {
+      s.advance(1, { throttle: 1, brake: 1 });
+      expect(s.state.launchPrimed).toBe(true);
+      s.step(0.001, FULL);
+      expect(s.state.boostS).toBeGreaterThan(2.49);
+      let peak = 0;
+      for (let i = 0; i < 2600; i++) {
+        s.step(0.001, FULL);
+        peak = Math.max(peak, s.state.motorPowerKw);
+      }
+      expect(peak).toBeGreaterThan(470);
+      expect(s.state.boostS).toBe(0);
+      for (let i = 0; i < 20000 && s.state.speed > 0; i++) s.step(0.001, { throttle: 0, brake: 1 });
+      expect(s.state.speed).toBe(0);
+    };
+    for (let n = 0; n < 3; n++) launchAndStop();
+  });
+
+  it('allows one linked Ioniq launch per 2 minutes, while the boost button still works after its recovery', () => {
+    const s = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }));
+    const launch = () => {
+      s.advance(1, { throttle: 1, brake: 1 });
+      const primed = s.state.launchPrimed;
+      s.step(0.001, FULL);
+      return primed;
+    };
+    const stop = () => {
+      for (let i = 0; i < 30000 && s.state.speed > 0; i++) s.step(0.001, { throttle: 0, brake: 1 });
+    };
+    expect(launch()).toBe(true);
+    s.advance(4, FULL);
+    stop();
+    s.advance(20, { throttle: 0, brake: 1 });
+    // 10 s boost over, 10 s recovery over, but launch control still cooling: no linked boost.
+    expect(s.state.boostRecoveryS).toBe(0);
+    expect(launch()).toBe(false);
+    expect(s.state.boostS).toBe(0);
+    expect(s.requestBoost()).toEqual({ ok: true });
+    stop();
+    s.advance(130, { throttle: 0, brake: 1 });
+    expect(launch()).toBe(true);
+    expect(s.state.boostS).toBeCloseTo(10, 2);
   });
 
   it('primes a launch-control boost on the brake and fires it on release', () => {
     const base = sim(ev6);
-    const v: SimVehicle = { ...base, electric: { ...base.electric!, boost: { systemPowerW: 480000, systemTorqueNm: null, durationS: 2.5, trigger: 'launch-control', armed: true } } };
+    const v: SimVehicle = {
+      ...base,
+      electric: { ...base.electric!, boost: { systemPowerW: 480000, systemTorqueNm: null, durationS: 2.5, trigger: 'launch-control', armed: true, recoveryS: 0, launchCooldownS: 0 } },
+    };
     const s = new VehicleSimulator(v);
     s.advance(1, { throttle: 1, brake: 1 });
     expect(s.state.launchPrimed).toBe(true);
     expect(s.state.speed).toBe(0);
     s.advance(0.01, FULL);
     expect(s.state.boostS).toBeGreaterThan(2.4);
-    const rolling = new VehicleSimulator(v);
-    rolling.advance(3, FULL);
-    expect(rolling.state.boostUsed).toBe(false);
   });
 
   it('changes a two-speed axle at its published speed', () => {
@@ -164,6 +270,37 @@ describe('simulated stepped gearbox (Hyundai N e-Shift)', () => {
     expect(s.gearCount).toBe(1);
     s.step(0.001, FULL);
     expect(s.state.engineRpm).toBeGreaterThan(6000); // rear-motor rpm at 120 km/h
+  });
+
+  it('pauses for N Grin Boost and returns when it ends; launch control is unavailable while it runs', () => {
+    const s = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }), 'auto');
+    s.setVirtualShift(true);
+    // N e-Shift on: a brake-held hold does not prime launch control.
+    s.advance(2, { throttle: 1, brake: 1 });
+    expect(s.state.launchPrimed).toBe(false);
+    pull(s, 60);
+    expect(s.gearCount).toBe(8);
+    expect(s.state.gear).toBeGreaterThan(1);
+    expect(s.requestBoost()).toEqual({ ok: true });
+    // The boost switches the simulated gears off for its duration…
+    expect(s.virtualShift).toBe(true);
+    expect(s.virtualShiftSuspended).toBe(true);
+    expect(s.gearCount).toBe(1);
+    expect(s.requestShift(1).ok).toBe(false);
+    let peak = 0;
+    for (let i = 0; i < 9900; i++) {
+      s.step(0.001, FULL);
+      peak = Math.max(peak, s.state.motorPowerKw);
+      expect(s.state.gear).toBe(1);
+    }
+    expect(peak).toBeGreaterThan(460);
+    // …and they come back afterwards, in a gear that keeps the simulated rpm under redline.
+    s.advance(0.2, FULL);
+    expect(s.state.boostS).toBe(0);
+    expect(s.virtualShiftSuspended).toBe(false);
+    expect(s.gearCount).toBe(8);
+    expect(s.state.gear).toBeGreaterThan(1);
+    expect(s.state.engineRpm).toBeLessThanOrEqual(6750);
   });
 
   it('leaves the test runners on the real single-speed drive', () => {
