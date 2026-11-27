@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BRAKE_CANCEL, DEFAULT_TRAFFIC_SEED, LiveDriveLoop, type AutoDriveView, type DisengageReason, type TrafficView } from '../assist/liveDrive';
-import type { TrafficMode } from '../assist/traffic';
+import {
+  BRAKE_CANCEL,
+  DEFAULT_TRAFFIC_SEED,
+  LiveDriveLoop,
+  type AutoDriveView,
+  type CommandResult,
+  type CruiseView,
+  type DisengageReason,
+  type PlayerLaneView,
+  type TrafficView,
+} from '../assist/liveDrive';
+import { defaultRoad, type RoadSettings, type TrafficMode } from '../assist/road';
 import { FIXED_DT } from '../physics/constants';
 import type { LiveTimerView } from '../physics/liveTimer';
 import type { TraceSample } from '../physics/runners';
@@ -36,6 +46,8 @@ export interface DriveSnapshot {
   /** Simulation time since the last reset, s. */
   timeS: number;
   autoDrive: AutoDriveView;
+  cruise: CruiseView;
+  lane: PlayerLaneView;
   traffic: TrafficView;
 }
 
@@ -70,6 +82,8 @@ function snapshotOf(loop: LiveDriveLoop): DriveSnapshot {
     timer: loop.timer.view,
     timeS: loop.time,
     autoDrive: loop.autoDriveView(),
+    cruise: loop.cruise,
+    lane: loop.laneView,
     traffic: loop.trafficView(),
   };
 }
@@ -92,18 +106,19 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
 
   if (loopRef.current === null || loopRef.current.vehicle !== vehicle) {
     const prev = loopRef.current;
-    // A new car (or tuning) starts a new session: Auto Drive is off and must be switched on again.
-    const setting = prev ? prev.trafficSetting : { mode: 'off' as const, seed: DEFAULT_TRAFFIC_SEED };
+    // A new car (or tuning) starts a new session: Auto Drive and cruise are off, the set speed is cleared.
+    const setting = prev ? prev.trafficSetting : { mode: 'off' as const, seed: DEFAULT_TRAFFIC_SEED, road: defaultRoad() };
     const next = new LiveDriveLoop(vehicle, shiftMode, {
       trafficMode: setting.mode,
       seed: setting.seed,
-      disengaged: prev?.autoDriveEngaged ? 'vehicle' : undefined,
+      road: setting.road,
+      disengaged: prev?.automated ? 'vehicle' : undefined,
     });
     if (prev) {
-      // Keep what the driver's feet are doing, never Auto Drive's requests.
+      // Keep what the driver's feet are doing, never automated requests.
       const driver = driverTargets();
-      next.applied.throttle = prev.autoDriveEngaged ? Math.min(prev.applied.throttle, driver.throttle) : prev.applied.throttle;
-      next.applied.brake = prev.autoDriveEngaged ? Math.min(prev.applied.brake, driver.brake) : prev.applied.brake;
+      next.applied.throttle = prev.automated ? Math.min(prev.applied.throttle, driver.throttle) : prev.applied.throttle;
+      next.applied.brake = prev.automated ? Math.min(prev.applied.brake, driver.brake) : prev.applied.brake;
     }
     loopRef.current = next;
   }
@@ -139,14 +154,22 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
     (source: InputSource, pedal: 'throttle' | 'brake', value: number) => {
       const v = Math.min(1, Math.max(0, value));
       targets.current[source][pedal] = v;
-      // The brake cancels Auto Drive the moment it is touched, even for a tap shorter than a frame.
-      if (pedal === 'brake' && v > BRAKE_CANCEL && loopRef.current!.autoDriveEngaged) {
+      // The brake cancels Auto Drive and cruise the moment it is touched, even for a tap shorter than a frame.
+      if (pedal === 'brake' && v > BRAKE_CANCEL && loopRef.current!.automated) {
         loopRef.current!.disengage('brake');
         refresh();
       }
     },
     [refresh],
   );
+
+  /** Focus lost or app hidden: release every pedal command (keys, touch and focused-pedal keys) and stop automation. */
+  const releaseAll = useCallback(() => {
+    const t = targets.current;
+    t.pointer.throttle = t.pointer.brake = t.key.throttle = t.key.brake = 0;
+    loopRef.current!.disengage('focus');
+    refresh();
+  }, [refresh]);
 
   const shift = useCallback((direction: 1 | -1): ShiftRequestResult => loopRef.current!.sim.requestShift(direction), []);
 
@@ -161,7 +184,7 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
       const l = loopRef.current!;
       let ok = true;
       if (on) ok = l.engage();
-      else l.disengage(reason);
+      else if (l.autoDriveEngaged || reason !== 'switch') l.disengage(reason);
       refresh();
       return ok;
     },
@@ -189,15 +212,28 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
     return result;
   }, [refresh]);
 
-  const setTraffic = useCallback(
-    (mode: TrafficMode, seed?: number) => {
-      loopRef.current!.setTraffic(mode, seed);
+  const command = useCallback(
+    (run: (l: LiveDriveLoop) => CommandResult | void): CommandResult => {
+      const r = run(loopRef.current!) ?? { ok: true };
       refresh();
+      return r;
     },
     [refresh],
   );
 
+  const setTraffic = useCallback((mode: TrafficMode, seed?: number) => command((l) => l.setTraffic(mode, seed)), [command]);
+  const setSeed = useCallback((seed: number) => command((l) => l.setSeed(seed)), [command]);
+  const setRoad = useCallback((road: RoadSettings) => command((l) => l.setRoad(road)), [command]);
+  const changeLane = useCallback((direction: -1 | 1) => command((l) => l.requestLaneChange(direction)), [command]);
+  const cruise = useCallback(
+    (action: 'set' | 'up' | 'down' | 'cancel' | 'resume') =>
+      command((l) =>
+        action === 'set' ? l.cruiseSet() : action === 'up' ? l.cruiseAdjust(1) : action === 'down' ? l.cruiseAdjust(-1) : action === 'cancel' ? l.cruiseCancel() : l.cruiseResume(),
+      ),
+    [command],
+  );
+
   const runSamples = useCallback((): readonly TraceSample[] => loopRef.current!.timer.samples, []);
 
-  return { snapshot, setPedal, shift, reset, runSamples, setAutoDrive, toggleAutoDrive, setTraffic };
+  return { snapshot, setPedal, releaseAll, shift, reset, runSamples, setAutoDrive, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise };
 }

@@ -29,10 +29,17 @@ APIs) and is designed for iPad Safari.
   - A GPS-style performance timer records 0–100, 0–200 and ¼ mile while you drive.
   - **Auto Drive** (off by default): a simulator aid that works the accelerator
     and brake for you in any playable car. It holds 100 % throttle while the
-    lane is clear, lifts and brakes for slower traffic, follows at a 2-second
-    gap and eases back to full throttle when the lane clears. Seeded traffic
-    (*Sparse traffic* or a repeatable *Cut-in test*) runs on a three-lane road
-    under the gauges. See [Auto Drive and traffic](#auto-drive-and-traffic).
+    lane is clear (or the cruise set speed, if you set one as a cap), lifts and
+    brakes for slower traffic, follows at a 2-second gap and eases back when
+    the lane clears.
+  - **Cruise control**: SET, +, −, CANCEL and RESUME hold a speed with the
+    accelerator only; you brake for traffic.
+  - **Traffic and lanes**: a three-lane road across the full width, with seeded
+    traffic from *Very sparse* to *Heavy*, a stop-and-go *Stuck* queue, an
+    *Auto* mix that changes over time, and two repeatable tests. *Taiwan* and
+    *Autobahn* presets set how traffic behaves, with an adjustable limit for
+    traffic. You change lanes yourself with the lane buttons. See
+    [Auto Drive and traffic](#auto-drive-and-traffic).
 - **Acceleration tests.** 0–100 and 0–200 km/h, 100–200, 0–60 mph, 60 ft, ⅛ and
   ¼ mile with trap speeds, and 1 km. Choose a brake-boost or a standard launch.
   - Speed, rpm (shift pattern) and boost traces share one crosshair.
@@ -190,17 +197,22 @@ headless tests run the same code.
 
 ## Auto Drive and traffic
 
-Auto Drive lives in `src/assist/` and is plain TypeScript like the physics. It
-is a universal driving aid of this simulator, not a model of any
-manufacturer's adaptive cruise control: it never reads or infers a car's
-factory ACC data (the Škoda's catalog entry still says `acc: false`, and the
-Lexus leaves it unspecified), and one set of defaults is shared by every car.
+Auto Drive, cruise control and the traffic live in `src/assist/` and are plain
+TypeScript like the physics, advanced in the same fixed 1 ms steps. They are
+simulator aids and simulator design assumptions, not models of any
+manufacturer's driver assistance: they never read or infer a car's factory
+ACC data (the Škoda's catalog entry still says `acc: false`, and the Lexus
+leaves it unspecified), and one set of defaults is shared by every car.
+
+### Auto Drive (accelerator and brake)
 
 - **What it controls.** Only the two pedal requests. They go through the same
-  pedal smoothing, Auto Hold, gearbox, traction, torque and speed-limiter
-  model as your own feet, so each car keeps its own launch, shifts and top
-  speed. Paddles and the Auto/Manual switch work as usual.
-- **Lane clear:** 100 % requested throttle.
+  pedal smoothing, Auto Hold, gearbox, traction, torque and speed-limiter model
+  as your own feet, so each car keeps its own launch, shifts and top speed.
+  Paddles, the Auto/Manual switch and lane changes stay yours: Auto Drive never
+  changes lanes.
+- **Lane clear:** 100 % requested throttle, or the cruise set speed when it is
+  active as a cap.
 - **Closing on a slower car:** full throttle until the constant deceleration
   needed to arrive at the 2-second gap (at the lead's speed) reaches 1.5 m/s²,
   then that plan: lift first (slower on very powerful cars so the lift stays
@@ -210,54 +222,117 @@ Lexus leaves it unspecified), and one set of defaults is shared by every car.
 - **Following:** a constant-time-gap law,
   a = 0.06·(gap − 5 m − 2 s·v) + 0.4·(v_lead − v), with the gap term floored at
   −1.2 m/s² so a cut-in opens the gap gently, and at most −3 m/s² unless a
-  collision has to be avoided. Standstill gap 5 m; a stopped lead is held on
-  the brake, and Auto Drive pulls away again when it moves.
+  collision has to be avoided. Standstill gap 5 m; at walking pace it brakes
+  against idle creep, holds a stopped lead on the brake, and pulls away again
+  when the queue moves.
 - **Pedals.** A feedforward throttle from a rough estimate of the car's
   throttle authority (peak power ÷ mass ÷ speed, capped by grip) plus an
   integral trim; a brake request from the car's brake capacity plus a trim.
   The two are never requested together. Braking starts 0.4 m/s² below the
   coasting deceleration and ends within 0.1 m/s² of it, with a 0.4 s coast
   before the throttle returns, so it does not cycle. Back on the throttle it
-  rises at 60 % per second (ease back on) up to 100 %.
-- **Taking over.** Any touch of the brake pedal (or `S`/`↓`) cancels Auto
-  Drive at once and the brake has priority; the automatic throttle is dropped
-  immediately. Pressing the accelerator harder than Auto Drive overrides its
-  braking without cancelling it. Auto Drive also switches off on Reset, a car
-  or tuning change, leaving Live Drive, or when the app loses focus, and must
-  be switched on again each time.
-- **Traffic.** Three lanes; you stay in the middle one. *Sparse traffic*
-  generates an encounter every 12–25 s of driving (a slower car ahead in your
-  lane, a car that cuts in from an adjacent lane, or adjacent traffic) at
-  75–125 km/h, placed far enough ahead for the closing speed. Cars in your lane
-  move out after you have followed them for a while. Traffic follows each
-  other with the Intelligent Driver Model, signals before changing lanes, and
-  abandons a cut-in that would leave you less than a firm brake. A car counts
-  as in your lane, and starts to affect Auto Drive, once it is 40 % of the way
-  across. *Cut-in test* is a fixed script: close on an 80 km/h lead, a 65 km/h
-  car cuts in, then moves out, the lead moves out, and the lane is clear.
-- **Replay.** Traffic and the controller run on simulation time in the same
-  fixed 1 ms steps as the physics. The same seed, starting state and pedal
-  inputs reproduce the same encounters and the same Auto Drive behaviour;
-  Reset replays the current seed, the ↻ button picks a new one.
-- **Limits.** There is no collision model (overlapping cars are only flagged),
-  no lateral control and no curves; the road is the existing flat, dry road.
-  A live run saved while Auto Drive was on is labelled *· Auto Drive*; its
-  timing basis is the usual live timer (first motion).
+  rises at 60 % per second up to 100 %.
+- **Which car it follows.** The nearest car in your path: a car counts once it
+  is within 0.6 lanes of your own lateral position and stops counting beyond
+  0.75 lanes. The same boundary applies to cut-ins, cut-outs and your own lane
+  changes (mid-change, cars in both lanes count).
 
-### Try Auto Drive on an iPad
+### Cruise control and the Auto Drive speed cap
 
-1. Open the app (Vercel preview or production URL) in Safari and stay on
-   **Drive**. Pick any playable car with the car buttons or **All cars**.
-2. Tap **Auto Drive** (left of the road). It turns green, traffic switches to
-   *Sparse traffic* if it was off, and the throttle pedal fills to 100 %.
-3. Watch the line under the road: *Accelerating*, *Following* or *Braking*,
-   the lead's speed, distance and time gap, and the requested pedal. The lead
-   gets a white body with an amber (following) or red (braking) outline;
-   blinking amber corners mark a car changing lanes.
-4. For a repeatable cut-in, choose **Cut-in test** in the traffic menu and tap
-   **Reset**, then **Auto Drive** again.
-5. Touch the **brake** pedal at any time to cancel (*Cancelled — brake
-   pressed*). Tap **Auto Drive** again to resume.
+- **SET** stores the current road speed (above 20 km/h); **+** and **−** change
+  it by 1 km/h per tap (hold to repeat); **CANCEL** stops using it and keeps it
+  stored; **RES** uses it again. The panel shows the speed and whether it is
+  active as *Cruise*, as the *Auto Drive cap*, or in *Standby*.
+- **Auto Drive off:** cruise holds the set speed with the accelerator only,
+  coasts down if you are faster, and returns to it after you let go of the
+  accelerator. You brake for traffic.
+- **Auto Drive on:** an active set speed is the most Auto Drive will aim for:
+  it does whichever of the cap and the lead calls for less acceleration or more
+  deceleration, so it slows for a slower lead and returns to the set speed when
+  the lane clears. CANCEL removes only the cap (back to 100 % on a clear road);
+  SET or RES restore it without turning Auto Drive off. Turning Auto Drive on
+  while cruise is active carries the speed over as the cap; turning Auto Drive
+  off leaves it in standby for a deliberate RES.
+- **Taking over.** Any touch of the brake pedal (or `S`/`↓`), even a quick tap,
+  cancels Auto Drive and cruise at once and the brake has priority; the
+  automatic throttle is dropped immediately. Pressing the accelerator harder
+  overrides without cancelling. Losing focus, hiding the app or leaving Live
+  Drive also stops both and releases every pedal command (keys, touch and the
+  pedals' own keys). Reset or a car or tuning change also clears the stored
+  speed. Cruise is independent of the road preset and its limit.
+
+### Traffic, roads and lanes
+
+- **Density** (Traffic menu): *Very sparse* (long clear stretches),
+  *Sparse* (one encounter every 12–25 s of driving, the original baseline),
+  *Mid* (small groups in several lanes), *Heavy* (frequent groups and slower
+  flow), *Stuck* (a nearby queue in every lane whose head alternates stops and
+  crawls, so stop-and-go waves start and clear even while you stand still) and
+  *Auto* (seeded patterns held for 40–110 s, from very sparse to congestion,
+  with a varying share of trucks and less courteous drivers; congestion forms
+  ahead and clears by changing the flow). *Cut-in test* and *Driver test* are
+  fixed scripts.
+- **Road presets.** *Taiwan* (110 km/h by default, 100 or 110 in one tap): most
+  traffic aims at or a little below the limit and follows the car ahead; a
+  seeded minority of less courteous drivers (about 5–20 %) merges late or
+  without signalling, accepts tighter gaps and makes short acceleration bursts,
+  always with room for a firm but playable response. *Autobahn* (no limit by
+  default): varied speeds from 80 km/h trucks to 230 km/h cars; traffic keeps
+  right, passes on the left, finishes a pass before returning, and makes way
+  for faster cars and for you when a safe opening exists; a few drivers are
+  slower to return right. The numeric limit (− / + in 10 km/h steps, Default)
+  sets traffic target speeds under either preset; drivers react after a short
+  delay and slow down gently. It never changes your car, Auto Drive or cruise.
+- **Driver variation** is sampled per vehicle from the seed (target speed,
+  time gap, acceleration, signalling, lane-change speed, accepted gaps,
+  keep-right habit, reaction time). Traffic follows the car ahead (or you) with
+  the Intelligent Driver Model, checks for room before changing lanes and
+  abandons a move into your path that would need more than a firm brake
+  (2.5 m/s², 3.5 m/s² for the less courteous).
+- **Your lane.** ◀ Lane / Lane ▶ (or `Z` / `X`) move you one lane over 2.5 s.
+  Edges, a car beside you and a second press in the same direction are refused
+  with a message; the opposite direction mid-change steers back smoothly.
+- **The road strip** spans the full width at one fixed scale (about 170 m ahead
+  on an iPad in landscape) with evenly spaced lane markings. Traffic beyond
+  either edge is not drawn; the nearest car per lane ahead, and faster traffic
+  approaching from behind, show as a lane-aligned distance cue until they come
+  into view. The gap line runs from your front bumper to the lead's rear bumper
+  as drawn, also during lane changes, and becomes a red marker when very short.
+- **Settings, Reset and seeds.** Density, road and limit can be changed at any
+  time: cars already on the road stay where they are and the change applies
+  from then on. Changing to or from *Off*, or to a scripted test, starts that
+  traffic afresh; the ↻ button picks a new seed for future traffic. **Reset**
+  restarts from a standing start in the middle lane with the current seed and
+  settings, so the same inputs replay the same traffic, lead changes and
+  Auto Drive behaviour (mid-drive setting changes are part of those inputs).
+  A scripted test that can no longer run as designed (you passed its car or
+  left its lane) ends as *missed*; Reset runs it again.
+- **Limits.** There is no collision model (an overlap is only flagged), no
+  steering model beyond lane changes, and no curves; the road is the existing
+  flat, dry road. A live run saved while Auto Drive or cruise was on is
+  labelled *· Auto Drive* or *· Cruise*; its timing basis is the usual live
+  timer (first motion).
+
+### Try it on an iPad
+
+1. Open the app in Safari and stay on **Drive**. Pick a car with the car
+   buttons or **All cars**.
+2. **Traffic and road:** in the row under the road choose a density (for
+   example *Heavy*), then *Taiwan* or *Autobahn*, and a limit (100 / 110, − / +,
+   or *Default*). The seed (#n ↻) rerolls future traffic.
+3. **Auto Drive:** tap **Auto Drive**. The line under the road shows
+   *Accelerating*, *Following* or *Braking*, the lead's speed, distance and time
+   gap, and the requested pedal; the lead gets an amber (following) or red
+   (braking) outline.
+4. **Lanes:** tap **◀ Lane** or **Lane ▶** above the pedals. Auto Drive keeps
+   only the pedals and follows whatever is ahead in your new lane.
+5. **Cruise:** with Auto Drive off, drive above 20 km/h, tap **SET**, use **+**
+   and **−**, press the accelerator to go faster and let go to come back, tap
+   the brake to cancel and **RES** to resume. With Auto Drive on, SET makes the
+   speed its cap and CANCEL removes the cap.
+6. Touch the **brake** pedal at any time to cancel (*Cancelled — brake
+   pressed*). For a repeatable run choose *Cut-in test*, *Driver test* or a
+   seed, then tap **Reset**.
 
 ## Project structure
 
@@ -265,8 +340,8 @@ Lexus leaves it unspecified), and one set of defaults is shared by every car.
 src/
   physics/        Pure simulation: engine, torque converter, gearbox, forces,
                   simulator, metrics, test runners, dyno, live timer (+ tests)
-  assist/         Auto Drive controller, seeded traffic and the Live Drive
-                  session loop (+ tests)
+  assist/         Auto Drive and cruise controller, road presets, seeded
+                  traffic and the Live Drive session loop (+ tests)
   data/           Owner-car specs, tire compounds (+ tests)
   data/catalog/   Catalog types, spec builder, classes, generated stock stats,
                   filters/sorting, gaps report, and cars/ (one file per row)
@@ -353,8 +428,12 @@ No environment variables or secrets are needed.
 | Shift up / down | `+ Up` / `− Down` paddles | `E` / `→`, `Q` / `←` |
 | Auto ↔ manual | Mode switch | `M` |
 | Auto Drive on / off | Auto Drive button | `A` |
-| Cancel Auto Drive | Touch the brake pedal | `S` / `↓` |
-| Traffic | Traffic menu: off, sparse (seeded, ↻ new seed) or cut-in test | — |
+| Cancel Auto Drive and cruise | Touch the brake pedal | `S` / `↓` |
+| Change lane left / right | ◀ Lane / Lane ▶ buttons | `Z` / `X` |
+| Cruise SET / RESUME / CANCEL | SET / RES / CANCEL buttons | `C` / `V` / `B` |
+| Cruise set speed ± 1 km/h | + / − buttons (hold to repeat) | `+` / `-` |
+| Traffic density and seed | Traffic menu; #seed ↻ for a new seed | — |
+| Road preset and traffic limit | Road menu; − / +, quick limits, Default | — |
 | Reset | Reset button | `R` |
 
 Auto Hold keeps the car still at rest until you press the throttle, so every
@@ -378,9 +457,10 @@ then release the brake, to brake-boost.
 
 - The simulation covers a flat, dry road at 20 °C and sea level, with a 75 kg
   driver included in every test mass.
-- Auto Drive and its traffic are simulator aids with estimated, shared
-  controller settings, not models of a real driver-assistance system. They
-  never change the stock physics, timing, classes or saved-data formats.
+- Auto Drive, cruise control and the traffic are simulator aids with estimated,
+  shared settings and seeded driver variation, not models of a real
+  driver-assistance system or of measured traffic. They never change the stock
+  physics, timing, classes or saved-data formats.
 - Traction control is always active. The model limits drive force to the
   available grip rather than simulating spinning wheels.
 - Timed tests start at brake release; the Tests view can also report times

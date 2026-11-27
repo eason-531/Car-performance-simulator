@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { AutoDriveView, DisengageReason, TrafficView } from '../assist/liveDrive';
-import type { TrafficMode } from '../assist/traffic';
+import type { AutoDriveView, CruiseView, DisengageReason, TrafficView } from '../assist/liveDrive';
+import { AssistBar, CruisePanel, LaneButton } from '../components/DriveAssist';
 import { ArcGauge, type GaugeZone } from '../components/ArcGauge';
 import { Icon } from '../components/Icon';
 import { Paddle } from '../components/Paddle';
@@ -36,7 +36,7 @@ export function DriveView() {
     setVirtualFor(null);
   }
   const virtual = !!vs && virtualFor === spec.id;
-  const { snapshot: s, setPedal, shift, reset, runSamples, setAutoDrive, toggleAutoDrive, setTraffic } = useDriveSimulation(vehicle, mode, virtual);
+  const { snapshot: s, setPedal, releaseAll, shift, reset, runSamples, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise } = useDriveSimulation(vehicle, mode, virtual);
   const color = seriesColor(spec.colorSlot ?? 0);
   const [flash, setFlash] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,6 +53,20 @@ export function DriveView() {
   const toggleAuto = useCallback(() => {
     if (toggleAutoDrive() === 'refused') showFlash('Release the brake to start Auto Drive');
   }, [toggleAutoDrive, showFlash]);
+  const lane = useCallback(
+    (dir: -1 | 1) => {
+      const r = changeLane(dir);
+      if (!r.ok && r.message) showFlash(r.message);
+    },
+    [changeLane, showFlash],
+  );
+  const cruiseAction = useCallback(
+    (a: 'set' | 'up' | 'down' | 'cancel' | 'resume') => {
+      const r = cruise(a);
+      if (!r.ok && r.message) showFlash(r.message);
+    },
+    [cruise, showFlash],
+  );
 
   const doShift = useCallback(
     (dir: 1 | -1) => {
@@ -82,6 +96,13 @@ export function DriveView() {
       else if (!e.repeat && k === 'm') app.setShiftMode(mode === 'auto' ? 'manual' : 'auto');
       else if (!e.repeat && k === 'r') reset();
       else if (!e.repeat && k === 'a') toggleAuto();
+      else if (!e.repeat && k === 'z') lane(-1);
+      else if (!e.repeat && k === 'x') lane(1);
+      else if (!e.repeat && k === 'c') cruiseAction('set');
+      else if (!e.repeat && k === 'v') cruiseAction('resume');
+      else if (!e.repeat && k === 'b') cruiseAction('cancel');
+      else if (k === '+' || k === '=') cruiseAction('up');
+      else if (k === '-' || k === '_') cruiseAction('down');
       else return;
       e.preventDefault();
     };
@@ -90,12 +111,9 @@ export function DriveView() {
       if (k === 'arrowup' || k === 'w') setPedal('key', 'throttle', 0);
       else if (k === 'arrowdown' || k === 's') setPedal('key', 'brake', 0);
     };
-    // Losing focus releases the keys and switches Auto Drive off; it has to be switched on again deliberately.
-    const blur = () => {
-      setPedal('key', 'throttle', 0);
-      setPedal('key', 'brake', 0);
-      setAutoDrive(false, 'focus');
-    };
+    // Losing focus or hiding the app releases every pedal (keys and touch) and stops Auto Drive and cruise;
+    // they have to be switched on again deliberately.
+    const blur = () => releaseAll();
     const visibility = () => {
       if (document.visibilityState === 'hidden') blur();
     };
@@ -109,7 +127,7 @@ export function DriveView() {
       window.removeEventListener('blur', blur);
       document.removeEventListener('visibilitychange', visibility);
     };
-  }, [setPedal, doShift, reset, app, mode, toggleAuto, setAutoDrive]);
+  }, [setPedal, doShift, reset, app, mode, toggleAuto, releaseAll, lane, cruiseAction]);
 
   const dyno = useMemo(() => computeDyno(vehicle), [vehicle]);
   const dial = useMemo(() => speedDial(topSpeedKmh(vehicle)), [vehicle]);
@@ -140,7 +158,11 @@ export function DriveView() {
       vehicleId: spec.id,
       vehicleName: spec.shortName,
       colorSlot: spec.colorSlot ?? -1,
-      tuningLabel: describeTuning(spec, app.tuningFor(spec.id)) + (virtual ? ` · ${vs.label}` : '') + (s.autoDrive.usedThisRun ? ' · Auto Drive' : ''),
+      tuningLabel:
+        describeTuning(spec, app.tuningFor(spec.id)) +
+        (virtual ? ` · ${vs.label}` : '') +
+        (s.autoDrive.usedThisRun ? ' · Auto Drive' : '') +
+        (s.autoDrive.cruiseUsedThisRun ? ' · Cruise' : ''),
       tuning: app.tuningFor(spec.id),
       launch: 'driver',
       powerPs: dyno.peakPowerPs,
@@ -153,7 +175,8 @@ export function DriveView() {
   };
 
   const auto = s.autoDrive;
-  const status = autoDriveStatus(auto, s.traffic);
+  const automated = auto.engaged || s.cruise.state === 'cruise';
+  const status = autoDriveStatus(auto, s.cruise, s.traffic);
 
   return (
     <div className="view drive">
@@ -301,47 +324,26 @@ export function DriveView() {
         </div>
       </div>
 
-      <div className="drive__assist">
-        <div className={`assist panel ${auto.engaged ? 'is-on' : ''}`}>
-          <button
-            type="button"
-            className={`assist__toggle ${auto.engaged ? 'is-on' : ''}`}
-            aria-pressed={auto.engaged}
-            onClick={toggleAuto}
-            title="Auto Drive: works the accelerator and brake (A)"
-          >
-            <span className="assist__led" aria-hidden="true" />
-            <span className="assist__name">Auto Drive</span>
-            <span className="assist__state">{auto.engaged ? 'On' : 'Off'}</span>
-          </button>
-          <div className="assist__traffic">
-            <select className="assist__select" value={s.traffic.mode} onChange={(e) => setTraffic(e.target.value as TrafficMode)} aria-label="Traffic">
-              <option value="off">Traffic off</option>
-              <option value="sparse">Sparse traffic</option>
-              <option value="cut-in">Cut-in test</option>
-            </select>
-            {s.traffic.mode === 'sparse' && (
-              <button
-                type="button"
-                className="assist__seed"
-                onClick={() => setTraffic('sparse', 1 + Math.floor(Math.random() * 9999))}
-                title="New traffic seed (Reset replays the current one)"
-                aria-label={`Traffic seed ${s.traffic.seed}: new seed`}
-              >
-                #{s.traffic.seed} <Icon name="reset" size={14} />
-              </button>
-            )}
-          </div>
-        </div>
-        <RoadView distanceM={s.distanceM} timeS={s.timeS} color={color} traffic={s.traffic} auto={auto} />
-      </div>
+      <RoadView distanceM={s.distanceM} speedKmh={s.speedKmh} timeS={s.timeS} color={color} traffic={s.traffic} auto={auto} lane={s.lane} />
       <p className={`drive__assist-note drive__assist-note--${status.tone}`}>
         <strong role="status">{status.title}</strong>
         <span>{status.detail}</span>
+        <span className="drive__odo">{fmt(s.distanceM / 1000, 2)} km</span>
       </p>
+      <AssistBar
+        auto={auto}
+        traffic={s.traffic}
+        onToggleAuto={toggleAuto}
+        onTraffic={(m) => setTraffic(m)}
+        onReroll={() => setSeed(1 + Math.floor(Math.random() * 9999))}
+        onRoad={setRoad}
+      />
 
       <div className="drive__controls">
-        <Pedal kind="brake" value={s.brake} onChange={(v) => setPedal('pointer', 'brake', v)} keyHint={auto.engaged ? 'Cancels Auto' : '↓ / S'} />
+        <div className="drive__pedal-col">
+          <LaneButton direction={-1} onPress={() => lane(-1)} changing={s.lane.signal < 0} />
+          <Pedal kind="brake" value={s.brake} onChange={(v) => setPedal('pointer', 'brake', v)} keyHint={automated ? 'Cancels' : '↓ / S'} />
+        </div>
 
         <div className="drive__center">
           <div className="paddles">
@@ -357,15 +359,14 @@ export function DriveView() {
             {!singleSpeed && <Paddle direction={1} onShift={doShift} label="Shift up" title="Shift up (E or →)" />}
           </div>
 
+          <CruisePanel cruise={s.cruise} onAction={cruiseAction} />
+
           <div className="timer panel">
             <div className="timer__head">
               <span className="timer__title">Performance timer</span>
               <Badge tone={timer.status === 'running' ? 'good' : timer.armed ? 'reported' : 'neutral'}>
                 {timer.status === 'running' ? 'Recording' : timer.armed ? 'Armed — launch' : 'Stop to arm'}
               </Badge>
-              <Button icon="save" variant="primary" onClick={saveRun} disabled={!canSave} className="timer__save">
-                Save run
-              </Button>
             </div>
             <div className="timer__grid">
               <TimerCell label="0–100" value={fmtSeconds(m.zeroTo100KmhS)} />
@@ -373,10 +374,16 @@ export function DriveView() {
               <TimerCell label="¼ mile" value={fmtSeconds(m.quarterMileS)} />
               <TimerCell label="Elapsed" value={fmtSeconds(timer.elapsedS, 1)} />
             </div>
+            <Button icon="save" variant="primary" onClick={saveRun} disabled={!canSave} className="timer__save">
+              Save run
+            </Button>
           </div>
         </div>
 
-        <Pedal kind="throttle" value={s.throttle} onChange={(v) => setPedal('pointer', 'throttle', v)} keyHint={auto.engaged ? 'Auto Drive' : '↑ / W'} />
+        <div className="drive__pedal-col">
+          <LaneButton direction={1} onPress={() => lane(1)} changing={s.lane.signal > 0} />
+          <Pedal kind="throttle" value={s.throttle} onChange={(v) => setPedal('pointer', 'throttle', v)} keyHint={auto.engaged ? 'Auto Drive' : s.cruise.state === 'cruise' ? 'Cruise' : '↑ / W'} />
+        </div>
       </div>
 
     </div>
@@ -385,22 +392,38 @@ export function DriveView() {
 
 const CANCEL_TEXT: Record<DisengageReason, string> = {
   brake: 'Cancelled — brake pressed',
-  switch: 'Switched off',
+  switch: 'Auto Drive switched off',
   focus: 'Off — the app lost focus',
   reset: 'Off — car reset',
   vehicle: 'Off — car changed',
 };
 
+const LEVEL_TEXT: Record<string, string> = { 'very-sparse': 'very sparse', sparse: 'sparse', mid: 'mid', heavy: 'heavy', jam: 'congestion' };
+
 function leadText(t: TrafficView): string {
   const l = t.lead;
   if (!l) return t.mode === 'off' ? 'No traffic' : 'Lane clear';
-  const gap = l.timeGapS !== null ? `${fmt(l.gapM)} m · ${l.timeGapS.toFixed(1)} s gap` : `${fmt(l.gapM)} m`;
+  const gap = l.timeGapS !== null ? `${fmt(Math.max(0, l.gapM))} m · ${l.timeGapS.toFixed(1)} s gap` : `${fmt(Math.max(0, l.gapM))} m`;
   return `${l.cutIn ? 'Cut-in ' : 'Lead '}${fmt(l.speedKmh)} km/h · ${gap}`;
 }
 
-/** One-line Auto Drive status for the HUD under the road. */
-function autoDriveStatus(a: AutoDriveView, t: TrafficView): { tone: 'off' | 'good' | 'warning' | 'critical'; title: string; detail: string } {
+function trafficText(t: TrafficView): string {
+  const road = `${t.road.preset === 'taiwan' ? 'Taiwan' : 'Autobahn'} ${t.road.limitKmh === null ? 'no limit' : `${t.road.limitKmh} km/h`}`;
+  const level = t.mode === 'auto' && t.level ? ` · Auto: ${LEVEL_TEXT[t.level]}` : '';
   const scenario = t.note ? ` · ${t.note}` : '';
+  return `${road}${level}${scenario}`;
+}
+
+/** One-line status for the HUD under the road: Auto Drive or cruise state, the lead and the traffic setting. */
+function autoDriveStatus(a: AutoDriveView, c: CruiseView, t: TrafficView): { tone: 'off' | 'good' | 'warning' | 'critical'; title: string; detail: string } {
+  const pedals = a.brake > 0.005 ? `brake ${fmt(a.brake * 100)} %` : `throttle ${fmt(a.throttle * 100)} %`;
+  if (!a.engaged && c.state === 'cruise') {
+    return {
+      tone: 'good',
+      title: a.override ? `Cruise ${c.setKmh} km/h · accelerator override` : `Cruise ${c.setKmh} km/h`,
+      detail: `Holds the set speed with the accelerator only (coasts above it; you brake for traffic) · requested ${pedals} · ${leadText(t)} · ${trafficText(t)}`,
+    };
+  }
   if (!a.engaged) {
     const recent = a.lastDisengage && a.lastDisengage.agoS < 4 ? a.lastDisengage : null;
     return {
@@ -408,11 +431,11 @@ function autoDriveStatus(a: AutoDriveView, t: TrafficView): { tone: 'off' | 'goo
       title: recent ? CANCEL_TEXT[recent.reason] : 'Auto Drive off',
       detail:
         t.mode === 'off'
-          ? 'Simulator aid that works the accelerator and brake for you: 100 % throttle when the lane is clear, a 2-second gap behind traffic. Gears and drivetrain stay as modelled. Brake or tap Auto Drive (A) to cancel.'
-          : `${leadText(t)}${scenario} · Auto Drive is a simulator aid for accelerator and brake; brake or tap it to cancel.`,
+          ? 'Auto Drive is a simulator aid that works the accelerator and brake for you: 100 % throttle when the lane is clear, a 2-second gap behind traffic, and the cruise set speed as an optional cap. Gears, lanes and drivetrain stay yours. Brake or tap Auto Drive (A) to cancel.'
+          : `${leadText(t)} · ${trafficText(t)} · Auto Drive is a simulator aid for accelerator and brake; brake or tap it to cancel.`,
     };
   }
-  const pedals = a.brake > 0.005 ? `brake ${fmt(a.brake * 100)} %` : `throttle ${fmt(a.throttle * 100)} %`;
+  const cap = c.state === 'cap' ? ` · cap ${c.setKmh} km/h` : '';
   const title = a.override
     ? 'Driver override'
     : a.mode === 'braking'
@@ -421,9 +444,11 @@ function autoDriveStatus(a: AutoDriveView, t: TrafficView): { tone: 'off' | 'goo
         ? 'Holding behind lead'
         : a.mode === 'following'
           ? 'Following'
-          : 'Accelerating';
+          : a.mode === 'cruising'
+            ? 'Holding the set speed'
+            : 'Accelerating';
   const tone = a.mode === 'braking' || a.mode === 'stopped' ? 'critical' : a.mode === 'following' ? 'warning' : 'good';
-  return { tone, title, detail: `${leadText(t)} · requested ${pedals}${scenario}` };
+  return { tone, title: `${title}${cap}`, detail: `${leadText(t)} · requested ${pedals} · ${trafficText(t)}` };
 }
 
 function TelemetryRow({ label, value, children }: { label: string; value: string; children?: React.ReactNode }) {

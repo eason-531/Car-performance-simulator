@@ -1,4 +1,4 @@
-import { useRef, type KeyboardEvent, type PointerEvent } from 'react';
+import { useEffect, useRef, type KeyboardEvent, type PointerEvent } from 'react';
 
 /**
  * Touch pedal. Press anywhere on it: the higher the finger, the deeper the
@@ -18,6 +18,27 @@ export function Pedal({
 }) {
   const pointer = useRef<number | null>(null);
   const label = kind === 'throttle' ? 'Throttle' : 'Brake';
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+
+  // Losing focus or hiding the app releases the pedal, whether it was held by a finger or by its own keys.
+  useEffect(() => {
+    const release = () => {
+      pointer.current = null;
+      onChangeRef.current(0);
+    };
+    const visibility = () => {
+      if (document.visibilityState === 'hidden') release();
+    };
+    window.addEventListener('blur', release);
+    document.addEventListener('visibilitychange', visibility);
+    return () => {
+      window.removeEventListener('blur', release);
+      document.removeEventListener('visibilitychange', visibility);
+    };
+  }, []);
 
   const fromEvent = (e: PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -35,6 +56,7 @@ export function Pedal({
   const move = (e: PointerEvent<HTMLDivElement>) => {
     if (e.pointerId === pointer.current) onChange(fromEvent(e));
   };
+  // Lifted, cancelled (e.g. a system gesture) or capture lost: the pedal returns to zero.
   const up = (e: PointerEvent<HTMLDivElement>) => {
     if (e.pointerId !== pointer.current) return;
     pointer.current = null;
@@ -63,6 +85,7 @@ export function Pedal({
       onPointerMove={move}
       onPointerUp={up}
       onPointerCancel={up}
+      onLostPointerCapture={up}
       onKeyDown={key}
       onContextMenu={(e) => e.preventDefault()}
     >
