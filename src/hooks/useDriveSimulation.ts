@@ -154,6 +154,8 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
     (source: InputSource, pedal: 'throttle' | 'brake', value: number) => {
       const v = Math.min(1, Math.max(0, value));
       targets.current[source][pedal] = v;
+      const t = targets.current;
+      loopRef.current!.setDriverInput({ throttle: Math.max(t.pointer.throttle, t.key.throttle), brake: Math.max(t.pointer.brake, t.key.brake) });
       // The brake cancels Auto Drive and cruise the moment it is touched, even for a tap shorter than a frame.
       if (pedal === 'brake' && v > BRAKE_CANCEL && loopRef.current!.automated) {
         loopRef.current!.disengage('brake');
@@ -167,6 +169,7 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
   const releaseAll = useCallback(() => {
     const t = targets.current;
     t.pointer.throttle = t.pointer.brake = t.key.throttle = t.key.brake = 0;
+    loopRef.current!.setDriverInput({ throttle: 0, brake: 0 });
     loopRef.current!.disengage('focus');
     refresh();
   }, [refresh]);

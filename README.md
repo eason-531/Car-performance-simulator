@@ -239,7 +239,7 @@ leaves it unspecified), and one set of defaults is shared by every car.
 
 ### Cruise control and the Auto Drive speed cap
 
-- **SET** stores the current road speed (above 20 km/h); **+** and **−** change
+- **SET** stores the current road speed (above 20 km/h; not while braking); **+** and **−** change
   it by 1 km/h per tap (hold to repeat); **CANCEL** stops using it and keeps it
   stored; **RES** uses it again. The panel shows the speed and whether it is
   active as *Cruise*, as the *Auto Drive cap*, or in *Standby*.
@@ -256,7 +256,8 @@ leaves it unspecified), and one set of defaults is shared by every car.
 - **Taking over.** Any touch of the brake pedal (or `S`/`↓`), even a quick tap,
   cancels Auto Drive and cruise at once and the brake has priority; the
   automatic throttle is dropped immediately. Pressing the accelerator harder
-  overrides without cancelling. Losing focus, hiding the app or leaving Live
+  overrides without cancelling. Auto Drive, SET and RES are refused while the
+  brake is held, however quickly they follow it. Losing focus, hiding the app or leaving Live
   Drive also stops both and releases every pedal command (keys, touch and the
   pedals' own keys). Reset or a car or tuning change also clears the stored
   speed. Cruise is independent of the road preset and its limit.
@@ -289,15 +290,22 @@ leaves it unspecified), and one set of defaults is shared by every car.
   the Intelligent Driver Model, checks for room before changing lanes and
   abandons a move into your path that would need more than a firm brake
   (2.5 m/s², 3.5 m/s² for the less courteous).
-- **Your lane.** ◀ Lane / Lane ▶ (or `Z` / `X`) move you one lane over 2.5 s.
-  Edges, a car beside you and a second press in the same direction are refused
-  with a message; the opposite direction mid-change steers back smoothly.
-- **The road strip** spans the full width at one fixed scale (about 170 m ahead
-  on an iPad in landscape) with evenly spaced lane markings. Traffic beyond
-  either edge is not drawn; the nearest car per lane ahead, and faster traffic
-  approaching from behind, show as a lane-aligned distance cue until they come
-  into view. The gap line runs from your front bumper to the lead's rear bumper
-  as drawn, also during lane changes, and becomes a red marker when very short.
+- **Your lane.** ◀ Lane / Lane ▶ (or `Z` / `X`) move you one lane over 2.5 s
+  along a minimum-jerk path (no sudden start or stop sideways). Edges, a car
+  beside you and a second press in the same direction are refused with a
+  message; the opposite direction mid-change eases out of the sideways motion
+  and back. Traffic changes lanes the same way, and a car abandons a move if
+  the gap it was taking closes before it is across the line.
+- **The road strip** is painted on one canvas per frame (cars, gap line and
+  labels together, so nothing is left behind from an earlier frame) across
+  the full width at one fixed scale (about 170 m ahead on an iPad in
+  landscape) with evenly spaced lane markings. The road ends at a narrow
+  horizon strip on the right: the nearest car per lane beyond it shows there
+  as a distance cue until it drives into view; faster traffic approaching from
+  behind gets a cue at the left edge. The gap line runs from your front bumper
+  to the lead's rear bumper as drawn, also during lane changes, with its label
+  on the line (or just beside it, never over another car), and becomes a red
+  marker when very short.
 - **Settings, Reset and seeds.** Density, road and limit can be changed at any
   time: cars already on the road stay where they are and the change applies
   from then on. Changing to or from *Off*, or to a scripted test, starts that

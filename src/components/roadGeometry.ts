@@ -21,6 +21,8 @@ export const SHORT_GAP_PX = 16;
 export interface RoadLayout {
   width: number;
   height: number;
+  /** Where the drawn road ends and the horizon strip with the distance cues begins, px. */
+  roadEnd: number;
   laneH: number;
   pxPerM: number;
   /** Screen x of the player's front bumper, px. */
@@ -29,12 +31,18 @@ export interface RoadLayout {
   behindM: number;
 }
 
+/** Width of the horizon strip at the right end, where traffic beyond the drawn road is shown as cues, px. */
+export function horizonWidth(width: number): number {
+  return width < 520 ? 56 : 68;
+}
+
 export function roadLayout(width: number, height: number): RoadLayout {
   const w = Math.max(width, 200);
   const h = Math.max(height, 60);
+  const roadEnd = w - horizonWidth(w);
   const x0 = Math.min(140, Math.max(46, w * 0.11));
-  const pxPerM = Math.min(6.5, Math.max(2.2, (w - x0 - 12) / AHEAD_TARGET_M));
-  return { width: w, height: h, laneH: (h - 2 * PAD_PX) / LANE_COUNT, pxPerM, x0, aheadM: (w - x0) / pxPerM, behindM: x0 / pxPerM };
+  const pxPerM = Math.min(6.5, Math.max(2.2, (roadEnd - x0 - 4) / AHEAD_TARGET_M));
+  return { width: w, height: h, roadEnd, laneH: (h - 2 * PAD_PX) / LANE_COUNT, pxPerM, x0, aheadM: (roadEnd - x0) / pxPerM, behindM: x0 / pxPerM };
 }
 
 export function laneY(l: RoadLayout, lat: number): number {
@@ -103,9 +111,10 @@ export interface RoadScene {
 }
 
 /**
- * Everything the strip draws for one frame. Bodies are cars with any part
- * between the edges (clipped there); cars wholly beyond the right edge, or
- * approaching from beyond the left edge, become one cue per lane.
+ * Everything the strip draws for one frame. Bodies are cars with any part on
+ * the drawn road (clipped at its ends); cars wholly beyond the road's end, or
+ * approaching from beyond the left edge, become one cue per lane, shown in the
+ * horizon strip (ahead) or at the left edge (behind).
  */
 export function roadScene(l: RoadLayout, cars: readonly TrafficCarView[], playerLat: number, playerSpeedKmh: number, leadId: number | null): RoadScene {
   const player = bodyBox(l, 0, PLAYER_LENGTH_M, playerLat);
@@ -117,14 +126,14 @@ export function roadScene(l: RoadLayout, cars: readonly TrafficCarView[], player
   for (const car of cars) {
     const b = bodyBox(l, car.dx, car.lengthM, car.lat, car.kind);
     const isLead = car.id === leadId;
-    if (b.x2 > 0 && b.x1 < l.width) {
+    if (b.x2 > 0 && b.x1 < l.roadEnd) {
       const body = { ...b, car };
       bodies.push(body);
       if (isLead) leadBody = body;
       continue;
     }
     const lane = laneOf(car.lat);
-    if (b.x1 >= l.width) {
+    if (b.x1 >= l.roadEnd) {
       const d = car.dx - car.lengthM;
       const cue: Cue = { id: car.id, lane, side: 'ahead', distanceM: d, y: laneY(l, lane), isLead };
       const prev = ahead.get(lane);
@@ -143,7 +152,7 @@ export function roadScene(l: RoadLayout, cars: readonly TrafficCarView[], player
     const x2 = leadBody.x1;
     gap = { x1, y1: player.cy, x2, y2: leadBody.cy, midX: (x1 + x2) / 2, midY: (player.cy + leadBody.cy) / 2, short: x2 - x1 < SHORT_GAP_PX, offscreen: false };
   } else if (leadCue) {
-    const x2 = l.width - 2;
+    const x2 = l.roadEnd;
     gap = { x1: player.x2, y1: player.cy, x2, y2: leadCue.y, midX: (player.x2 + x2) / 2, midY: (player.cy + leadCue.y) / 2, short: false, offscreen: true };
   }
   return { layout: l, player, bodies, cues: [...ahead.values(), ...behind.values()], gap };

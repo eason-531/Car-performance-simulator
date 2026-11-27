@@ -204,3 +204,28 @@ describe('Auto Drive speed cap', () => {
     expect(loop.trafficSetting.road).toEqual({ preset: 'taiwan', limitKmh: 100 });
   });
 });
+
+describe('brake interlock', () => {
+  it('refuses Auto Drive, SET and RESUME while the brake is held, even before the next step, and changes nothing', () => {
+    const loop = session(lexus);
+    upTo(loop, 70);
+    loop.cruiseSet();
+    loop.cruiseCancel();
+    const stored = loop.cruise;
+    expect(stored.state).toBe('standby');
+    // The brake is pressed between steps (as a pedal event would report it).
+    loop.setDriverInput({ throttle: 0, brake: 1 });
+    expect(loop.engage()).toBe(false);
+    expect(loop.cruiseSet()).toEqual({ ok: false, message: 'Release the brake to set a speed' });
+    expect(loop.cruiseResume()).toEqual({ ok: false, message: 'Release the brake to resume' });
+    expect(loop.cruise).toEqual(stored);
+    expect(loop.automated).toBe(false);
+    expect(loop.trafficSetting.mode).toBe('off');
+    // Released: deliberate engagement works again; a brake tap still cancels at once.
+    loop.setDriverInput({ throttle: 0, brake: 0 });
+    expect(loop.cruiseResume().ok).toBe(true);
+    expect(loop.engage()).toBe(true);
+    loop.step({ throttle: 0, brake: 0.1 });
+    expect(loop.automated).toBe(false);
+  });
+});

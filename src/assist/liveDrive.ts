@@ -2,8 +2,9 @@ import { FIXED_DT } from '../physics/constants';
 import { LiveTimer } from '../physics/liveTimer';
 import { VehicleSimulator } from '../physics/simulator';
 import type { ShiftMode, SimVehicle } from '../physics/types';
-import { kmhToMs, msToKmh, smoothstep } from '../physics/units';
+import { kmhToMs, msToKmh } from '../physics/units';
 import { AutoDriveController, plantModel, type AutoDriveCommand, type AutoDriveMode } from './autoDrive';
+import { lateralMove, reversalDuration, sampleLateral, type LateralMove } from './lateral';
 import { normaliseSeed } from './rng';
 import { defaultRoad, isGenerated, isScripted, type RoadSettings, type TrafficMode } from './road';
 import { LANE_COUNT, PLAYER_LENGTH_M, RELEASE_LANES, START_LANE, TrafficSim, rearOf, type Level, type ScenarioPhase } from './traffic';
@@ -113,7 +114,7 @@ interface PlayerLaneChange {
   to: number;
   latStart: number;
   elapsedS: number;
-  durationS: number;
+  move: LateralMove;
 }
 
 /**
@@ -155,6 +156,9 @@ export class LiveDriveLoop {
   private cruiseUsedThisRun = false;
   private lane = START_LANE;
   private lat = START_LANE;
+  /** Lateral velocity and acceleration of the player's car, lanes/s and lanes/s². */
+  private latV = 0;
+  private latA = 0;
   private laneChange: PlayerLaneChange | null = null;
 
   constructor(
@@ -201,6 +205,14 @@ export class LiveDriveLoop {
 
   // ---------------------------------------------------------------------------
   // Auto Drive
+
+  /**
+   * The driver's pedal targets as they are now (the hook calls this on every pedal event), so a command
+   * that must be refused while braking sees a brake pressed since the last fixed step.
+   */
+  setDriverInput(driver: DriverInput): void {
+    this.driver = { ...driver };
+  }
 
   /** Turn Auto Drive on. Refused (false) while the driver is braking. An active cruise speed becomes its cap. */
   engage(): boolean {
@@ -292,16 +304,17 @@ export class LiveDriveLoop {
     if (ch) {
       const moving = Math.sign(ch.to - this.lat) as -1 | 0 | 1;
       if (moving === direction) return { ok: false, message: 'Already changing lanes' };
-      // The other way mid-change: steer back to the lane it came from, from where the car is.
+      // The other way mid-change: ease out of the current sideways motion and back to the lane it came from.
       const back = ch.from;
-      this.laneChange = { from: ch.to, to: back, latStart: this.lat, elapsedS: 0, durationS: Math.max(0.6, PLAYER_LANE_CHANGE_S * Math.abs(this.lat - back)) };
+      const from = { p: this.lat, v: this.latV, a: this.latA };
+      this.laneChange = { from: ch.to, to: back, latStart: this.lat, elapsedS: 0, move: lateralMove(from, back, reversalDuration(PLAYER_LANE_CHANGE_S, this.lat - back, this.latV)) };
       this.lane = back;
       return { ok: true, message: 'Lane change cancelled' };
     }
     const to = this.lane + direction;
     if (to < 0 || to >= LANE_COUNT) return { ok: false, message: direction < 0 ? 'No lane to the left' : 'No lane to the right' };
     if (this.laneOccupiedBeside(to)) return { ok: false, message: 'Lane occupied — wait for a gap' };
-    this.laneChange = { from: this.lane, to, latStart: this.lat, elapsedS: 0, durationS: PLAYER_LANE_CHANGE_S };
+    this.laneChange = { from: this.lane, to, latStart: this.lat, elapsedS: 0, move: lateralMove({ p: this.lat, v: 0, a: 0 }, to, PLAYER_LANE_CHANGE_S) };
     this.lane = to;
     return { ok: true };
   }
@@ -320,10 +333,14 @@ export class LiveDriveLoop {
     const ch = this.laneChange;
     if (!ch) return;
     ch.elapsedS += dt;
-    const p = Math.min(1, ch.elapsedS / ch.durationS);
-    this.lat = ch.latStart + (ch.to - ch.latStart) * smoothstep(p);
-    if (p >= 1) {
+    const s = sampleLateral(ch.move, ch.elapsedS);
+    this.lat = s.p;
+    this.latV = s.v;
+    this.latA = s.a;
+    if (ch.elapsedS >= ch.move.durationS) {
       this.lat = ch.to;
+      this.latV = 0;
+      this.latA = 0;
       this.laneChange = null;
     }
   }
@@ -374,6 +391,8 @@ export class LiveDriveLoop {
     this.cruiseUsedThisRun = false;
     this.lane = START_LANE;
     this.lat = START_LANE;
+    this.latV = 0;
+    this.latA = 0;
     this.laneChange = null;
     this.restartTraffic();
   }
