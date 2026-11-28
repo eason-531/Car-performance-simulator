@@ -18,7 +18,11 @@ commits:
   - 7d79732: P2 held_brake_interlock_after_vehicle_switch
   - 46a6017: P2 ioniq_stale_launch_prime_bypasses_e_shift
   - 7404150: P2 ioniq_verified_grip_table_reversed + P3 nevera_record_source_metadata
-  - (5): this log
+  - 437ee80: this log (first part)
+  - 2d5e56d: catalog RS 3, Macan GTS, F-150 Raptor 37, AMG E 63 S Wagon + 'multi-clutch' transmission type
+  - dd8e66a: hybrid drive model + NSX, SF90 AF, M5 Touring, V60 T8 PE, Prius AWD
+  - 6205c80: README
+  - (10): this log (acceptance part)
 
 changes:
   layout (0c77edc):
@@ -61,13 +65,38 @@ changes:
     nevera: benchmark rimac-2023 date 2023-05-17 → 2023-04-30 (event); source src-rimac-2023 keeps 2023-05-17 (publication); new source src-rimac-bp1; timingNote: Dewesoft column shown, up to 0.03 s apart (1.82/1.81, 8.26/8.25, 20.62/20.59); other: Dewesoft (Racelogic) pairs; record day vs release; caveat + provenance check line attribute the standing mile to both systems; provisional fade (8,400 rpm, ^0.44) and Famoso trap residual (≈178 vs 167.5 mph) unchanged
     generated: DATA_GAPS.md Ioniq line only; stockStats byte-identical
 
+  stock_picker_acceptance (2d5e56d, dd8e66a):
+    roster: pinned DATA_GAPS.md at 85cf2b7 and 5566be6 → identical 83 '### ' headings; each = fullName(e) of exactly one CATALOG entry → 83 unique ids (map built with a temporary vitest fixture, not committed); 74 sim + 9 catalog-only at 5566be6 (= the brief's nine ids)
+    harness (session scratchpad scripts/accept.cjs, Playwright Chromium 158.0.8127.36, 1180x820, fresh storage): #/tests → 'All cars' → search the exact heading → button 'Choose <heading>' (default 'Runnable only' filter) → radio aria-checked title = heading → no stored tuning (stock) → Run test → Skip → ¼-mile StatTile text → Save result → localStorage cps:v1:results newest for the id: metrics.quarterMileS finite > 0, trace.t/v all finite (> 10 samples), shown value = saved value to 2 dp, chart paths free of NaN/Infinity, no page errors
+    baseline 7404150: 74 pass / 9 catalog-only ('Choose … (not runnable yet)' with Runnable only off) / 0 fail / 0 error; ET 8.472–16.055 s
+    final dd8e66a build: 83 pass / 0 catalog-only / 0 fail / 0 error; the 74 baseline ETs identical to the bit; new: Prius AWD 15.612, RS 3 11.850, E 63 S Wagon 11.554, V60 T8 PE 13.152, M5 Touring 11.362, Macan GTS 12.779, Raptor 37 14.207, NSX 11.455, SF90 AF 9.738 s (brake-release ¼, stock, Best launch)
+    live drive smoke (1133x744, Manual, W held 2.5 s, touch Shift up): E 63 S 65 km/h 1/9→2/9 · NSX 80 1/9→2/9 · Prius 56 1/6→2/6 · Raptor 59 1/10→2/10 · SF90 105 1/8→2/8; paddle bottom 644 (in view); 0 page errors
+    sources tried 2026-11-28: Audi RS 3 Sedan TFSI eTD PDF (fetched; pdftotext locally): 294 kW (400 PS) @ 5,600–7,000, 500 Nm @ 2,250–5,600, 3.560/2.530/1.680/1.020/0.790/0.760/0.630, 'final drive ratio 1-2 / 2-3: 4.059 / -', 265/30 ZR19 F | 245/35 ZR19 R, 1,570/1,645/2,070 kg, Cd 0.32 / 2.22 m², 4,542 × 1,851 × 1,412, WB 2,631, 250 km/h governed, 0–100 3.8 s · Motor1 Raptor first drive (450 hp / 510 lb-ft, 10AT, '4.10 rear end', 37-inch BFGoodrich KO2, 5,851 lb, 'Maximum speed 118 MPH', 0–60 5.3 s est) · BLOCKED: caranddriver.com (fetch layer refuses), download.newsroom.porsche.com (DNS ENOTFOUND), media.mbusa.com release (HTTP 404)
+    models:
+      multi-clutch (types.ts TransmissionType): non-converter path (launchClutch), creep default true, shift defaults 0.20 up / 0.30 down, dip 0.35, 'blend' profile; used by the E 63 S Wagon only
+      hybrid (VehicleSpec.hybrid → SimHybrid via buildSimVehicle; build.ts SimInput.hybrid): inputMotor torque = demand × min(Tpk, Ppk/ω_engine), 0 at fuel cut or above maxRpm, ≤ battery/ω and ≤ system/ω − engine T; added to engine torque before converter/clutch (s.engineTorqueNm stays engine-only). axleMotors: ω_m = v/r × reduction, 0 above maxRpm, T = demand × min(Tpk, Ppk/ω_m), F = T × reduction × 0.95 / r; total scaled to min(battery − input motor, system − engine power); F added to the engine force before the shared traction clamp; s.motorPowerKw = input + axle motor power. demand = throttle after the speed limiter, before idle control. Dyno unchanged (engine only); classes come from simulated ET/trap/0–100 so hybrids are classed on performance
+    configurations (provenance per field; 'estimated' = bounded estimate with its basis; most recalled values marked 'not verified from a reachable source'):
+      rs-3: TT RS DQ500 per-gear outputs [4.059,3.45,3.45,4.059,4.059,3.45,3.45] estimated; bounds all-4.059 → 11.80 @ 116.1 (0–60 3.32), all-3.45 → 11.89 @ 114.0 (3.35); grip 1.15, η 0.91 fit to C/D 3.3 / 11.8 @ 117 (sim 3.29 / 11.73 @ 117.1 rollout); mass 1,651 kg C/D test; staggered EU tires
+      macan-gts: axle 4.67 (EU) modelled, 4.13 (US db) → 3.96 / 12.62 @ 107.6 vs 3.96 / 12.53 @ 108.0 (MT cannot separate); grip 1 (not traction-limited), η 0.92 fit to MT trap; PTM front share 0–0.5; 2,032 kg 55 % MT
+      raptor-37: 4WD front share 0–0.5 (4A/4H assumption; test mode not transcribed); touring compound ×0.8, η 0.80 fit to C/D 5.2 s rollout (5.22) and Edmunds 14.3 standing (14.21); 2,708 kg C/D; 190 km/h (Motor1 118 mph); 10R80 ratios recalled
+      e-63-s-wagon: multi-clutch 9G ratios + 3.06 (MBUSA as transcribed, page 404 now); no benchmark → grip/η default, uncalibrated (sim 3.06 s rollout 0–60, 11.31 @ 122.2)
+      nsx: DD motor 35 kW/148 Nm input; front 2 × 27 kW/73 Nm @ 8.05 cut 16,000 rpm; battery 89 kW; system 427 kW; front share 0–0.3; grip 0.85, η 0.81 → 3.09 / 11.18 @ 126.4 rollout vs C/D 3.1 / 11.2 @ 126 (basis unconfirmed; brake-release 3.36 / 11.46)
+      sf90-af: MGUK 80 kW/250 Nm; front 2 × 45 kW/120 Nm @ 10 cut ≈ 211 km/h; battery 162 kW; system 735 kW; 8DCT ratios geometric (estimated, sized to 340 km/h); grip 1.15, η 0.78 → 2.10 / 9.51 @ 146.3 vs MT 2.1 / 9.6 @ 145.2
+      m5-touring: P2 145 kW/450 Nm; battery 145; system 535; grip 0.82, η 0.94 (ceiling; lumped) → 3.09 / 11.09 @ 128.4 vs C/D 3.1 / 11.0 @ 129; brake-release 3.36 / 11.36 vs Edmunds 3.4 / 11.3 @ 124.7
+      v60-t8-pe: crank ISG 34 kW/150 Nm; rear 65 kW/240 Nm @ 9.2 cut ≈ 165 km/h; battery 70; system 309; front share 0.5–1; 180 km/h; grip 0.9, η 0.82 → 4.37 / 12.88 @ 106.8 vs aggregator 4.4 / 12.9 @ 107 (unconfirmed)
+      prius-awd: CVT model (span 2.60–0.55 × 3.218, hold 5,900 rpm, no Step Shift) + MG2 83 kW/206 Nm @ 10 front + rear 30 kW/84 Nm @ 10.5; battery 45; system 146; grip 1, η 0.86 → 6.89 / 15.32 @ 88.3 vs FWD Limited 7.1 / 15.5 @ 92 (equivalent; trap −3.7 mph = power-split approximation)
+    tests: hybrid.test.ts (quicker than engine-only for M5/NSX/V60; motor ≤ battery and engine+motor ≤ system each ms to 200 km/h; 0 output at zero demand; NSX front motors cut above ≈ 245 km/h); catalog.test.ts nine formerly catalog-only ids playable with no unsupportedReason; vehicles.test.ts per-car suites cover the nine (Peak power/Peak torque/Gear ratios/Curb mass/Drag coefficient rows; idle < 1000; η < 0.95)
+    generated: DATA_GAPS 'Catalog-only cars (0)', 'Playable cars (83)', 83 headings kept; stockStats additions only (0 removed lines)
+
 checks:
+  npm run check (dd8e66a): PASS 36 files / 1,324 tests (+109 vs 7404150: per-vehicle suites for nine cars, hybrid 3, roster 1), typecheck, lint, build (chunk-size warning); git diff --check clean
   npm run check (7404150): PASS 35 files / 1,215 tests (+9 vs main: layout 2, interlock 3, launch prime 4), typecheck, lint, vite build (pre-existing chunk-size warning); git diff --check clean
   generate:gaps → Ioniq line; generate:stats → no diff
   browser: Playwright Chromium 158.0.8127.36 headless, emulated touch, dpr 1 (evidence screenshots dpr 2 in session scratchpad, not committed). NOT native iPad Safari; svh/safe-area behave as vh/0 in this emulation
 
 remaining:
   - native iPad Safari (owner device): 1024x768 / 1133x744 landscape with the toolbar shown and hidden, home indicator safe area, Taiwan Heavy AD cap 140 + Stuck (gap line, car/blinker alignment, overlap, interrupted lane changes, touch reach); canvas stale-paint report from PR #12 still unconfirmed on WebKit
-  - stock picker acceptance 83/83 (9 catalog-only) — in progress after this entry
+  - nine formerly catalog-only cars run on bounded estimates: confirm with primary sheets when reachable — C/D tests (RS 3, Raptor 37, E 63 S Wagon, NSX, Prius AWD, M5 Touring, V60 T8), Porsche Macan GTS sheets (axle ratio, rpm band, tires), MBUSA E 63 data, hybrid motor ratings/reductions/battery limits for all five hybrids, SF90 DCT ratios, E 63 S Wagon benchmark (uncalibrated now), V60 curb mass
+  - hybrid model limits: no charge state, temperature, regeneration or deployment strategy; Dyno engine-only; front motor axles share one traction limit
   - Launch Lab, 3D Highway (later milestones)
 ```
