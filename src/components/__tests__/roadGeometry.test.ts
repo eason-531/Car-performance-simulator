@@ -62,7 +62,7 @@ describe('road strip geometry', () => {
     expect(lane1[0].distanceM).toBeCloseTo(3500 - 4.6, 6);
     expect(scene.cues.find((c) => c.lane === 2)?.distanceM).toBeCloseTo(600 - 4.6, 6);
     // The lead beyond the strip keeps a gap line, to its cue at the edge.
-    expect(scene.gap).toMatchObject({ offscreen: true, x2: l.width - 2, y2: laneY(l, 1) });
+    expect(scene.gap).toMatchObject({ offscreen: true, x2: l.roadEnd, y2: laneY(l, 1) });
   });
 
   it('hands a car over from its cue to its body as it enters, without both or neither', () => {
@@ -78,7 +78,7 @@ describe('road strip geometry', () => {
       if (body) {
         sawBody = true;
         const b = bodyBox(l, dx, 4.6, 0);
-        expect(b.x1).toBeLessThan(l.width);
+        expect(b.x1).toBeLessThan(l.roadEnd);
       }
     }
     expect(sawCue && sawBody).toBe(true);
@@ -97,9 +97,17 @@ describe('road strip geometry', () => {
         const xs = dashXs(l, d);
         for (let k = 1; k < xs.length; k++) expect(xs[k] - xs[k - 1]).toBeCloseTo(DASH_PERIOD_M * l.pxPerM, 9);
         expect(xs[0]).toBeLessThanOrEqual(0);
-        expect(xs[xs.length - 1]).toBeGreaterThanOrEqual(l.width - DASH_PERIOD_M * l.pxPerM);
+        expect(xs[xs.length - 1]).toBeGreaterThanOrEqual(l.roadEnd - DASH_PERIOD_M * l.pxPerM);
       }
       expect(DASH_LENGTH_M * l.pxPerM).toBeGreaterThan(5);
+    }
+  });
+
+  it('ends the drawn road before a horizon strip at the right edge', () => {
+    for (const w of [360, 820, 1036, 1500]) {
+      const l = roadLayout(w, 104);
+      expect(l.roadEnd).toBeLessThan(l.width - 50);
+      expect(l.x0 + l.aheadM * l.pxPerM).toBeCloseTo(l.roadEnd, 9);
     }
   });
 

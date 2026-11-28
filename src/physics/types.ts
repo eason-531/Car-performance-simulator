@@ -38,8 +38,9 @@ export interface SimMotor {
   peakPowerW: number;
   peakTorqueNm: number;
   maxRpm: number;
-  /** End of the peak-power band, rpm (power ∝ 1/speed above it), or null. */
+  /** End of the peak-power band, rpm (power ∝ (end/speed)^peakPowerFadeExponent above it), or null. */
   peakPowerEndRpm: number | null;
+  peakPowerFadeExponent: number;
   reductions: readonly number[];
   upshiftMs: number | null;
   /** Rotor inertia reflected per unit ratio², kg·m². */
@@ -50,10 +51,26 @@ export interface SimElectric {
   motors: readonly SimMotor[];
   systemPowerW: number;
   systemTorqueNm: number | null;
-  boost: { systemPowerW: number; systemTorqueNm: number | null; durationS: number; trigger: 'launch-control' | 'driver'; armed: boolean } | null;
+  boost: SimBoost | null;
   creep: boolean;
   /** Simulated stepped gearbox (Live Drive option), or null. */
   virtualShift: SimVirtualShift | null;
+}
+
+/**
+ * Published temporary boost. `launch-control`: each brake-held launch fires it.
+ * `driver`: fired by the boost button (VehicleSimulator.requestBoost), then
+ * `recoveryS` before reuse; with `armed` (linked to launches) a brake-held
+ * launch fires it too, at most once per `launchCooldownS`.
+ */
+export interface SimBoost {
+  systemPowerW: number;
+  systemTorqueNm: number | null;
+  durationS: number;
+  trigger: 'launch-control' | 'driver';
+  armed: boolean;
+  recoveryS: number;
+  launchCooldownS: number;
 }
 
 export interface SimVirtualShift {
@@ -169,9 +186,17 @@ export interface SimState {
   motorPowerKw: number;
   /** Electric drive: seconds of published boost remaining (0 when inactive). */
   boostS: number;
-  /** Electric drive: the boost has been used on this run. */
+  /** Electric drive: the boost has been used since the last reset. */
   boostUsed: boolean;
-  /** Electric drive: a launch-control hold (brake + full throttle) has primed the launch boost. */
+  /** Electric drive: seconds before a driver boost can be used again (0 = ready). */
+  boostRecoveryS: number;
+  /** Electric drive: seconds before a linked launch can fire the boost again (0 = ready). */
+  launchCooldownS: number;
+  /**
+   * Electric drive: a launch-control hold (brake + full throttle at rest) is
+   * ready to fire the launch boost on brake release. Lifting the accelerator
+   * cancels it.
+   */
   launchPrimed: boolean;
   throttle: number;
   brake: number;

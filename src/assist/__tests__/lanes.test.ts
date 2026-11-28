@@ -6,8 +6,8 @@ import { CLAIM_LANES, START_LANE } from '../traffic';
 
 const IDLE: DriverInput = { throttle: 0, brake: 0 };
 const steps = (s: number) => Math.round(s / FIXED_DT);
-/** Largest lateral step of a smoothstep move of one lane over PLAYER_LANE_CHANGE_S, per fixed step. */
-const MAX_STEP = (1.5 / PLAYER_LANE_CHANGE_S) * FIXED_DT * 1.001;
+/** Largest lateral step of a minimum-jerk move of one lane over PLAYER_LANE_CHANGE_S, per fixed step (peak speed 1.875/T). */
+const MAX_STEP = (1.875 / PLAYER_LANE_CHANGE_S) * FIXED_DT * 1.001;
 
 function run(loop: LiveDriveLoop, seconds: number, input: DriverInput = IDLE, each?: (l: LiveDriveLoop) => void) {
   for (let i = 0; i < steps(seconds); i++) {
@@ -38,28 +38,32 @@ describe('player lane changes', () => {
     expect(loop.requestLaneChange(1)).toEqual({ ok: false, message: 'No lane to the right' });
   });
 
-  it('ignores a repeat in the same direction and steers back smoothly on the opposite command', () => {
+  it('ignores a repeat in the same direction and eases back without a jolt on the opposite command', () => {
     const loop = new LiveDriveLoop(sim(lexus));
     loop.requestLaneChange(1);
+    // Starts from rest sideways: no jump in lateral speed at the start.
+    const lat0 = loop.playerLat;
+    loop.step(IDLE);
+    expect((loop.playerLat - lat0) / FIXED_DT).toBeLessThan(0.01);
     run(loop, 1);
     expect(loop.requestLaneChange(1)).toEqual({ ok: false, message: 'Already changing lanes' });
     const mid = loop.playerLat;
     expect(mid).toBeGreaterThan(1.1);
     expect(mid).toBeLessThan(1.9);
+    const before = loop.playerLat;
+    loop.step(IDLE);
+    const vBefore = (loop.playerLat - before) / FIXED_DT;
+    expect(vBefore).toBeGreaterThan(0.3);
     expect(loop.requestLaneChange(-1)).toEqual({ ok: true, message: 'Lane change cancelled' });
     expect(loop.playerLane).toBe(1);
-    let prev = loop.playerLat;
-    let maxStep = 0;
-    let rose = false;
-    run(loop, 2, IDLE, (l) => {
-      maxStep = Math.max(maxStep, Math.abs(l.playerLat - prev));
-      if (l.playerLat > prev + 1e-12) rose = true;
-      prev = l.playerLat;
-    });
+    // Lateral position and speed stay continuous: the car eases out of its rightward motion and back.
+    const lats: number[] = [loop.playerLat];
+    run(loop, 3, IDLE, (l) => lats.push(l.playerLat));
+    const v = lats.slice(1).map((x, i) => (x - lats[i]) / FIXED_DT);
+    expect(Math.abs(v[0] - vBefore)).toBeLessThan(0.01);
+    for (let i = 1; i < v.length; i++) expect(Math.abs(v[i] - v[i - 1])).toBeLessThan(0.02);
+    expect(Math.max(...lats) - lats[0]).toBeLessThan(0.3);
     expect(loop.playerLat).toBe(1);
-    expect(rose).toBe(false);
-    // No jump at the reversal and no faster than a normal move.
-    expect(maxStep).toBeLessThanOrEqual(MAX_STEP * 1.6);
     expect(loop.laneView.signal).toBe(0);
   });
 

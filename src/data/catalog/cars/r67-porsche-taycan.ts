@@ -5,6 +5,8 @@ const TD = 'https://newsroom.porsche.com/dam/jcr:36531be5-a8a3-46ec-b146-2727299
 const FEATURE = 'https://newsroom.porsche.com/pdf/7504e7b5-be34-4bcd-9ea8-5f102d60d9a7';
 const POWERTRAIN = 'https://newsroom.porsche.com/en/products/taycan/powertrain-18555.html';
 const EPA = 'https://www.epa.gov/system/files/documents/2024-05/23-testcar-2024-05-17_0.xlsx';
+/** Porsche Taycan technology press kit (2019): Launch Control overboost and repeatable launches. */
+const TECH_KIT = 'https://pnr-prd2-pub2.newsroom.porsche.com/dam/jcr%3A93483663-c12b-43ca-98f5-b1b8b845e321/PAG_Taycan_Technology_PM_EN.pdf.PDF';
 
 /** Rear first gear from the EPA N/V of 186 rpm/mph (MY2023 Taycan Turbo, first gear) with the simulator rolling radius of the 305/30 ZR21 (0.34806 m); Porsche: "roughly 15". */
 const REAR_FIRST = 15.2;
@@ -73,6 +75,14 @@ export const entry: CatalogEntry = {
       date: "2019-09-04"
     },
     {
+      id: "src-porsche-tech-kit",
+      title: "The new Porsche Taycan: technology press kit (Launch Control, overboost, repeatable acceleration)",
+      publisher: "Porsche Newsroom",
+      url: TECH_KIT,
+      kind: "manufacturer",
+      date: "2019-09"
+    },
+    {
       id: "src-epa",
       title: "Data on cars used for testing fuel economy, model year 2023 (Taycan Turbo rows)",
       publisher: "US EPA",
@@ -116,7 +126,16 @@ export const entry: CatalogEntry = {
         quarterMileTrapMph: 130,
         rolloutS: 0.2
       },
-      conditions: {},
+      conditions: {
+        testMass: "5,246 lb curb (as weighed)",
+        tires: "Pirelli P Zero PZ4 Elect (sizes as listed in the original table)",
+        driveMode: "Sport Plus",
+        launchControl: "Launch Control (brake and accelerator, then release), as the article describes",
+        other: [
+          "Read from the original comparison per the Codex inspection of PR #9 (2026-11-26); caranddriver.com refuses automated fetches from this environment, so the tire sizes are not re-transcribed",
+          "State of charge and battery temperature not transcribed"
+        ]
+      },
       match: "exact",
       verification: "Elapsed times unchanged; source moved to the original comparison table, whose 0.2 s rollout entry sets the timing basis, per the Codex inspection of 358661b (2026-11-24). The January 2020 acceleration story remains listed as a reference.",
       date: "2020"
@@ -131,7 +150,7 @@ export const entry: CatalogEntry = {
   ],
   simCaveats: [
     "Electric model: each motor holds its rated torque to base speed and then rated power up to 16,000 rpm; Porsche publishes no curve above base speed.",
-    "Overboost (560 kW) runs for an estimated 2.5 s after a Launch Control start; Porsche does not state the duration in the reachable sources, and the quarter-mile trap is sensitive to it.",
+    "Overboost (560 kW) runs for an estimated 2.5 s after every Launch Control start (brake and accelerator at rest, then release the brake; lifting the accelerator first cancels it). Porsche does not state the duration in the reachable sources, and the quarter-mile trap is sensitive to it. Porsche says the Turbo S repeats its 0–100 km/h time 10 times in succession, so launches are not rationed in the model (battery temperature is not modelled).",
     "Porsche's motor ratings (190 + 335 kW) sum to less than the 560 kW overboost, so both motor caps are raised in proportion (to 203 and 357 kW) for the published overboost to be reachable."
   ],
   notes: [
@@ -164,11 +183,12 @@ export const entry: CatalogEntry = {
     factory: { zeroTo100S: 2.8, topSpeedKmh: 260, zeroTo60MphS: 2.6 },
     provenance: [
       { parameter: 'Peak power', value: 'Front 190 kW, rear 335 kW; system 460 kW, 560 kW overboost with Launch Control', status: 'verified', source: 'Porsche Technical Feature (motor ratings) and technical data (system and overboost)', url: FEATURE },
-      { parameter: 'Motor power caps', value: 'Front 202.7 kW, rear 357.3 kW (ratings × 560/525)', status: 'reported', source: 'Derived: the published ratings sum to 525 kW, under the published 560 kW overboost, so both are scaled in proportion; the shared 460 kW limit binds outside overboost', url: FEATURE },
+      { parameter: 'Motor power caps', value: 'Front 202.7 kW, rear 357.3 kW (ratings × 560/525)', status: 'estimated', source: 'Modelling assumption, not a rating: the published ratings sum to 525 kW, under the published 560 kW overboost, so both are scaled in proportion; the shared 460 kW limit binds outside overboost', url: FEATURE },
       { parameter: 'Peak torque', value: 'Front 400 Nm (440 Nm with Launch Control, modelled), rear 550 Nm; 1,050 Nm system with Launch Control', status: 'verified', source: 'Porsche Technical Feature and technical data', url: FEATURE },
       { parameter: 'Motor maximum speed', value: '16,000 rpm (both)', status: 'verified', source: 'Porsche Technical Feature', url: FEATURE },
       { parameter: 'Gear ratios', value: `Front ${EIGHT.toFixed(1)}:1 single speed; rear ${REAR_FIRST}:1 first, ${EIGHT.toFixed(1)}:1 second`, status: 'reported', source: 'Porsche: front approx. 8:1, rear first roughly 15:1, second around 8:1. Rear first refined from the EPA N/V of 186 rpm/mph (MY2023 Taycan Turbo) with the simulator rolling radius', url: POWERTRAIN },
       { parameter: 'Gear change speed', value: 'First to second at 120 km/h', status: 'estimated', source: 'Porsche: the transmission "remains in first gear for a relatively long time"; first runs out near 139 km/h at 16,000 rpm. Above ≈ 98 km/h second gear also reaches full power, so the choice mainly moves the change dip' },
+      { parameter: 'Launch Control', value: 'Overboost (560 kW) on every Launch Control start; repeatable back to back', status: 'verified', source: 'Porsche Taycan technology press kit: Launch Control "uses an overboost function" (560 kW in the Turbo S), and the Turbo S can "reproduce" its 2.8 s 0–100 km/h "10 times in succession"', url: TECH_KIT },
       { parameter: 'Overboost duration', value: '2.5 s after a Launch Control start', status: 'estimated', source: 'Not stated in the reachable Porsche sources' },
       { parameter: 'Curb mass', value: '2,295 kg unladen (DIN); Autocar weighed 2,355 kg', status: 'verified', source: 'Porsche technical data', url: TD },
       { parameter: 'Tire size', value: '265/35 ZR21 front, 305/30 ZR21 rear', status: 'verified', source: 'Porsche technical data', url: TD },

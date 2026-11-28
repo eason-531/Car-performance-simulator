@@ -4,7 +4,7 @@ import { electricOutput } from './electric';
 import { aeroDragN, axleLoads, rollingResistanceN, tractionLimitN } from './forces';
 import { autoShiftTarget, manualStallProtection, type ShiftContext } from './gearbox';
 import { torqueConverterTorques } from './torqueConverter';
-import type { DriverInput, ShiftMode, SimElectric, SimState, SimVehicle } from './types';
+import type { DriverInput, ShiftMode, SimBoost, SimElectric, SimState, SimVehicle } from './types';
 import { clamp, lerp, radSToRpm, rpmToRadS, smoothstep } from './units';
 
 export interface ShiftRequestResult {
@@ -62,6 +62,8 @@ export function initialState(vehicle: SimVehicle): SimState {
     motorPowerKw: 0,
     boostS: 0,
     boostUsed: false,
+    boostRecoveryS: 0,
+    launchCooldownS: 0,
     launchPrimed: false,
     cvtRatio: vehicle.transmission.cvt?.ratioLow ?? 1,
     cvtStepping: false,
@@ -89,6 +91,15 @@ export class VehicleSimulator {
   state: SimState;
 
   private virtualOn = false;
+  /** N e-Shift requested but paused while a boost runs (Hyundai: NGB deactivates it; it returns afterwards). */
+  private virtualSuspended = false;
+  /**
+   * CVT: `gear` holds a paddle-commanded step (manual), so further requests
+   * step on from it even while the pulleys are still moving. Cleared whenever
+   * the automatic ratio control runs, so the first request after Auto starts
+   * from the step nearest the actual ratio.
+   */
+  private cvtCommanded = false;
 
   constructor(vehicle: SimVehicle, shiftMode: ShiftMode = 'auto') {
     this.vehicle = vehicle;
@@ -98,12 +109,24 @@ export class VehicleSimulator {
 
   reset(): void {
     this.state = initialState(this.vehicle);
+    this.virtualSuspended = false;
+    this.cvtCommanded = false;
     if (this.virtualOn) this.state.engineRpm = this.vehicle.electric!.virtualShift!.idleRpm;
   }
 
-  /** Whether an electric car's simulated stepped gearbox (e.g. N e-Shift) is in use. */
+  /** Whether an electric car's simulated stepped gearbox (e.g. N e-Shift) is switched on. */
   get virtualShift(): boolean {
     return this.virtualOn;
+  }
+
+  /** Switched on but paused while a boost runs; the simulated gears return when it ends. */
+  get virtualShiftSuspended(): boolean {
+    return this.virtualOn && this.virtualSuspended;
+  }
+
+  /** The simulated gearbox is switched on and not paused. */
+  private get virtualActive(): boolean {
+    return this.virtualOn && !this.virtualSuspended;
   }
 
   /**
@@ -116,12 +139,19 @@ export class VehicleSimulator {
     const next = on && !!vs;
     if (next === this.virtualOn) return;
     this.virtualOn = next;
+    this.virtualSuspended = next && this.state.boostS > 0;
+    this.selectGearbox();
+  }
+
+  /** Re-enter the real reduction or the simulated gears (picking the gear that keeps the simulated rpm under redline). */
+  private selectGearbox(): void {
+    const vs = this.vehicle.electric?.virtualShift;
     const s = this.state;
     s.shift = null;
     s.timeSinceShift = 0;
     s.fuelCut = false;
     s.fuelCutTime = 0;
-    if (!next || !vs) {
+    if (!this.virtualActive || !vs) {
       s.gear = 1;
       return;
     }
@@ -134,7 +164,7 @@ export class VehicleSimulator {
 
   /** The transmission the driver's gears refer to (virtual gears while simulated shifting is on). */
   private get gearbox() {
-    return this.virtualOn ? this.vehicle.electric!.virtualShift!.transmission : this.vehicle.transmission;
+    return this.virtualActive ? this.vehicle.electric!.virtualShift!.transmission : this.vehicle.transmission;
   }
 
   get gearCount(): number {
@@ -152,30 +182,61 @@ export class VehicleSimulator {
     const s = this.state;
     if (s.shift) return { ok: false, reason: 'Shift in progress' };
     const cvt = this.vehicle.transmission.cvt;
-    if (cvt && !this.virtualOn) {
-      // Paddles select a simulated step, starting from the one nearest the current ratio.
+    if (cvt && !this.virtualActive) {
+      // Paddles command a simulated step. Repeated requests step on from the
+      // commanded step (the pulleys follow at the step rate); the first request
+      // after Auto starts from the step nearest the current ratio.
       const steps = this.vehicle.transmission.gearRatios;
       let g = 1;
-      steps.forEach((r, i) => {
-        if (Math.abs(r - s.cvtRatio) < Math.abs(steps[g - 1] - s.cvtRatio)) g = i + 1;
-      });
+      if (this.cvtCommanded) g = s.gear;
+      else {
+        steps.forEach((r, i) => {
+          if (Math.abs(r - s.cvtRatio) < Math.abs(steps[g - 1] - s.cvtRatio)) g = i + 1;
+        });
+      }
       const to = g + direction;
       if (to < 1) return { ok: false, reason: 'Already in 1st' };
       if (to > steps.length) return { ok: false, reason: 'Already in top gear' };
       if (direction < 0 && this.inputRpmInGear(to) > this.vehicle.engine.revLimitRpm - 100) return { ok: false, reason: 'Over-rev protection' };
       s.gear = to;
       s.timeSinceShift = 0;
+      this.cvtCommanded = true;
       return { ok: true };
     }
     const target = s.gear + direction;
     if (target < 1) return { ok: false, reason: 'Already in 1st' };
     if (target > this.gearCount) return { ok: false, reason: 'Already in top gear' };
-    const limit = this.virtualOn ? this.vehicle.electric!.virtualShift!.revLimitRpm : this.vehicle.engine.revLimitRpm;
+    const limit = this.virtualActive ? this.vehicle.electric!.virtualShift!.revLimitRpm : this.vehicle.engine.revLimitRpm;
     if (direction < 0 && this.inputRpmInGear(target) > limit - 100) {
       return { ok: false, reason: 'Over-rev protection' };
     }
     this.startShift(target);
     return { ok: true };
+  }
+
+  /**
+   * Boost button (e.g. Hyundai N Grin Boost): starts the published boost for
+   * its duration. Refused while it runs and during its recovery time.
+   */
+  requestBoost(): ShiftRequestResult {
+    const b = this.vehicle.electric?.boost;
+    const s = this.state;
+    if (!b || b.trigger !== 'driver') return { ok: false, reason: 'No boost button on this car' };
+    if (s.boostS > 0) return { ok: false, reason: 'Boost already running' };
+    if (s.boostRecoveryS > 0) return { ok: false, reason: `Boost recovering — ready in ${Math.ceil(s.boostRecoveryS - 1e-6)} s` };
+    this.startBoost(b);
+    return { ok: true };
+  }
+
+  private startBoost(b: SimBoost): void {
+    const s = this.state;
+    s.boostS = b.durationS;
+    s.boostUsed = true;
+    s.launchPrimed = false;
+    if (this.virtualActive) {
+      this.virtualSuspended = true;
+      this.selectGearbox();
+    }
   }
 
   private startShift(target: number): void {
@@ -414,6 +475,7 @@ export class VehicleSimulator {
     let target: number;
     let rate = c.ratioRatePerS;
     const stepping = this.shiftMode === 'auto' && throttle >= c.stepThrottle && s.speed >= 0.8;
+    if (this.shiftMode === 'auto') this.cvtCommanded = false;
     if (s.speed < 0.8) {
       s.gear = 1;
       target = c.ratioLow;
@@ -465,7 +527,11 @@ export class VehicleSimulator {
     const throttleCmd = clamp(input.throttle, 0, 1);
     const brake = clamp(input.brake, 0, 1);
     const twoSpeed = el.motors.find((m) => m.reductions.length > 1);
-    const vs = this.virtualOn ? el.virtualShift : null;
+    if (this.virtualSuspended && s.boostS === 0) {
+      this.virtualSuspended = false;
+      if (this.virtualOn) this.selectGearbox();
+    }
+    const vs = this.virtualActive ? el.virtualShift : null;
     if (vs) {
       this.stepVirtualShift(dt, input, vs);
       return;
@@ -566,23 +632,28 @@ export class VehicleSimulator {
     }
     const stationaryHold = s.speed < 0.3 && brake > 0.2;
 
-    // 3. Published boost: launch-control boosts prime on a brake-held full-throttle
-    // launch and fire on release; driver boosts fire when armed.
-    if (el.boost) {
-      if (el.boost.trigger === 'launch-control') {
-        if (stationaryHold && throttle > 0.9) s.launchPrimed = true;
-        else if (s.launchPrimed && !stationaryHold && throttle > 0.9 && !s.boostUsed) {
-          s.boostS = el.boost.durationS;
-          s.boostUsed = true;
-          s.launchPrimed = false;
-        }
-      } else if (el.boost.armed && throttle > 0.9 && !s.boostUsed && s.boostS === 0) {
-        s.boostS = el.boost.durationS;
-        s.boostUsed = true;
+    // 3. Published boost. A brake-held full-throttle hold at rest primes a launch
+    // (launch-control boosts always; driver boosts when linked to launches and
+    // ready); releasing the brake fires it, lifting the accelerator cancels it.
+    // The simulated gearbox blocks launch control (as N e-Shift does).
+    const b = el.boost;
+    if (b) {
+      const full = throttleCmd > 0.9;
+      const ready = b.armed && !this.virtualActive && s.boostS === 0 && s.boostRecoveryS === 0 && s.launchCooldownS === 0;
+      if (!full) s.launchPrimed = false;
+      else if (stationaryHold) s.launchPrimed = ready;
+      else if (s.launchPrimed) {
+        s.launchPrimed = false;
+        s.launchCooldownS = b.launchCooldownS;
+        this.startBoost(b);
       }
     }
     const boosting = s.boostS > 0;
-    if (boosting) s.boostS = Math.max(0, s.boostS - dt);
+    if (boosting) {
+      s.boostS = Math.max(0, s.boostS - dt);
+      if (s.boostS === 0 && b) s.boostRecoveryS = b.recoveryS;
+    } else if (s.boostRecoveryS > 0) s.boostRecoveryS = Math.max(0, s.boostRecoveryS - dt);
+    if (s.launchCooldownS > 0) s.launchCooldownS = Math.max(0, s.launchCooldownS - dt);
 
     // 4. Motor output and per-axle traction.
     const out = electricOutput(v, el, s.speed, throttle, gearFrom, { boosting, blendTo, torqueFactor });

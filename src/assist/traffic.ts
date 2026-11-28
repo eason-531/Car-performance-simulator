@@ -1,4 +1,5 @@
-import { clamp, kmhToMs, msToKmh, smoothstep } from '../physics/units';
+import { clamp, kmhToMs, msToKmh } from '../physics/units';
+import { lateralMove, reversalDuration, sampleLateral, type LateralMove } from './lateral';
 import { Rng, normaliseSeed } from './rng';
 import { isGenerated, isScripted, type RoadSettings, type TrafficDensity, type TrafficMode, type TrafficScript } from './road';
 
@@ -98,7 +99,10 @@ export interface DriverTraits {
 interface LaneChange {
   from: number;
   to: number;
+  /** Lateral position when the change began (differs from `from` after an aborted move). */
   latStart: number;
+  /** Minimum-jerk profile, created when the car starts to move (after its signal). */
+  move: LateralMove | null;
   elapsedS: number;
   signalS: number;
   durationS: number;
@@ -110,7 +114,6 @@ interface Pacer {
   go: boolean;
   untilS: number;
   goMs: number;
-  released: boolean;
 }
 
 export interface TrafficCar {
@@ -125,6 +128,9 @@ export interface TrafficCar {
   /** Lane the car is in, or is leaving during a change. */
   lane: number;
   lat: number;
+  /** Lateral velocity (lanes/s) and acceleration (lanes/s²), continuous through lane changes and reversals. */
+  latV: number;
+  latA: number;
   change: LaneChange | null;
   /** Desired speed now, and the speed it is adjusting to after a limit change, m/s. */
   v0: number;
@@ -501,6 +507,8 @@ export class TrafficSim {
       speed,
       lane,
       lat: lane,
+      latV: 0,
+      latA: 0,
       change: null,
       v0: target,
       v0Target: target,
@@ -610,7 +618,7 @@ export class TrafficSim {
       let x = player.x + tail + this.rng.range(0, 25) + count * 9;
       const kindHead = this.sampleKind();
       const head = this.spawn('pacer', lane, x, kmhToMs(this.rng.range(0, 10)), kindHead, this.sampleTraits(kindHead), { flow: 1 });
-      head.pacer = { go: false, untilS: this.time + this.rng.range(2, 6), goMs: kmhToMs(this.rng.range(8, 25)), released: false };
+      head.pacer = { go: false, untilS: this.time + this.rng.range(2, 6), goMs: kmhToMs(this.rng.range(8, 25)) };
       for (let i = 1; i < count; i++) {
         const kind = this.sampleKind();
         const traits = this.sampleTraits(kind);
@@ -625,8 +633,20 @@ export class TrafficSim {
     }
   }
 
+  /**
+   * Congestion over: queue heads become ordinary traffic and the queue aims for
+   * normal road speeds again (after each driver's reaction, accelerating gently
+   * from where they are). Positions and speeds are kept.
+   */
   private releasePacers(): void {
-    for (const c of this.cars) if (c.pacer) c.pacer.released = true;
+    for (const c of this.cars) {
+      if (!c.pacer && c.role !== 'queue') continue;
+      c.pacer = null;
+      c.flow = 1;
+      c.v0 = Math.max(c.speed, 1);
+      c.v0Target = this.targetSpeed(c.kind, c.traits);
+      c.reactAtS = this.time + c.traits.reactionS;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -663,24 +683,29 @@ export class TrafficSim {
   }
 
   /** Scripted actors become ordinary traffic (missed scenario, or another traffic mode chosen). */
+  /** Another traffic mode chosen: the test's phase and guidance end, and its cars carry on as ordinary traffic. */
   private releaseScript(): void {
+    this.releaseActors();
+    this.script = null;
+    this.phase = null;
+  }
+
+  /** Scripted cars follow the ordinary NPC rules from now on, including the road's speeds (reacting gradually). */
+  private releaseActors(): void {
     for (const c of this.cars) {
-      if (!c.scripted) continue;
+      if (!c.scripted && c.fixedSpeed === null) continue;
       c.scripted = false;
       c.cutInPending = false;
       c.cutOutAfterS = null;
+      c.fixedSpeed = null;
+      c.v0Target = this.targetSpeed(c.kind, c.traits) * c.flow;
+      c.reactAtS = this.time + c.traits.reactionS;
     }
-    this.script = null;
   }
 
   private miss(note: string): void {
     this.setPhase('missed', note);
-    for (const c of this.cars) {
-      if (!c.scripted) continue;
-      c.scripted = false;
-      c.cutInPending = false;
-      c.cutOutAfterS = null;
-    }
+    this.releaseActors();
   }
 
   private stepScript(player: PlayerState): void {
@@ -900,6 +925,25 @@ export class TrafficSim {
     return true;
   }
 
+  /** A looser re-check during a move: nobody alongside, and no one ahead or closing from behind inside half the accepted gap. */
+  private targetLaneStillClear(c: TrafficCar, to: number): boolean {
+    const k = 0.5 * c.traits.gapAcceptance;
+    for (const o of this.cars) {
+      if (o === c) continue;
+      const inLane = Math.abs(o.lat - to) < RELEASE_LANES || (o.change !== null && o.change.to === to);
+      if (!inLane) continue;
+      if (rearOf(o) < c.x + 1 && o.x > rearOf(c) - 1) return false;
+      if (o.x > c.x) {
+        const closing = Math.max(0, c.speed - o.speed);
+        if (rearOf(o) - c.x < (STANDSTILL_GAP_M + 0.5 * c.speed + (closing * closing) / (2 * CUT_IN_DECEL)) * k) return false;
+      } else {
+        const closing = Math.max(0, o.speed - c.speed);
+        if (rearOf(c) - o.x < (STANDSTILL_GAP_M + 0.5 * o.speed + (closing * closing) / (2 * CUT_IN_DECEL)) * k) return false;
+      }
+    }
+    return true;
+  }
+
   /** Whether any car occupies `lane` between the given positions (rear, front), m. */
   private laneOccupied(lane: number, rear: number, front: number, except?: TrafficCar): boolean {
     return this.cars.some((c) => {
@@ -911,7 +955,7 @@ export class TrafficSim {
 
   private startChange(c: TrafficCar, to: number, reason: LaneChange['reason'], note?: string): void {
     const t = c.traits;
-    c.change = { from: c.lane, to, latStart: c.lat, elapsedS: 0, signalS: t.signalS, durationS: t.changeS, reason };
+    c.change = { from: c.lane, to, latStart: c.lat, move: null, elapsedS: 0, signalS: t.signalS, durationS: t.changeS, reason };
     c.lastChangeS = this.time;
     c.lastChangeDir = to > c.lane ? 1 : -1;
     this.log({ kind: 'signal', id: c.id, role: c.role, lane: c.lane, to, gapM: round1(rearOf(c) - this.player.x), speedKmh: round1(msToKmh(c.speed)), signalS: round1(t.signalS), reason, courteous: t.courteous, note });
@@ -921,7 +965,8 @@ export class TrafficSim {
   private abortChange(c: TrafficCar): void {
     const back = c.change!.from;
     const wasCutIn = c.change!.reason === 'cut-in';
-    c.change = { from: back, to: back, latStart: c.lat, elapsedS: 0, signalS: 0, durationS: Math.max(0.8, c.traits.changeS * Math.abs(c.lat - back)), reason: 'abort' };
+    // The return starts from the car's current sideways speed, so it eases back rather than snapping.
+    c.change = { from: back, to: back, latStart: c.lat, move: null, elapsedS: 0, signalS: 0, durationS: reversalDuration(c.traits.changeS, c.lat - back, c.latV), reason: 'abort' };
     if (wasCutIn) c.cutInPending = true;
     c.retryAtS = c.ageS + 4;
     c.lastChangeS = this.time;
@@ -933,9 +978,11 @@ export class TrafficSim {
     // (the player may have sped up since it started).
     if (c.change) {
       const ch = c.change;
-      if (ch.reason !== 'abort' && ch.to !== ch.from && !c.inPlayerLane && c.x > player.x && Math.abs(ch.to - player.lat) < RELEASE_LANES && this.mergeUnsafeForPlayer(c, rearOf(c) - player.x)) {
-        this.abortChange(c);
-      }
+      if (ch.reason === 'abort' || ch.to === ch.from) return;
+      const unsafeForPlayer = !c.inPlayerLane && c.x > player.x && Math.abs(ch.to - player.lat) < RELEASE_LANES && this.mergeUnsafeForPlayer(c, rearOf(c) - player.x);
+      // Before it is across the line, a move into a lane where traffic has since come alongside or closed up is abandoned too.
+      const notYetAcross = Math.abs(c.lat - ch.from) < 0.5;
+      if (unsafeForPlayer || (notYetAcross && !this.targetLaneStillClear(c, ch.to))) this.abortChange(c);
       return;
     }
     if (this.time < c.nextDecisionS || c.pacer) return;
@@ -1049,12 +1096,19 @@ export class TrafficSim {
       const ch = c.change;
       if (!ch) continue;
       ch.elapsedS += dt;
-      const p = clamp((ch.elapsedS - ch.signalS) / ch.durationS, 0, 1);
-      c.lat = ch.latStart + (ch.to - ch.latStart) * smoothstep(p);
-      if (p >= 1) {
+      const t = ch.elapsedS - ch.signalS;
+      if (t <= 0) continue;
+      ch.move ??= lateralMove({ p: c.lat, v: c.latV, a: c.latA }, ch.to, ch.durationS);
+      const s = sampleLateral(ch.move, t);
+      c.lat = s.p;
+      c.latV = s.v;
+      c.latA = s.a;
+      if (t >= ch.move.durationS) {
         if (c.lane !== ch.to) c.laneSinceS = this.time;
         c.lane = ch.to;
         c.lat = ch.to;
+        c.latV = 0;
+        c.latA = 0;
         c.change = null;
       }
     }
@@ -1111,10 +1165,10 @@ export class TrafficSim {
       const aMax = bursting ? 2.4 : t.accel;
       const v = c.speed;
       let free: number;
-      if (c.pacer && !c.pacer.released) {
+      if (c.pacer) {
         if (this.time >= c.pacer.untilS) {
           c.pacer.go = !c.pacer.go;
-          c.pacer.untilS = this.time + (c.pacer.go ? this.rng.range(4, 9) : this.rng.range(3, 8));
+          c.pacer.untilS = this.time + (c.pacer.go ? this.rng.range(4, 9) : this.rng.range(5, 10));
           c.pacer.goMs = kmhToMs(this.rng.range(8, 25));
         }
         free = c.pacer.go ? aMax * (1 - (v / c.pacer.goMs) ** 4) : -Math.min(2, 2 * v);

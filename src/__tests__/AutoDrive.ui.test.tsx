@@ -157,6 +157,18 @@ describe('Live Drive controls (UI)', () => {
     expect(screen.getByLabelText('NPC speed limit No limit')).toBeTruthy();
   });
 
+  it('does not accept Auto Drive or change traffic when the brake was pressed earlier in the same frame', () => {
+    renderApp();
+    fireEvent.keyDown(window, { key: 's' });
+    fireEvent.click(autoButton());
+    expect(isOn()).toBe(false);
+    expect((screen.getByLabelText('Traffic') as HTMLSelectElement).value).toBe('off');
+    expect(screen.getByText('Release the brake to start Auto Drive')).toBeTruthy();
+    fireEvent.keyUp(window, { key: 's' });
+    fireEvent.click(autoButton());
+    expect(isOn()).toBe(true);
+  });
+
   it('explains cruise and lane commands it cannot carry out', () => {
     renderApp();
     fireEvent.click(screen.getByRole('button', { name: 'SET' }));

@@ -86,6 +86,36 @@ export function DynoView() {
   const xDomain = [xMin, Math.ceil(xMaxRaw / xStep) * xStep] as const;
   const xLabel = speedAxis ? 'km/h' : 'rpm';
   const mixedEv = !speedAxis && entries.some((e) => e.sheet.axis === 'speed');
+  const anyEv = speedAxis || mixedEv;
+  // Motor-side and wheel-side quantities are labelled by basis: electric "crank" figures are motor shaft
+  // figures, and electric wheel torque is taken at the wheels (through each motor's reduction).
+  const sourceLabel = speedAxis ? 'Motor' : mixedEv ? 'Crank / motor' : 'Crank';
+  const powerTitle = measure === 'crank' ? `Power (${sourceLabel.toLowerCase()})` : 'Power (wheel)';
+  const torqueTitle =
+    measure === 'crank'
+      ? speedAxis
+        ? 'Torque (motor shafts, summed)'
+        : mixedEv
+          ? 'Torque (crank / motor shafts)'
+          : 'Torque (crank)'
+      : speedAxis
+        ? 'Torque (at the wheels)'
+        : mixedEv
+          ? 'Torque (wheel — bases differ)'
+          : 'Torque (wheel-equivalent)';
+  const torqueSubtitle =
+    measure === 'crank'
+      ? speedAxis
+        ? 'Sum of the motor torques at their shafts'
+        : mixedEv
+          ? 'Petrol: crank torque · electric: motor shaft torques, summed'
+          : undefined
+      : speedAxis
+        ? 'Each motor’s torque × its reduction × efficiency, summed over the axles'
+        : mixedEv
+          ? 'Petrol: crank torque × efficiency (wheel-equivalent) · electric: at the wheels, through the reductions — not comparable'
+          : 'Crank torque × drivetrain efficiency, at engine rpm';
+  const torqueUnit = (e: DynoEntry) => (e.sheet.axis === 'speed' ? (measure === 'crank' ? 'Nm motors' : 'Nm at wheels') : 'Nm');
   const revealX = pull.time !== null ? xMin + (pull.time / PULL_SECONDS) * (xDomain[1] - xMin) : undefined;
 
   const mk = (pick: (p: DynoSheet['points'][number]) => number): ChartSeries[] =>
@@ -139,7 +169,7 @@ export function DynoView() {
             value={measure}
             onChange={setMeasure}
             options={[
-              { value: 'crank', label: 'Crank' },
+              { value: 'crank', label: sourceLabel },
               { value: 'wheel', label: 'Wheel' },
             ]}
           />
@@ -161,7 +191,9 @@ export function DynoView() {
             </div>
             <div className="peak-card__row">
               <span className="peak-card__value">{fmt(measure === 'crank' ? e.sheet.peakTorqueNm : e.sheet.peakWheelTorqueNm)}</span>
-              <span className="peak-card__unit">Nm @ {e.sheet.axis === 'speed' ? `${fmt(e.sheet.peakTorqueKmh)} km/h` : fmt(e.sheet.peakTorqueRpm)}</span>
+              <span className="peak-card__unit">
+                {torqueUnit(e)} @ {e.sheet.axis === 'speed' ? `${fmt(measure === 'crank' ? e.sheet.peakTorqueKmh : e.sheet.peakWheelTorqueKmh)} km/h` : fmt(e.sheet.peakTorqueRpm)}
+              </span>
             </div>
             <div className="peak-card__meta">
               {e.sheet.axis === 'speed' ? 'electric' : `${fmt(e.sheet.peakBoostBar, 2)} bar peak`} · {fmt((e.sheet.peakPowerPs / e.massKg) * 1000)} PS/t
@@ -188,7 +220,7 @@ export function DynoView() {
         </Panel>
       ) : (
         <>
-          <Panel title={measure === 'crank' ? 'Power (crank)' : 'Power (wheel)'} subtitle="Full load, steady state">
+          <Panel title={powerTitle} subtitle="Full load, steady state">
             <LineChart
               ariaLabel="Power versus engine speed"
               series={powerSeries}
@@ -204,7 +236,7 @@ export function DynoView() {
               revealX={revealX}
             />
           </Panel>
-          <Panel title={measure === 'crank' ? 'Torque (crank)' : 'Torque (wheel-equivalent)'}>
+          <Panel title={torqueTitle} subtitle={torqueSubtitle}>
             <LineChart
               ariaLabel="Torque versus engine speed"
               series={torqueSeries}
@@ -220,25 +252,27 @@ export function DynoView() {
               revealX={revealX}
             />
           </Panel>
-          <Panel title="Boost" subtitle="Steady-state target, gauge pressure">
-            <LineChart
-              ariaLabel="Boost versus engine speed"
-              series={boostSeries}
-              xLabel={xLabel}
-              yLabel="bar"
-              xDomain={xDomain}
-              yDomain={[0, 2]}
-              height={170}
-              xFormat={rpmFmt}
-              yFormat={(v) => fmt(v, 1)}
-              valueFormat={(v) => `${fmt(v, 2)} bar`}
-              hoverX={hoverX}
-              onHoverX={setHoverX}
-              revealX={revealX}
-            />
-          </Panel>
+          {!speedAxis && (
+            <Panel title="Boost" subtitle={mixedEv ? 'Steady-state target, gauge pressure (electric cars read 0)' : 'Steady-state target, gauge pressure'}>
+              <LineChart
+                ariaLabel="Boost versus engine speed"
+                series={boostSeries}
+                xLabel={xLabel}
+                yLabel="bar"
+                xDomain={xDomain}
+                yDomain={[0, 2]}
+                height={170}
+                xFormat={rpmFmt}
+                yFormat={(v) => fmt(v, 1)}
+                valueFormat={(v) => `${fmt(v, 2)} bar`}
+                hoverX={hoverX}
+                onHoverX={setHoverX}
+                revealX={revealX}
+              />
+            </Panel>
+          )}
           {showTable && (
-            <Panel title="Dyno table" subtitle={`${measure === 'crank' ? (speedAxis ? 'Motor' : 'Crank') : 'Wheel'} figures every ${speedAxis ? '20 km/h' : '500 rpm'}`}>
+            <Panel title="Dyno table" subtitle={`${measure === 'crank' ? sourceLabel : 'Wheel'} figures every ${speedAxis ? '20 km/h' : '500 rpm'}`}>
               <div className="table-scroll">
                 <table className="table table--numeric">
                   <thead>
@@ -254,7 +288,7 @@ export function DynoView() {
                       <th scope="col" />
                       {entries.map((e) => [
                         <th key={`${e.key}p`} scope="col">PS</th>,
-                        <th key={`${e.key}t`} scope="col">Nm</th>,
+                        <th key={`${e.key}t`} scope="col">{torqueUnit(e)}</th>,
                       ])}
                     </tr>
                   </thead>
@@ -279,6 +313,7 @@ export function DynoView() {
           <p className="footnote">
             Wheel figures apply each car’s drivetrain efficiency, as a chassis dyno would read. Curves are modelled from
             rated outputs — see Garage for data sources.
+            {anyEv && ' Electric wheel torque is the torque at the wheels (each motor through its own reduction, e.g. both Taycan axles), so it is many times the motor torque; electric wheel power is motor power × efficiency.'}
             {speedAxis && ' Electric cars are measured over road speed (best gear, shared output limits, no boost).'}
             {mixedEv && ' Electric cars are plotted against rear-motor rpm here; load only electric cars for a road-speed axis.'}
           </p>

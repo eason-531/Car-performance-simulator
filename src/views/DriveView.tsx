@@ -36,7 +36,7 @@ export function DriveView() {
     setVirtualFor(null);
   }
   const virtual = !!vs && virtualFor === spec.id;
-  const { snapshot: s, setPedal, releaseAll, shift, reset, runSamples, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise } = useDriveSimulation(vehicle, mode, virtual);
+  const { snapshot: s, setPedal, releaseAll, shift, boost, reset, runSamples, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise } = useDriveSimulation(vehicle, mode, virtual);
   const color = seriesColor(spec.colorSlot ?? 0);
   const [flash, setFlash] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -67,6 +67,11 @@ export function DriveView() {
     },
     [cruise, showFlash],
   );
+
+  const pressBoost = useCallback(() => {
+    const r = boost();
+    if (!r.ok && r.reason) showFlash(r.reason);
+  }, [boost, showFlash]);
 
   const doShift = useCallback(
     (dir: 1 | -1) => {
@@ -101,6 +106,7 @@ export function DriveView() {
       else if (!e.repeat && k === 'c') cruiseAction('set');
       else if (!e.repeat && k === 'v') cruiseAction('resume');
       else if (!e.repeat && k === 'b') cruiseAction('cancel');
+      else if (!e.repeat && k === 'n') pressBoost();
       else if (k === '+' || k === '=') cruiseAction('up');
       else if (k === '-' || k === '_') cruiseAction('down');
       else return;
@@ -127,7 +133,7 @@ export function DriveView() {
       window.removeEventListener('blur', blur);
       document.removeEventListener('visibilitychange', visibility);
     };
-  }, [setPedal, doShift, reset, app, mode, toggleAuto, releaseAll, lane, cruiseAction]);
+  }, [setPedal, doShift, reset, app, mode, toggleAuto, releaseAll, lane, cruiseAction, pressBoost]);
 
   const dyno = useMemo(() => computeDyno(vehicle), [vehicle]);
   const dial = useMemo(() => speedDial(topSpeedKmh(vehicle)), [vehicle]);
@@ -136,6 +142,8 @@ export function DriveView() {
   const ev = vehicle.electric;
   const singleSpeed = !!ev && electricGearCount(ev) === 1 && !virtual;
   const powerMax = ev ? Math.ceil(((ev.boost?.systemPowerW ?? ev.systemPowerW) / 1000) / 100) * 100 : 0;
+  const boostSpec = spec.electric?.boost;
+  const boostButton = ev?.boost?.trigger === 'driver' && boostSpec ? boostSpec.label : null;
   const e = vehicle.engine;
   const redlineRpm = virtual ? vs.redlineRpm : e.redlineRpm;
   const tachMax = Math.ceil(((virtual ? vs.revLimitRpm : e.revLimitRpm) + 300) / 1000);
@@ -178,6 +186,21 @@ export function DriveView() {
   const automated = auto.engaged || s.cruise.state === 'cruise';
   const status = autoDriveStatus(auto, s.cruise, s.traffic);
 
+  const boostControl = boostButton ? (
+    <button
+      type="button"
+      className={`boost-btn ${singleSpeed ? 'boost-btn--slot ' : ''}${s.boostActive ? 'is-active' : s.boostRecoveryS > 0 ? 'is-recovering' : ''}`}
+      onClick={pressBoost}
+      title={`${boostButton} (N key): ${fmt(ev!.boost!.systemPowerW / 1000)} kW for ${fmt(ev!.boost!.durationS)} s`}
+      aria-label={`${boostButton}: ${s.boostActive ? `running, ${Math.ceil(s.boostS - 1e-6)} s left` : s.boostRecoveryS > 0 ? `recovering, ready in ${Math.ceil(s.boostRecoveryS - 1e-6)} s` : 'ready'}`}
+    >
+      <span className="boost-btn__label">{boostButton}</span>
+      <span className="boost-btn__state">
+        {s.boostActive ? `${Math.ceil(s.boostS - 1e-6)} s` : s.boostRecoveryS > 0 ? `Ready in ${Math.ceil(s.boostRecoveryS - 1e-6)} s` : 'Ready'}
+      </span>
+    </button>
+  ) : null;
+
   return (
     <div className="view drive">
       <div className="view__bar">
@@ -189,7 +212,7 @@ export function DriveView() {
                 checked={virtual}
                 onChange={(on) => setVirtualFor(on ? spec.id : null)}
                 label={vs.label}
-                description={`Simulated ${vs.transmission.overallRatios.length}-speed shifts`}
+                description={s.virtualSuspended ? `Paused while ${boostSpec?.label ?? 'the boost'} runs` : `Simulated ${vs.transmission.overallRatios.length}-speed shifts`}
               />
             </div>
           )}
@@ -318,6 +341,7 @@ export function DriveView() {
             <Light on={s.speedLimited} label="LIM" tone="warning" title="Speed limiter" />
             {(!ev || virtual) && <Light on={s.fuelCut} label="REV" tone="critical" title={virtual ? 'Simulated rev limiter' : 'Rev limiter'} />}
             {ev?.boost && <Light on={s.boostActive} label="BST" tone="good" title="Published boost active" />}
+            {ev?.boost?.armed && <Light on={s.launchPrimed} label="LC" tone="good" title="Launch control ready — release the brake to launch with the boost" />}
             <Light on={s.autoHold} label="HOLD" tone="good" title="Auto Hold (released by the throttle)" />
             {!ev && <Light on={s.coupling === 'locked' && !s.clutchOpen} label={vehicle.transmission.torqueConverter ? 'L/U' : 'CLU'} tone="good" title={vehicle.transmission.torqueConverter ? 'Converter lock-up' : 'Clutch closed'} />}
           </div>
@@ -348,6 +372,7 @@ export function DriveView() {
         <div className="drive__center">
           <div className="paddles">
             {!singleSpeed && <Paddle direction={-1} onShift={doShift} label="Shift down" title="Shift down (Q or ←)" />}
+            {singleSpeed && boostControl && <span aria-hidden="true" />}
             <div className="paddles__gear">
               <span className="paddles__gear-label">{singleSpeed ? 'Single-speed' : mode === 'auto' ? 'Automatic' : 'Manual'}</span>
               <span className="paddles__tune" title="Change in Tuning">{describeTuning(spec, app.tuningFor(spec.id))}</span>
@@ -357,7 +382,11 @@ export function DriveView() {
               </span>
             </div>
             {!singleSpeed && <Paddle direction={1} onShift={doShift} label="Shift up" title="Shift up (E or →)" />}
+            {/* Single-speed drive: the boost button takes the free paddle slot instead of a row of its own. */}
+            {singleSpeed && boostControl}
           </div>
+
+          {boostControl && !singleSpeed && boostControl}
 
           <CruisePanel cruise={s.cruise} onAction={cruiseAction} />
 

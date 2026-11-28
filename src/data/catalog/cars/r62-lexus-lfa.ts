@@ -170,7 +170,8 @@ export const entry: CatalogEntry = {
     provenance: [
       { parameter: 'Peak power', value: '412 kW (560 PS, EEC net) @ 8,700 rpm; 553 hp (US)', status: 'verified', source: 'Lexus LFA dossier specifications', url: DOSSIER },
       { parameter: 'Peak torque', value: '480 Nm (EEC net) @ 6,800 rpm; 354 lb-ft (US)', status: 'verified', source: 'Lexus LFA dossier specifications', url: DOSSIER },
-      { parameter: 'Rev limit', value: '9,000 rpm (maximum engine speed and redline)', status: 'verified', source: 'Lexus LFA dossier (maximum engine speed). The model places its hard cut there; a distinct fuel-cut rpm is not published', url: DOSSIER },
+      { parameter: 'Maximum engine speed', value: '9,000 rpm (also the redline)', status: 'verified', source: 'Lexus LFA dossier (maximum engine speed)', url: DOSSIER },
+      { parameter: 'Rev limit', value: 'Hard cut modelled at 9,000 rpm', status: 'estimated', source: 'Not published: the model places its hard fuel cut at the sourced 9,000 rpm maximum engine speed; a distinct cut rpm and its behaviour are unknown' },
       { parameter: 'Gear ratios', value: '3.231/2.188/1.609/1.233/0.970/0.795', status: 'verified', source: 'Lexus LFA dossier specifications (6-speed ASG)', url: DOSSIER },
       { parameter: 'Final drive', value: '4.302 = front counter gear 1.259 × final drive 3.417', status: 'verified', source: "Lexus dossier lists both stages; its maximum speed per gear at 9,000 rpm (83/123/167/218/277 km/h) confirms they act in series for every gear (within 1.5–1.7 %)", url: DOSSIER },
       { parameter: 'Shift time', value: '0.2 s upshift (fastest of seven stages); 0.35 s down (estimated)', status: 'verified', source: 'Lexus dossier: upshifts in 0.2 s, adjustable in seven stages', url: DOSSIER },

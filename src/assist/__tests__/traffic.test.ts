@@ -248,6 +248,8 @@ describe('road presets and limits', () => {
       speed: kmhToMs(kmh),
       lane,
       lat: lane,
+      latV: 0,
+      latA: 0,
       change: null,
       v0: kmhToMs(kmh),
       v0Target: kmhToMs(kmh),
@@ -393,5 +395,119 @@ describe('replay', () => {
     run(loop, 50);
     expect(JSON.stringify(loop.traffic!.events.filter((e) => e.t <= 50))).toBe(first);
     expect(kmhToMs(1)).toBeGreaterThan(0);
+  }, 30_000);
+});
+
+describe('traffic integrity', () => {
+  it('never lets two vehicles overlap, including merges in stop-and-go queues', () => {
+    const cases: [VehicleSpec, TrafficMode, RoadSettings][] = [
+      [lexus, 'stuck', TAIWAN],
+      [lexus, 'stuck', AUTOBAHN],
+      [lexus, 'heavy', TAIWAN],
+      [nevera, 'heavy', AUTOBAHN],
+    ];
+    for (const [spec, mode, road] of cases) {
+      for (const seed of [1, 2, 3]) {
+        const loop = session(spec, mode, road, seed);
+        let overlap = false;
+        run(loop, 120, IDLE, (l, i) => {
+          if (i % 50 === 0 && overlaps(l.traffic!.cars)) overlap = true;
+        });
+        expect(overlap, `${mode}/${road.preset} seed ${seed}`).toBe(false);
+      }
+    }
+  }, 120_000);
+
+  it('moves traffic sideways with continuous position and speed, also when a lane change is abandoned', () => {
+    let aborts = 0;
+    for (const seed of [1, 2, 3, 4]) {
+      const loop = session(nevera, 'heavy', AUTOBAHN, seed);
+      const prev = new Map<number, { lat: number; v: number }>();
+      let maxStep = 0;
+      let maxDv = 0;
+      run(loop, 100, IDLE, (l) => {
+        for (const c of l.traffic!.cars) {
+          const p = prev.get(c.id);
+          if (p) {
+            const v = (c.lat - p.lat) / FIXED_DT;
+            maxStep = Math.max(maxStep, Math.abs(c.lat - p.lat));
+            maxDv = Math.max(maxDv, Math.abs(v - p.v));
+            prev.set(c.id, { lat: c.lat, v });
+          } else prev.set(c.id, { lat: c.lat, v: 0 });
+        }
+      });
+      aborts += loop.traffic!.events.filter((e) => e.kind === 'abort').length;
+      // At most ~1.1 lanes/s sideways, and no step change in sideways speed (minimum-jerk moves and reversals).
+      expect(maxStep).toBeLessThan(1.1 * FIXED_DT);
+      expect(maxDv).toBeLessThan(0.02);
+    }
+    expect(aborts).toBeGreaterThan(0);
+  }, 60_000);
+});
+
+describe('mode transitions (review fixes)', () => {
+  it('Stuck → Sparse: queue heads become ordinary traffic, speed up when unblocked and follow later road changes', () => {
+    const loop = session(lexus, 'stuck', TAIWAN, 1, false);
+    run(loop, 20, { throttle: 0, brake: 1 });
+    const heads = loop.traffic!.cars.filter((c) => c.pacer).map((c) => c.id);
+    expect(heads.length).toBe(3);
+    const before = new Map(loop.traffic!.cars.map((c) => [c.id, { x: c.x, v: c.speed }]));
+    loop.setTraffic('sparse');
+    loop.setRoad({ preset: 'autobahn', limitKmh: 120 });
+    for (const c of loop.traffic!.cars) {
+      const b = before.get(c.id)!;
+      expect(c.x).toBe(b.x);
+      expect(c.speed).toBe(b.v);
+    }
+    run(loop, 40, { throttle: 0, brake: 1 });
+    for (const id of heads) {
+      const c = loop.traffic!.cars.find((x) => x.id === id);
+      if (!c) continue;
+      expect(c.pacer).toBeNull();
+      expect(msToKmh(c.v0Target)).toBeLessThanOrEqual(120 * 1.12 + 0.1);
+      expect(msToKmh(c.v0Target)).toBeGreaterThan(60);
+      expect(msToKmh(c.speed)).toBeGreaterThan(40);
+    }
+  }, 30_000);
+
+  it('Auto: leaving congestion releases the queue the same way', () => {
+    // Seed 11 with the player waiting: mid → heavy → jam (159 s) → mid (200 s).
+    const loop = session(lexus, 'auto', TAIWAN, 11, false);
+    let heads: number[] = [];
+    run(loop, 199, { throttle: 0, brake: 1 }, (l) => {
+      if (!heads.length && l.traffic!.currentLevel === 'jam') heads = [];
+      const ps = l.traffic!.cars.filter((c) => c.pacer).map((c) => c.id);
+      if (ps.length) heads = ps;
+    });
+    expect(loop.traffic!.currentLevel).toBe('jam');
+    expect(heads.length).toBeGreaterThan(0);
+    run(loop, 30, { throttle: 0, brake: 1 });
+    expect(loop.traffic!.currentLevel).toBe('mid');
+    expect(loop.traffic!.cars.some((c) => c.pacer)).toBe(false);
+    for (const c of loop.traffic!.cars.filter((x) => heads.includes(x.id))) expect(msToKmh(c.v0Target)).toBeGreaterThan(60);
+  }, 60_000);
+
+  it('choosing generated traffic ends a test: no stale phase or guidance, and its cars follow the road limit', () => {
+    const loop = session(lexus, 'cut-in', TAIWAN, 1);
+    run(loop, 20);
+    expect(loop.traffic!.phase).toBe('approach');
+    loop.setTraffic('sparse');
+    expect(loop.traffic!.phase).toBeNull();
+    expect(loop.trafficView().note).toBeNull();
+    const a = loop.traffic!.cars.find((c) => c.id === 1)!;
+    expect(a.fixedSpeed).toBeNull();
+    loop.setRoad({ preset: 'taiwan', limitKmh: 60 });
+    let maxDecel = 0;
+    let prev = a.speed;
+    run(loop, 40, IDLE, () => {
+      maxDecel = Math.max(maxDecel, (prev - a.speed) / FIXED_DT);
+      prev = a.speed;
+    });
+    expect(msToKmh(a.v0Target)).toBeLessThanOrEqual(60 * 1.1 + 0.1);
+    expect(msToKmh(a.speed)).toBeLessThan(60 * 1.1 + 2);
+    expect(maxDecel).toBeLessThan(1.3);
+    // The test itself still replays from Reset while selected.
+    loop.setTraffic('cut-in');
+    expect(loop.traffic!.phase).toBe('approach');
   }, 30_000);
 });

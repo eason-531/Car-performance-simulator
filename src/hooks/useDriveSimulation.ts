@@ -39,6 +39,12 @@ export interface DriveSnapshot {
   /** Electric cars: motor output, kW, and whether a published boost is running. */
   motorPowerKw: number;
   boostActive: boolean;
+  /** Electric cars: boost seconds left, recovery seconds before the boost button works again, and a primed launch. */
+  boostS: number;
+  boostRecoveryS: number;
+  launchPrimed: boolean;
+  /** Simulated stepped gearbox switched on but paused while a boost runs. */
+  virtualSuspended: boolean;
   distanceM: number;
   /** Auto Hold is keeping the car stationary until the throttle is pressed. */
   autoHold: boolean;
@@ -77,6 +83,10 @@ function snapshotOf(loop: LiveDriveLoop): DriveSnapshot {
     clutchOpen: s.clutchOpen,
     motorPowerKw: s.motorPowerKw,
     boostActive: s.boostS > 0,
+    boostS: s.boostS,
+    boostRecoveryS: s.boostRecoveryS,
+    launchPrimed: s.launchPrimed,
+    virtualSuspended: sim.virtualShiftSuspended,
     distanceM: s.distance,
     autoHold: loop.hold,
     timer: loop.timer.view,
@@ -154,6 +164,8 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
     (source: InputSource, pedal: 'throttle' | 'brake', value: number) => {
       const v = Math.min(1, Math.max(0, value));
       targets.current[source][pedal] = v;
+      const t = targets.current;
+      loopRef.current!.setDriverInput({ throttle: Math.max(t.pointer.throttle, t.key.throttle), brake: Math.max(t.pointer.brake, t.key.brake) });
       // The brake cancels Auto Drive and cruise the moment it is touched, even for a tap shorter than a frame.
       if (pedal === 'brake' && v > BRAKE_CANCEL && loopRef.current!.automated) {
         loopRef.current!.disengage('brake');
@@ -167,11 +179,23 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
   const releaseAll = useCallback(() => {
     const t = targets.current;
     t.pointer.throttle = t.pointer.brake = t.key.throttle = t.key.brake = 0;
+    loopRef.current!.setDriverInput({ throttle: 0, brake: 0 });
     loopRef.current!.disengage('focus');
     refresh();
   }, [refresh]);
 
-  const shift = useCallback((direction: 1 | -1): ShiftRequestResult => loopRef.current!.sim.requestShift(direction), []);
+  /** Paddle request. Paddles always select manual (the view switches its mode too), so it applies before the next step. */
+  const shift = useCallback((direction: 1 | -1): ShiftRequestResult => {
+    const sim = loopRef.current!.sim;
+    sim.shiftMode = 'manual';
+    return sim.requestShift(direction);
+  }, []);
+  /** Boost button (e.g. N Grin Boost). */
+  const boost = useCallback((): ShiftRequestResult => {
+    const r = loopRef.current!.sim.requestBoost();
+    refresh();
+    return r;
+  }, [refresh]);
 
   const reset = useCallback(() => {
     loopRef.current!.reset();
@@ -235,5 +259,5 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
 
   const runSamples = useCallback((): readonly TraceSample[] => loopRef.current!.timer.samples, []);
 
-  return { snapshot, setPedal, releaseAll, shift, reset, runSamples, setAutoDrive, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise };
+  return { snapshot, setPedal, releaseAll, shift, boost, reset, runSamples, setAutoDrive, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise };
 }
