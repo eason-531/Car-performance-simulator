@@ -409,7 +409,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2025 Hyundai Ioniq 5 N
 
-- Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift not stated); N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping
+- Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift / launch grip level not stated); US-market owner's manual for the launch-control, N Grin Boost and N e-Shift behaviour (the UK 2025 edition is cited); N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping
 - Consulted: [Hyundai Motor Europe](https://www.hyundai.news/newsroom/dam/eu/press-kits/20240325_ioniq_5_n/hyundai-ioniq-5-n-technical-data-0324.pdf) · [Hyundai Motor Europe](https://www.hyundai.news/eu/models/performance/ioniq-5-n/press-kit/press-information.html) · [US EPA](https://www.epa.gov/system/files/documents/2026-01/25-testcar-2026-01-21.xlsx)
 
 ### 2021 Tesla Model S Plaid

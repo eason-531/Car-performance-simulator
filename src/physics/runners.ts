@@ -62,7 +62,7 @@ const STAGNATION_WINDOW_S = 6;
  *   hold.
  *
  * Electric cars with a driver boost linked to launches (e.g. N Grin Boost with
- * N Launch Control on HIGH grip) start the boost at brake release on either
+ * N Launch Control with the boost link) start the boost at brake release on either
  * technique (a standard launch presses the boost button at the start).
  *
  * The clock starts when the brake is released (no roll-out applied).

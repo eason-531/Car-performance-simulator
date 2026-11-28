@@ -101,7 +101,7 @@ describe('electric drive', () => {
     linked.step(0.001, FULL);
     expect(linked.state.boostS).toBeCloseTo(10, 2);
     expect(linked.state.launchPrimed).toBe(false);
-    // Unlinked (stock comparison, MEDIUM grip): no prime and no boost.
+    // Unlinked (stock comparison, a simulation assumption): no prime and no boost.
     const stock = new VehicleSimulator(sim(ioniq));
     stock.advance(2.5, { throttle: 1, brake: 1 });
     expect(stock.state.launchPrimed).toBe(false);

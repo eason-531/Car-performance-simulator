@@ -103,7 +103,7 @@ export interface ElectricSpec {
    * - `launch-control`: every brake-held launch-control start fires it (repeatable).
    * - `driver`: the driver's boost button fires it (Live Drive), then it needs
    *   `recoveryS` before it can be used again. When linked to launches
-   *   (`armedByDefault` or the Tuning toggle, e.g. N Launch Control on HIGH grip),
+   *   (`armedByDefault` or the Tuning toggle, e.g. N Launch Control with the boost link on MEDIUM / HIGH grip),
    *   a brake-held launch also fires it at brake release, at most once per
    *   `launchCooldownS`; timed runs then start with it.
    */
