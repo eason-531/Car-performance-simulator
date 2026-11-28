@@ -24,7 +24,14 @@ APIs) and is designed for iPad Safari.
   8-speed with a hard limiter and a shift jolt) as an explicit switch, off by
   default and never used by the tests.
   - Touch pedals: press higher for more pedal, and both pedals can be used at
-    once for left-foot braking. Shift paddles sit between them.
+    once for left-foot braking. Shift paddles sit between them, with cruise
+    control under the paddles.
+  - Layout on a landscape iPad (and any landscape screen up to 900 px tall):
+    the gauges, both shift paddles and the pedals fit on one screen with the
+    browser toolbars shown. The gauges take what height is left (from the full
+    pre–Auto Drive size down to 190 px across), the lane buttons and the Auto
+    Drive switch share one row under the road, and the traffic / road settings
+    and the performance timer sit below the driving controls.
   - Automatic or manual shifting.
   - A GPS-style performance timer records 0–100, 0–200 and ¼ mile while you drive.
   - **Auto Drive** (off by default): a simulator aid that works the accelerator
@@ -330,14 +337,14 @@ leaves it unspecified), and one set of defaults is shared by every car.
 
 1. Open the app in Safari and stay on **Drive**. Pick a car with the car
    buttons or **All cars**.
-2. **Traffic and road:** in the row under the road choose a density (for
+2. **Traffic and road:** in the row under the pedals choose a density (for
    example *Heavy*), then *Taiwan* or *Autobahn*, and a limit (100 / 110, − / +,
    or *Default*). The seed (#n ↻) rerolls future traffic.
-3. **Auto Drive:** tap **Auto Drive**. The line under the road shows
+3. **Auto Drive:** tap **Auto Drive** (under the road). The status beside it shows
    *Accelerating*, *Following* or *Braking*, the lead's speed, distance and time
    gap, and the requested pedal; the lead gets an amber (following) or red
    (braking) outline.
-4. **Lanes:** tap **◀ Lane** or **Lane ▶** above the pedals. Auto Drive keeps
+4. **Lanes:** tap **◀ Lane** or **Lane ▶** at the ends of the row under the road. Auto Drive keeps
    only the pedals and follows whatever is ahead in your new lane.
 5. **Cruise:** with Auto Drive off, drive above 20 km/h, tap **SET**, use **+**
    and **−**, press the accelerator to go faster and let go to come back, tap
