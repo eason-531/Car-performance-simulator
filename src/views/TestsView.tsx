@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PowertrainSound, SoundButton } from '../audio/PowertrainAudio';
 import { CarPickerDialog, CarSwitcher } from '../components/catalog/CarPicker';
 import { Icon } from '../components/Icon';
 import { LineChart, type ChartSeries } from '../components/LineChart';
@@ -12,7 +13,7 @@ import { fmt, fmtSeconds, fmtSigned } from '../lib/format';
 import { computeDyno } from '../physics/dyno';
 import { electricGearCount } from '../physics/electric';
 import type { TimingBasis } from '../physics/metrics';
-import { runAccelerationRun, sampleAt, type LaunchTechnique, type TraceSample } from '../physics/runners';
+import { launchThrottle, runAccelerationRun, sampleAt, type LaunchTechnique, type TraceSample } from '../physics/runners';
 import { useApp } from '../state/AppState';
 import type { CarChoice } from '../storage/settings';
 import { describeTuning, isStock } from '../tuning/tuning';
@@ -47,7 +48,7 @@ export function TestsView() {
   const compareVehicle = compare ? app.simVehicle(compare.vehicleId, compare.variant) : null;
   const compareResult = useMemo(() => (compareVehicle ? runAccelerationRun(compareVehicle, { launch }) : null), [compareVehicle, launch]);
   const dyno = useMemo(() => computeDyno(vehicle), [vehicle]);
-  const playback = usePlayback(result.durationS, PLAYBACK_SPEED);
+  const playback = usePlayback(result.durationS, PLAYBACK_SPEED, result);
   const t = playback.time;
   const configKey = `${spec.id}|${launch}|${JSON.stringify(tuning)}`;
   const saved = savedKey === configKey;
@@ -120,6 +121,7 @@ export function TestsView() {
 
   return (
     <div className="view tests">
+      <PowertrainSound spec={spec} frame={live && { ...live, throttle: launchThrottle(launch, live.t) }} />
       <div className="view__bar">
         <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Car to test" />
         <div className="view__bar-actions">
@@ -141,6 +143,7 @@ export function TestsView() {
               Run test
             </Button>
           )}
+          <SoundButton />
         </div>
       </div>
 

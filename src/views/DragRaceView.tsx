@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PowertrainSound, SoundButton } from '../audio/PowertrainAudio';
 import { Icon } from '../components/Icon';
 import { CarPickerDialog } from '../components/catalog/CarPicker';
 import { ClassBadge } from '../components/catalog/CatalogBrowser';
@@ -12,7 +13,7 @@ import type { CarChoice } from '../storage/settings';
 import { fmt, fmtSeconds } from '../lib/format';
 import { computeDyno } from '../physics/dyno';
 import { DISTANCES_M } from '../physics/metrics';
-import { runDragRace, sampleAt, type DragLaneResult, type LaunchTechnique } from '../physics/runners';
+import { launchThrottle, runDragRace, sampleAt, type DragLaneResult, type LaunchTechnique } from '../physics/runners';
 import { useApp } from '../state/AppState';
 import { defaultTuning, describeTuning } from '../tuning/tuning';
 import type { VehicleSpec } from '../data/types';
@@ -51,7 +52,7 @@ export function DragRaceView() {
   const labels = lanes.map((l, i) => `${specs[i].shortName}${l.variant === 'stock' ? ' (stock)' : ''}`);
 
   const duration = Math.max(...race.lanes.map((l) => l.elapsedS ?? l.trace[l.trace.length - 1].t)) + 1.2;
-  const playback = usePlayback(duration, 1);
+  const playback = usePlayback(duration, 1, race);
   const [phase, setPhase] = useState<Phase>('setup');
   const [tree, setTree] = useState(0);
   const [savedRace, setSavedRace] = useState<typeof race | null>(null);
@@ -126,6 +127,14 @@ export function DragRaceView() {
 
   return (
     <div className="view drag">
+      {([0, 1] as const).map((i) => (
+        <PowertrainSound
+          key={i}
+          spec={specs[i]}
+          pan={i === 0 ? -0.45 : 0.45}
+          frame={playback.playing ? { ...pos[i], throttle: launchThrottle(launch, raceTime) } : null}
+        />
+      ))}
       <div className="drag__setup">
         {([0, 1] as const).map((i) => (
           <Panel key={i} className="drag__lane-config" title={<span className="lane-title"><span className="lane-tag" style={{ background: colors[i] }}>Lane {i === 0 ? 'A' : 'B'}</span></span>}>
@@ -155,7 +164,7 @@ export function DragRaceView() {
             </p>
           </Panel>
         ))}
-        <Panel className="drag__race-config" title="Race">
+        <Panel className="drag__race-config" title="Race" actions={<SoundButton />}>
           <Segmented<DistanceKey>
             block
             ariaLabel="Race distance"

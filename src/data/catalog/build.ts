@@ -1,4 +1,5 @@
 import type {
+  Aspiration,
   CurvePoints,
   DriveLayout,
   ElectricSpec,
@@ -24,8 +25,6 @@ import type { BodyStyle } from './types';
 export const HP_TO_KW = 0.745699872;
 export const PS_TO_KW = 0.73549875;
 export const LBFT_TO_NM = 1.3558179483;
-
-export type Aspiration = 'turbo' | 'twin-turbo' | 'supercharged' | 'na';
 
 export interface RatedValue<U extends string> {
   value: number;
@@ -361,6 +360,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       code: e.code,
       description: e.description,
       displacementCc: e.displacementCc,
+      aspiration: e.aspiration,
       idleRpm: e.idleRpm,
       redlineRpm: e.redlineRpm,
       revLimitRpm: e.revLimitRpm,

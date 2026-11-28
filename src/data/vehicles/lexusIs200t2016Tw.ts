@@ -20,6 +20,7 @@ export const lexusIs200t2016Tw: VehicleSpec = {
   engine: {
     code: '8AR-FTS',
     description: '2.0 L inline-4, twin-scroll turbo, D-4ST direct + port injection',
+    aspiration: 'turbo',
     displacementCc: 1998,
     idleRpm: 700,
     redlineRpm: 6200,
