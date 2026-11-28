@@ -94,6 +94,11 @@ export class VehicleSimulator {
   /** N e-Shift requested but paused while a boost runs (Hyundai: NGB deactivates it; it returns afterwards). */
   private virtualSuspended = false;
   /**
+   * Launch control was invalidated (N e-Shift switched on) while the driver may still be holding the
+   * brake and full accelerator: no new prime until the accelerator lifts or the brake is released.
+   */
+  private launchRearm = false;
+  /**
    * CVT: `gear` holds a paddle-commanded step (manual), so further requests
    * step on from it even while the pulleys are still moving. Cleared whenever
    * the automatic ratio control runs, so the first request after Auto starts
@@ -111,6 +116,7 @@ export class VehicleSimulator {
     this.state = initialState(this.vehicle);
     this.virtualSuspended = false;
     this.cvtCommanded = false;
+    this.launchRearm = false;
     if (this.virtualOn) this.state.engineRpm = this.vehicle.electric!.virtualShift!.idleRpm;
   }
 
@@ -140,6 +146,12 @@ export class VehicleSimulator {
     if (next === this.virtualOn) return;
     this.virtualOn = next;
     this.virtualSuspended = next && this.state.boostS > 0;
+    if (next) {
+      // Launch control is unavailable while N e-Shift operates: drop any prime, and do not re-prime from the
+      // same brake-and-accelerator hold if the driver switches it off again before lifting or releasing.
+      this.state.launchPrimed = false;
+      this.launchRearm = true;
+    }
     this.selectGearbox();
   }
 
@@ -635,18 +647,23 @@ export class VehicleSimulator {
     // 3. Published boost. A brake-held full-throttle hold at rest primes a launch
     // (launch-control boosts always; driver boosts when linked to launches and
     // ready); releasing the brake fires it, lifting the accelerator cancels it.
-    // The simulated gearbox blocks launch control (as N e-Shift does).
+    // The simulated gearbox blocks launch control (as N e-Shift does): switching
+    // it on drops a prime, and a prime fires only if launch control is still
+    // available at the release.
     const b = el.boost;
     if (b) {
       const full = throttleCmd > 0.9;
       const ready = b.armed && !this.virtualActive && s.boostS === 0 && s.boostRecoveryS === 0 && s.launchCooldownS === 0;
       if (!full) s.launchPrimed = false;
-      else if (stationaryHold) s.launchPrimed = ready;
+      else if (stationaryHold) s.launchPrimed = ready && !this.launchRearm;
       else if (s.launchPrimed) {
         s.launchPrimed = false;
-        s.launchCooldownS = b.launchCooldownS;
-        this.startBoost(b);
+        if (ready) {
+          s.launchCooldownS = b.launchCooldownS;
+          this.startBoost(b);
+        }
       }
+      if (!full || !stationaryHold) this.launchRearm = false;
     }
     const boosting = s.boostS > 0;
     if (boosting) {

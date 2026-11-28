@@ -303,6 +303,81 @@ describe('simulated stepped gearbox (Hyundai N e-Shift)', () => {
     expect(s.state.engineRpm).toBeLessThanOrEqual(6750);
   });
 
+  it('drops a linked launch prime when N e-Shift is switched on, so releasing the brake fires no boost', () => {
+    const s = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }), 'auto');
+    s.advance(1, { throttle: 1, brake: 1 });
+    expect(s.state.launchPrimed).toBe(true);
+    s.setVirtualShift(true);
+    expect(s.state.launchPrimed).toBe(false);
+    // Brake released at full throttle on the next fixed step: no boost, no cooldown, gears not suspended.
+    s.step(0.001, FULL);
+    expect(s.state.boostS).toBe(0);
+    expect(s.state.boostUsed).toBe(false);
+    expect(s.state.launchCooldownS).toBe(0);
+    expect(s.virtualShiftSuspended).toBe(false);
+    expect(s.gearCount).toBe(8);
+    s.advance(3, FULL);
+    expect(s.state.boostUsed).toBe(false);
+  });
+
+  it('does not re-prime from the same hold across rapid N e-Shift toggles, but primes again after a fresh hold', () => {
+    const s = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }), 'auto');
+    const hold = { throttle: 1, brake: 1 };
+    s.advance(1, hold);
+    expect(s.state.launchPrimed).toBe(true);
+    for (const on of [true, false, true, false]) {
+      s.setVirtualShift(on);
+      s.advance(0.05, hold);
+      expect(s.state.launchPrimed).toBe(false);
+    }
+    // Still holding with N e-Shift off: the invalidated hold stays unprimed and the release fires nothing.
+    s.advance(0.5, hold);
+    expect(s.state.launchPrimed).toBe(false);
+    s.step(0.001, FULL);
+    expect(s.state.boostUsed).toBe(false);
+    expect(s.state.launchCooldownS).toBe(0);
+    // Stop, then a fresh brake-and-accelerator hold with N e-Shift off primes and fires as usual.
+    for (let i = 0; i < 30000 && s.state.speed > 0; i++) s.step(0.001, { throttle: 0, brake: 1 });
+    s.advance(1, hold);
+    expect(s.state.launchPrimed).toBe(true);
+    s.step(0.001, FULL);
+    expect(s.state.boostS).toBeCloseTo(10, 2);
+    expect(s.state.launchCooldownS).toBeGreaterThan(119);
+  });
+
+  it('fires a prime only if launch control is still available at the release', () => {
+    const s = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }), 'auto');
+    s.setVirtualShift(true);
+    s.advance(1, { throttle: 1, brake: 1 });
+    // Even a prime that somehow survived (forced here) cannot fire while N e-Shift operates.
+    s.state.launchPrimed = true;
+    s.step(0.001, FULL);
+    expect(s.state.launchPrimed).toBe(false);
+    expect(s.state.boostUsed).toBe(false);
+    expect(s.state.launchCooldownS).toBe(0);
+    expect(s.virtualShiftSuspended).toBe(false);
+  });
+
+  it('keeps launch control blocked after N Grin Boost suspends and returns N e-Shift', () => {
+    const s = new VehicleSimulator(sim(ioniq, { electricBoostArmed: true }), 'auto');
+    s.setVirtualShift(true);
+    expect(s.requestBoost()).toEqual({ ok: true });
+    expect(s.virtualShiftSuspended).toBe(true);
+    // Hold at rest while the boost runs and after it: no prime (boost running, then recovery and N e-Shift back).
+    s.advance(10.2, { throttle: 1, brake: 1 });
+    expect(s.state.launchPrimed).toBe(false);
+    expect(s.virtualShiftSuspended).toBe(false);
+    expect(s.gearCount).toBe(8);
+    s.advance(11, { throttle: 1, brake: 1 });
+    expect(s.state.boostRecoveryS).toBe(0);
+    expect(s.state.launchPrimed).toBe(false);
+    // N e-Shift off and a fresh hold: launch control is available again.
+    s.setVirtualShift(false);
+    s.advance(0.5, { throttle: 0, brake: 1 });
+    s.advance(1, { throttle: 1, brake: 1 });
+    expect(s.state.launchPrimed).toBe(true);
+  });
+
   it('leaves the test runners on the real single-speed drive', () => {
     const a = runAccelerationRun(sim(ioniq), { targetSpeedKmh: 200 });
     expect(a.trace.every((p) => p.gear === 1)).toBe(true);
