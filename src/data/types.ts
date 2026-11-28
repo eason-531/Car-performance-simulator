@@ -66,6 +66,30 @@ export interface EngineSpec {
  * instead of a torque converter (Mercedes-AMG MCT): clutch-slip launch and
  * creep like a dual-clutch, power-on clutch-to-clutch shifts like an automatic.
  */
+/** One hybrid traction motor (rated mechanical output). */
+export interface HybridMotorSpec {
+  peakPowerKw: number;
+  peakTorqueNm: number;
+  maxRpm: number;
+}
+
+/**
+ * Hybrid drive on top of the engine path. The input motor (P2 / crank) adds
+ * its torque to the engine's ahead of the converter or clutch, so it goes
+ * through the gears; axle motors drive their axle through a fixed reduction
+ * (through-the-road). Both scale with the accelerator. Their combined output
+ * is held to the battery's discharge limit and engine + motors to the
+ * manufacturer's system rating. Charge state, temperature, regeneration and
+ * deployment strategy are not modelled (full deployment on demand).
+ */
+export interface HybridSpec {
+  description: string;
+  inputMotor?: HybridMotorSpec;
+  axleMotors?: readonly (HybridMotorSpec & { axle: 'front' | 'rear'; reduction: number })[];
+  systemPowerKw: number;
+  batteryPowerKw: number;
+}
+
 export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'multi-clutch' | 'automated-manual' | 'manual' | 'direct-drive' | 'cvt';
 
 /** One traction motor driving one axle through its own fixed (or two-speed) reduction. */
@@ -338,6 +362,8 @@ export interface VehicleSpec {
   /** Electronic top-speed limiter, km/h (null = none). */
   /** Battery-electric drive; when set the simulator uses the electric path. */
   electric?: ElectricSpec;
+  /** Hybrid drive added to the engine path (gearbox-input motor and/or axle motors). */
+  hybrid?: HybridSpec;
   speedLimiterKmh: number | null;
   /** Manufacturer performance claims; null where the maker does not publish one. */
   factory: { zeroTo100S: number | null; topSpeedKmh: number | null; zeroTo60MphS?: number | null };

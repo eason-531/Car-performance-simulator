@@ -334,6 +334,8 @@ export class VehicleSimulator {
         s.speedLimited = true;
       }
     }
+    // The driver's demand for hybrid motors (after the speed limiter, before idle control).
+    const motorDemand = throttle;
     const stationaryHold = s.speed < 0.3 && brake > 0.2;
     const manual = tr.type === 'manual';
     if (manual && stationaryHold && s.coupling === 'slipping') {
@@ -348,8 +350,21 @@ export class VehicleSimulator {
     if (s.engineRpm >= e.revLimitRpm) s.fuelCut = true;
     else if (s.engineRpm < e.revLimitRpm - 150) s.fuelCut = false;
     s.fuelCutTime = s.fuelCut || s.engineRpm > e.revLimitRpm - 160 ? s.fuelCutTime + dt : 0;
-    const engineT = engineTorque(e, s.engineRpm, s.manifoldBar, s.fuelCut);
-    s.engineTorqueNm = engineT;
+    const engineOnlyT = engineTorque(e, s.engineRpm, s.manifoldBar, s.fuelCut);
+    s.engineTorqueNm = engineOnlyT;
+    // Hybrid input motor (P2 / crank): adds to the engine's torque on the same shaft, within the battery
+    // and system limits; cut with the engine at the rev limiter.
+    const hy = v.hybrid;
+    let inputMotorW = 0;
+    let engineT = engineOnlyT;
+    if (hy?.inputMotor) {
+      const m = hy.inputMotor;
+      const w = Math.max(rpmToRadS(s.engineRpm), 1);
+      let tm = s.fuelCut || s.engineRpm > m.maxRpm ? 0 : motorDemand * Math.min(m.peakTorqueNm, m.peakPowerW / w);
+      tm = Math.min(tm, hy.batteryPowerW / w, Math.max(0, hy.systemPowerW / w - Math.max(0, engineOnlyT)));
+      engineT = engineOnlyT + tm;
+      inputMotorW = tm * w;
+    }
 
     // 5. Coupling ------------------------------------------------------------
     const engineOmega = rpmToRadS(s.engineRpm);
@@ -418,7 +433,29 @@ export class VehicleSimulator {
 
     // 6. Wheel force and traction --------------------------------------------
     const eta = v.drivetrain.efficiency;
-    const engineForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
+    const engineOnlyForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
+    // Hybrid axle motors drive their axle directly; the battery and the system rating cap the total.
+    let axleMotorForce = 0;
+    let axleMotorW = 0;
+    if (hy && hy.axleMotors.length > 0 && motorDemand > 0) {
+      const wheelW = s.speed / r;
+      for (const m of hy.axleMotors) {
+        const wm = wheelW * m.reduction;
+        if (radSToRpm(wm) > m.maxRpm) continue;
+        const tm = motorDemand * Math.min(m.peakTorqueNm, m.peakPowerW / Math.max(wm, 1));
+        axleMotorForce += (tm * m.reduction * hy.axleEfficiency) / r;
+        axleMotorW += tm * wm;
+      }
+      const engineW = Math.max(0, engineT * rpmToRadS(s.engineRpm));
+      const availW = Math.min(hy.batteryPowerW - inputMotorW, hy.systemPowerW - engineW);
+      if (axleMotorW > 1e-9 && availW < axleMotorW) {
+        const k = Math.max(0, availW) / axleMotorW;
+        axleMotorForce *= k;
+        axleMotorW *= k;
+      }
+    }
+    if (hy) s.motorPowerKw = (inputMotorW + axleMotorW) / 1000;
+    const engineForce = engineOnlyForce + axleMotorForce;
     const tractionMax = tractionLimitN(v, s.accelFiltered) * TRACTION_CONTROL_EFFICIENCY;
     const driveForce = clamp(engineForce, -tractionMax, tractionMax);
 

@@ -31,6 +31,8 @@ export interface SimVehicle {
   speedLimitMs: number | null;
   /** Battery-electric drive (tuned); when present the simulator uses the electric path. */
   electric?: SimElectric;
+  /** Hybrid motors added to the engine path. */
+  hybrid?: SimHybrid;
 }
 
 export interface SimMotor {
@@ -45,6 +47,22 @@ export interface SimMotor {
   upshiftMs: number | null;
   /** Rotor inertia reflected per unit ratio², kg·m². */
   rotorInertiaKgM2: number;
+}
+
+export interface SimHybridMotor {
+  peakTorqueNm: number;
+  peakPowerW: number;
+  maxRpm: number;
+}
+
+/** Hybrid drive on the engine path (see HybridSpec). */
+export interface SimHybrid {
+  inputMotor: SimHybridMotor | null;
+  axleMotors: readonly (SimHybridMotor & { axle: 'front' | 'rear'; reduction: number })[];
+  systemPowerW: number;
+  batteryPowerW: number;
+  /** Axle-motor gear efficiency. */
+  axleEfficiency: number;
 }
 
 export interface SimElectric {

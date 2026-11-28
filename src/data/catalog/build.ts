@@ -2,6 +2,7 @@ import type {
   CurvePoints,
   DriveLayout,
   ElectricSpec,
+  HybridSpec,
   LaunchClutchSpec,
   Provenance,
   StageTune,
@@ -190,6 +191,8 @@ export interface SimInput {
   speedLimiterKmh: number | null;
   factory?: { zeroTo100S?: number | null; topSpeedKmh?: number | null; zeroTo60MphS?: number | null };
   stage1?: StageTune;
+  /** Hybrid motors added to the engine path (see HybridSpec). */
+  hybrid?: HybridSpec;
   /** Sourced facts for this configuration (with URLs). Estimates are appended automatically. */
   provenance: readonly Provenance[];
   notes?: readonly string[];
@@ -412,6 +415,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
       zeroTo60MphS: input.factory?.zeroTo60MphS ?? null,
     },
     stage1: input.stage1,
+    ...(input.hybrid ? { hybrid: input.hybrid } : {}),
     provenance: [...input.provenance, ...est],
     notes: input.notes ?? [],
   };
