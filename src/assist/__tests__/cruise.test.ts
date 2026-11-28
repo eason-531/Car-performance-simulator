@@ -228,4 +228,20 @@ describe('brake interlock', () => {
     loop.step({ throttle: 0, brake: 0.1 });
     expect(loop.automated).toBe(false);
   });
+
+  it('starts a replacement session (car or tuning change) from the pedals the driver is still holding', () => {
+    const held = new LiveDriveLoop(sim(skoda), 'auto', { trafficMode: 'heavy', seed: 42, driver: { throttle: 0, brake: 1 } });
+    // No step yet: the held brake must already refuse every engagement command and change nothing.
+    expect(held.engage()).toBe(false);
+    expect(held.cruiseSet()).toEqual({ ok: false, message: 'Release the brake to set a speed' });
+    expect(held.cruiseResume().ok).toBe(false);
+    expect(held.automated).toBe(false);
+    expect(held.cruise).toEqual({ setKmh: null, state: 'off' });
+    expect(held.trafficSetting.mode).toBe('heavy');
+    expect(held.trafficSetting.seed).toBe(42);
+    held.setDriverInput({ throttle: 0, brake: 0 });
+    expect(held.engage()).toBe(true);
+    // Without the option a new session starts with the feet off the pedals, as before.
+    expect(new LiveDriveLoop(sim(skoda)).engage()).toBe(true);
+  });
 });

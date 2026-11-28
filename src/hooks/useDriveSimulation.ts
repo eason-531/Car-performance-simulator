@@ -118,15 +118,18 @@ export function useDriveSimulation(vehicle: SimVehicle, shiftMode: ShiftMode, vi
     const prev = loopRef.current;
     // A new car (or tuning) starts a new session: Auto Drive and cruise are off, the set speed is cleared.
     const setting = prev ? prev.trafficSetting : { mode: 'off' as const, seed: DEFAULT_TRAFFIC_SEED, road: defaultRoad() };
+    // The new session starts from the pedals the driver is holding now, so a brake held across the change
+    // refuses Auto Drive, SET and RESUME before the first step (not only after the next frame).
+    const driver = driverTargets();
     const next = new LiveDriveLoop(vehicle, shiftMode, {
       trafficMode: setting.mode,
       seed: setting.seed,
       road: setting.road,
       disengaged: prev?.automated ? 'vehicle' : undefined,
+      driver,
     });
     if (prev) {
       // Keep what the driver's feet are doing, never automated requests.
-      const driver = driverTargets();
       next.applied.throttle = prev.automated ? Math.min(prev.applied.throttle, driver.throttle) : prev.applied.throttle;
       next.applied.brake = prev.automated ? Math.min(prev.applied.brake, driver.brake) : prev.applied.brake;
     }
