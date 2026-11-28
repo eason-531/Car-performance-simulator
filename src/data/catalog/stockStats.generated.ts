@@ -1556,6 +1556,59 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "score": 53.6,
     "cls": "A"
   },
+  "2022-audi-rs-3-us-sedan-awd-7dct": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.667,
+      "zeroTo200KmhS": 13.508,
+      "sixtyFootS": 1.786,
+      "quarterMileS": 11.85,
+      "quarterMileTrapKmh": 188.413,
+      "kilometerS": 21.762,
+      "kilometerTrapKmh": 240.169,
+      "metres400S": 11.805,
+      "metres400TrapKmh": 188.08,
+      "splits": {
+        "30mph": 1.22,
+        "60mph": 3.417,
+        "100mph": 8.646,
+        "130mph": 15.149,
+        "150mph": 22.101,
+        "100kmh": 3.667,
+        "160kmh": 8.55,
+        "180kmh": 10.771,
+        "200kmh": 13.508
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.545,
+      "zeroTo200KmhS": 13.385,
+      "sixtyFootS": 1.664,
+      "quarterMileS": 11.727,
+      "quarterMileTrapKmh": 188.413,
+      "kilometerS": 21.639,
+      "kilometerTrapKmh": 240.169,
+      "metres400S": 11.683,
+      "metres400TrapKmh": 188.08,
+      "splits": {
+        "30mph": 1.098,
+        "60mph": 3.295,
+        "100mph": 8.524,
+        "130mph": 15.026,
+        "150mph": 21.978,
+        "100kmh": 3.545,
+        "160kmh": 8.428,
+        "180kmh": 10.648,
+        "200kmh": 13.385
+      }
+    },
+    "topSpeedKmh": 250,
+    "peakPowerPs": 408,
+    "peakTorqueNm": 500,
+    "testMassKg": 1726,
+    "score": 68.2,
+    "cls": "S"
+  },
   "2017-alfa-romeo-giulia-quadrifoglio-us-sedan-rwd-8at": {
     "formula": "SLC-5",
     "brakeRelease": {
@@ -1766,6 +1819,59 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "peakTorqueNm": 800,
     "testMassKg": 2325,
     "score": 72.5,
+    "cls": "S"
+  },
+  "2018-mercedes-amg-e-63-s-wagon-4matic-us-wagon-awd-9mct": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 3.483,
+      "zeroTo200KmhS": 11.946,
+      "sixtyFootS": 1.916,
+      "quarterMileS": 11.554,
+      "quarterMileTrapKmh": 196.738,
+      "kilometerS": 20.99,
+      "kilometerTrapKmh": 249.25,
+      "metres400S": 11.511,
+      "metres400TrapKmh": 196.376,
+      "splits": {
+        "30mph": 1.311,
+        "60mph": 3.311,
+        "100mph": 7.7,
+        "130mph": 13.123,
+        "150mph": 18.401,
+        "100kmh": 3.483,
+        "160kmh": 7.62,
+        "180kmh": 9.683,
+        "200kmh": 11.946
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 3.236,
+      "zeroTo200KmhS": 11.699,
+      "sixtyFootS": 1.669,
+      "quarterMileS": 11.307,
+      "quarterMileTrapKmh": 196.738,
+      "kilometerS": 20.743,
+      "kilometerTrapKmh": 249.25,
+      "metres400S": 11.264,
+      "metres400TrapKmh": 196.376,
+      "splits": {
+        "30mph": 1.064,
+        "60mph": 3.065,
+        "100mph": 7.453,
+        "130mph": 12.876,
+        "150mph": 18.154,
+        "100kmh": 3.236,
+        "160kmh": 7.373,
+        "180kmh": 9.437,
+        "200kmh": 11.699
+      }
+    },
+    "topSpeedKmh": 250,
+    "peakPowerPs": 613,
+    "peakTorqueNm": 850,
+    "testMassKg": 2193,
+    "score": 75.1,
     "cls": "S"
   },
   "1993-toyota-supra-turbo-us-coupe-rwd-6mt": {
@@ -2980,6 +3086,106 @@ export const STOCK_STATS: Record<string, StockStats> = {
     "testMassKg": 2053,
     "score": 65.8,
     "cls": "S"
+  },
+  "2021-porsche-macan-gts-us-suv-awd-7dct": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 4.468,
+      "zeroTo200KmhS": 18.062,
+      "sixtyFootS": 1.964,
+      "quarterMileS": 12.779,
+      "quarterMileTrapKmh": 173.757,
+      "kilometerS": 23.577,
+      "kilometerTrapKmh": 219.346,
+      "metres400S": 12.73,
+      "metres400TrapKmh": 173.462,
+      "splits": {
+        "30mph": 1.415,
+        "60mph": 4.2,
+        "100mph": 10.832,
+        "130mph": 20.436,
+        "150mph": 34.07,
+        "100kmh": 4.468,
+        "160kmh": 10.701,
+        "180kmh": 13.846,
+        "200kmh": 18.062
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 4.224,
+      "zeroTo200KmhS": 17.818,
+      "sixtyFootS": 1.72,
+      "quarterMileS": 12.535,
+      "quarterMileTrapKmh": 173.757,
+      "kilometerS": 23.333,
+      "kilometerTrapKmh": 219.346,
+      "metres400S": 12.486,
+      "metres400TrapKmh": 173.462,
+      "splits": {
+        "30mph": 1.171,
+        "60mph": 3.955,
+        "100mph": 10.588,
+        "130mph": 20.192,
+        "150mph": 33.825,
+        "100kmh": 4.224,
+        "160kmh": 10.457,
+        "180kmh": 13.602,
+        "200kmh": 17.818
+      }
+    },
+    "topSpeedKmh": 265,
+    "peakPowerPs": 382,
+    "peakTorqueNm": 519,
+    "testMassKg": 2107,
+    "score": 52,
+    "cls": "A"
+  },
+  "2021-ford-f-150-raptor-supercrew-37-performance-package-us-pickup-4wd-10at": {
+    "formula": "SLC-5",
+    "brakeRelease": {
+      "zeroTo100KmhS": 5.835,
+      "zeroTo200KmhS": null,
+      "sixtyFootS": 2.319,
+      "quarterMileS": 14.207,
+      "quarterMileTrapKmh": 156.28,
+      "kilometerS": 26.397,
+      "kilometerTrapKmh": 188.958,
+      "metres400S": 14.153,
+      "metres400TrapKmh": 156.029,
+      "splits": {
+        "30mph": 1.981,
+        "60mph": 5.516,
+        "100mph": 15.253,
+        "100kmh": 5.835,
+        "160kmh": 15.035,
+        "180kmh": 21.007
+      }
+    },
+    "rollout": {
+      "zeroTo100KmhS": 5.537,
+      "zeroTo200KmhS": null,
+      "sixtyFootS": 2.021,
+      "quarterMileS": 13.909,
+      "quarterMileTrapKmh": 156.28,
+      "kilometerS": 26.099,
+      "kilometerTrapKmh": 188.958,
+      "metres400S": 13.855,
+      "metres400TrapKmh": 156.029,
+      "splits": {
+        "30mph": 1.683,
+        "60mph": 5.217,
+        "100mph": 14.954,
+        "100kmh": 5.537,
+        "160kmh": 14.737,
+        "180kmh": 20.709
+      }
+    },
+    "topSpeedKmh": 190,
+    "peakPowerPs": 458,
+    "peakTorqueNm": 691,
+    "testMassKg": 2783,
+    "score": 29.2,
+    "cls": "C"
   },
   "2012-lexus-lfa-us-coupe-rwd-6amt": {
     "formula": "SLC-5",

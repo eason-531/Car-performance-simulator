@@ -273,14 +273,23 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
   const isManual = t.type === 'manual';
   const isDct = t.type === 'dual-clutch';
   const isAmt = t.type === 'automated-manual';
-  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : isAmt ? 0.25 : 0.3);
-  const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : isAmt ? 0.35 : 0.4);
-  const dip = t.shiftTorqueDip ?? (isManual || isAmt ? 1 : isDct ? 0.18 : 0.45);
+  const isMct = t.type === 'multi-clutch';
+  const up = t.upshiftTimeS ?? (isManual ? 0.3 : isDct ? 0.15 : isAmt ? 0.25 : isMct ? 0.2 : 0.3);
+  const down = t.downshiftTimeS ?? (isManual ? 0.5 : isDct ? 0.25 : isAmt ? 0.35 : isMct ? 0.3 : 0.4);
+  const dip = t.shiftTorqueDip ?? (isManual || isAmt ? 1 : isDct ? 0.18 : isMct ? 0.35 : 0.45);
   if (t.upshiftTimeS === undefined) {
     estimate(
       'Shift time',
       `${up} s up / ${down} s down`,
-      isManual ? 'Deterministic test driver: brisk full-throttle clutch shift' : isDct ? 'Typical dual-clutch handover' : isAmt ? 'Typical single-clutch automated manual (clutch open for the whole shift)' : 'Typical modern planetary automatic',
+      isManual
+        ? 'Deterministic test driver: brisk full-throttle clutch shift'
+        : isDct
+          ? 'Typical dual-clutch handover'
+          : isAmt
+            ? 'Typical single-clutch automated manual (clutch open for the whole shift)'
+            : isMct
+              ? 'Planetary clutch-to-clutch shift with a wet start-off clutch (AMG MCT); not published'
+              : 'Typical modern planetary automatic',
     );
   }
   const tPk = toNm(e.torque);
@@ -303,7 +312,7 @@ export function buildSpec(id: Identity, input: SimInput): VehicleSpec {
         launchRpm: t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         brakeHoldRpmLimit: t.launchClutch?.brakeHoldRpmLimit ?? t.launchClutch?.launchRpm ?? defaultLaunchRpm,
         maxClutchTorqueNm: t.launchClutch?.maxClutchTorqueNm ?? Math.round(tPk * 1.6),
-        creep: t.launchClutch?.creep ?? isDct,
+        creep: t.launchClutch?.creep ?? (isDct || isMct),
         ...(t.launchClutch?.creepTorqueNm !== undefined && { creepTorqueNm: t.launchClutch.creepTorqueNm }),
         driverEngageS: t.launchClutch?.driverEngageS ?? (isManual ? 0.3 : undefined),
       };

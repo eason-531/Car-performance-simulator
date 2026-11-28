@@ -61,7 +61,12 @@ export interface EngineSpec {
  *   shift, is zero while the clutch is open and ramps back in over the last
  *   20 %. The clutch stays open at idle (no creep) unless the car says otherwise.
  */
-export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual' | 'direct-drive' | 'cvt';
+/**
+ * 'multi-clutch': a planetary automatic that launches on a wet start-off clutch
+ * instead of a torque converter (Mercedes-AMG MCT): clutch-slip launch and
+ * creep like a dual-clutch, power-on clutch-to-clutch shifts like an automatic.
+ */
+export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'multi-clutch' | 'automated-manual' | 'manual' | 'direct-drive' | 'cvt';
 
 /** One traction motor driving one axle through its own fixed (or two-speed) reduction. */
 export interface ElectricMotorSpec {

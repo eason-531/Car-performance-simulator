@@ -84,7 +84,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
       launchRpm: t.launchClutch.launchRpm,
       brakeHoldRpmLimit: t.launchClutch.brakeHoldRpmLimit,
       maxClutchTorqueNm: t.launchClutch.maxClutchTorqueNm,
-      creep: t.launchClutch.creep ?? t.type === 'dual-clutch',
+      creep: t.launchClutch.creep ?? (t.type === 'dual-clutch' || t.type === 'multi-clutch'),
       creepTorqueNm: t.launchClutch.creepTorqueNm ?? DEFAULT_CREEP_TORQUE_NM,
       driverEngageS: t.launchClutch.driverEngageS ?? 0,
     };
