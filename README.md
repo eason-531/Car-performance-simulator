@@ -130,11 +130,15 @@ handoff, and carry the **Hypercar** tag (a quick filter in the car browser).
   Nevera, built from Bugatti, Koenigsegg, Porsche, McLaren and Rimac technical
   data and the Veyron EPA filing, with Car and Driver results where a test
   exists.
-- **Catalog-only (9).** Hybrids, the AMG MCT and the Raptor's 4WD wait for
-  models of their own, so they are never
-  routed through an incompatible one. Some conventional cars wait for gear
-  ratios that no reachable source published. They can still be browsed and
-  compared on their measured results.
+- **Formerly catalog-only (9), now playable on bounded estimates.** The
+  Audi RS 3 (per-gear outputs from the TT RS DQ500 mapping), Porsche Macan GTS
+  (EU 4.67 axle, US 4.13 recorded as the other bound), Ford F-150 Raptor 37
+  (both axles driven, as 4A/4H), Mercedes-AMG E 63 S Wagon (AMG MCT), and five
+  hybrids: Acura NSX, Ferrari SF90 Stradale Assetto Fiorano, BMW M5 Touring,
+  Volvo V60 T8 Polestar Engineered and Toyota Prius Limited AWD. Their
+  disputed or unpublished inputs are labelled *estimated* with the evidence
+  and the sensitivity, and they stay listed in `docs/DATA_GAPS.md`. No
+  catalog car is catalog-only any more.
 - **Benchmarks.** Each result records the publication, the timing basis
   (from brake release, or 1-ft rollout as Car and Driver has used since late
   2019 and MotorTrend uses), test conditions, and whether the tested car is the
@@ -196,6 +200,18 @@ headless tests run the same code.
   repeated presses step on from the last commanded step while the pulleys
   catch up (the first press after Auto starts from the step nearest the actual
   ratio), with over-rev protection on each downshift.
+- **AMG MCT (multi-clutch).** A planetary automatic that launches on a wet
+  start-off clutch instead of a converter: clutch-slip launch and creep like a
+  dual-clutch, power-on clutch-to-clutch shifts like an automatic.
+- **Hybrid drive.** Added to the engine path: an input motor (P2 or crank)
+  whose torque joins the engine's ahead of the converter or clutch, and axle
+  motors through fixed reductions that cut out above their maximum speed. Both
+  follow the accelerator; their output is held to the battery's discharge
+  limit and engine plus motors to the manufacturer's system rating. Charge
+  state, temperature, regeneration and each maker's deployment strategy are
+  not modelled (full deployment on demand), and the Dyno shows the engine
+  alone. A front axle driven only by motors shares one traction limit with
+  the rear, with its share capped.
 - **Gearbox.** Per-gear final drives and shift times with a torque dip and a
   ratio blend. The automatic shift schedule computes optimal full-throttle
   upshift points and handles multi-gear kickdown and coasting downshifts. Manual
