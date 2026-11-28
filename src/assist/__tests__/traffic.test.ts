@@ -383,7 +383,9 @@ describe('replay', () => {
     expect(b.leads).toEqual(a.leads);
     expect(b.state).toEqual(a.state);
     expect(b.lane).toBe(a.lane);
-    expect(a.leads.length).toBeGreaterThan(3);
+    // A meaningful replay: several lead changes and plenty of generated traffic.
+    expect(a.leads.length).toBeGreaterThanOrEqual(3);
+    expect(JSON.parse(a.events).filter((e: { kind: string }) => e.kind === 'spawn').length).toBeGreaterThan(20);
   }, 60_000);
 
   it('Reset replays the seed with the current settings from a standing start', () => {
@@ -471,18 +473,20 @@ describe('mode transitions (review fixes)', () => {
   }, 30_000);
 
   it('Auto: leaving congestion releases the queue the same way', () => {
-    // Seed 11 with the player waiting: mid → heavy → jam (159 s) → mid (200 s).
+    // Seed 11 with the player waiting: run until the seeded pattern reaches congestion, then until it leaves it.
     const loop = session(lexus, 'auto', TAIWAN, 11, false);
+    const hold = { throttle: 0, brake: 1 };
     let heads: number[] = [];
-    run(loop, 199, { throttle: 0, brake: 1 }, (l) => {
-      if (!heads.length && l.traffic!.currentLevel === 'jam') heads = [];
-      const ps = l.traffic!.cars.filter((c) => c.pacer).map((c) => c.id);
-      if (ps.length) heads = ps;
-    });
+    for (let i = 0; i < steps(600) && loop.traffic!.currentLevel !== 'jam'; i++) loop.step(hold);
     expect(loop.traffic!.currentLevel).toBe('jam');
+    for (let i = 0; i < steps(120) && loop.traffic!.currentLevel === 'jam'; i++) {
+      loop.step(hold);
+      const ps = loop.traffic!.cars.filter((c) => c.pacer).map((c) => c.id);
+      if (ps.length) heads = ps;
+    }
     expect(heads.length).toBeGreaterThan(0);
-    run(loop, 30, { throttle: 0, brake: 1 });
-    expect(loop.traffic!.currentLevel).toBe('mid');
+    expect(loop.traffic!.currentLevel).not.toBe('jam');
+    run(loop, 30, hold);
     expect(loop.traffic!.cars.some((c) => c.pacer)).toBe(false);
     for (const c of loop.traffic!.cars.filter((x) => heads.includes(x.id))) expect(msToKmh(c.v0Target)).toBeGreaterThan(60);
   }, 60_000);

@@ -39,6 +39,13 @@ export const SPAWN_BEHIND_M = 70;
 /** Traffic farther than this ahead or behind is removed, m. */
 export const DESPAWN_AHEAD_M = 4000;
 export const DESPAWN_BEHIND_M = 250;
+/**
+ * A car this far ahead that is pulling away from the player will never be
+ * seen again, so it is removed and frees its place for traffic that will.
+ */
+export const RELEASE_AHEAD_M = 900;
+/** Window around the player in which a level's near-traffic target is kept, m (behind, ahead). */
+export const NEAR_WINDOW_M: readonly [number, number] = [-220, 650];
 
 const STANDSTILL_GAP_M = 5;
 const SPAWN_DECEL = 1.0;
@@ -57,14 +64,20 @@ interface LevelSpec {
   flow: number;
   /** Encounter mix: slower car in the player's lane, cut-in, adjacent, faster car from behind. */
   mix: readonly [number, number, number, number];
+  /**
+   * Cars kept within NEAR_WINDOW_M of the player whatever the player's speed
+   * (0 = encounters only). Replenished on the side traffic flows in from:
+   * ahead when the player is faster, behind when slower.
+   */
+  near: number;
 }
 
 export const LEVELS: Readonly<Record<Level, LevelSpec>> = {
-  'very-sparse': { intervalS: [30, 55], group: [1, 1], maxCars: 4, flow: 1, mix: [0.35, 0.25, 0.3, 0.1] },
-  sparse: { intervalS: ENCOUNTER_INTERVAL_S, group: [1, 1], maxCars: 8, flow: 1, mix: [0.4, 0.35, 0.25, 0] },
-  mid: { intervalS: [7, 13], group: [1, 3], maxCars: 14, flow: 1, mix: [0.3, 0.3, 0.25, 0.15] },
-  heavy: { intervalS: [3.5, 7], group: [2, 4], maxCars: 22, flow: 0.88, mix: [0.3, 0.25, 0.25, 0.2] },
-  jam: { intervalS: [6, 12], group: [1, 2], maxCars: 26, flow: 0.8, mix: [0, 0, 0, 1] },
+  'very-sparse': { intervalS: [30, 55], group: [1, 1], maxCars: 4, flow: 1, mix: [0.35, 0.25, 0.3, 0.1], near: 0 },
+  sparse: { intervalS: ENCOUNTER_INTERVAL_S, group: [1, 1], maxCars: 8, flow: 1, mix: [0.4, 0.35, 0.25, 0], near: 0 },
+  mid: { intervalS: [7, 13], group: [1, 3], maxCars: 14, flow: 1, mix: [0.3, 0.3, 0.25, 0.15], near: 5 },
+  heavy: { intervalS: [3.5, 7], group: [2, 4], maxCars: 22, flow: 0.88, mix: [0.3, 0.25, 0.25, 0.2], near: 10 },
+  jam: { intervalS: [6, 12], group: [1, 2], maxCars: 26, flow: 0.8, mix: [0, 0, 0, 1], near: 0 },
 };
 
 export type VehicleKind = 'car' | 'van' | 'truck';
@@ -282,6 +295,13 @@ export class TrafficSim {
   private nextId = 1;
   private drivingS = 0;
   private nextEncounterS = 0;
+  /** Next near-traffic replenishment check (driving time), s; starts once the player is under way. */
+  private nextFlowS = 1;
+  /**
+   * Separate seeded stream for near-traffic replenishment, so its draws do not
+   * shift the encounter and Auto-pattern sequence of the main stream.
+   */
+  private flowRng: Rng;
   private level: Level = 'sparse';
   private levelUntilS = Infinity;
   private truckShare = 0.1;
@@ -295,6 +315,7 @@ export class TrafficSim {
     this.road = { ...road };
     this.seedValue = normaliseSeed(seed);
     this.rng = new Rng(this.seedValue);
+    this.flowRng = new Rng(flowSeed(this.seedValue));
     this.player = { ...player };
     if (isScripted(mode)) this.startScript(mode, player);
     else this.startGenerated(mode, player);
@@ -360,6 +381,7 @@ export class TrafficSim {
   setSeed(seed: number): void {
     this.seedValue = normaliseSeed(seed);
     this.rng = new Rng(this.seedValue);
+    this.flowRng = new Rng(flowSeed(this.seedValue));
     this.log({ kind: 'setting', id: 0, note: `seed ${this.seedValue}` });
   }
 
@@ -373,6 +395,7 @@ export class TrafficSim {
     else {
       if (this.mode === 'auto' && this.time >= this.levelUntilS) this.nextSegment(false);
       this.stepEncounters(player);
+      this.stepFlow(player);
     }
     this.sortCars();
     for (const c of this.cars) this.decide(c, player);
@@ -551,6 +574,69 @@ export class TrafficSim {
     const role: CarRole = roll < mLead ? 'lead' : roll < mLead + mCut ? 'cut-in' : roll < mLead + mCut + mAdj ? 'adjacent' : 'behind';
     const size = Math.round(this.rng.range(spec.group[0], spec.group[1] + 0.999) - 0.499);
     this.spawnGroup(role, Math.max(1, size), player, spec);
+  }
+
+  /**
+   * Keep the level's near-traffic target around the player at any speed.
+   * Scheduled encounters alone are timed in driving seconds, so a fast player
+   * passes them all and a slow one is left behind by them. Here the count of
+   * cars within NEAR_WINDOW_M is topped up from the side the flow comes from:
+   * outside the drawn road ahead when the player is faster than the traffic
+   * (it will be caught), behind when slower (it will pass in a free lane).
+   * Each placement keeps the usual safe-gap check; one or two cars per check
+   * (a small group), checks every 0.6–1.4 s of driving.
+   */
+  private stepFlow(player: PlayerState): void {
+    const spec = LEVELS[this.level];
+    if (spec.near === 0 || this.drivingS < this.nextFlowS) return;
+    const main = this.rng;
+    this.rng = this.flowRng;
+    try {
+      this.replenish(player, spec);
+    } finally {
+      this.rng = main;
+    }
+  }
+
+  private replenish(player: PlayerState, spec: LevelSpec): void {
+    this.nextFlowS = this.drivingS + this.rng.range(0.6, 1.4);
+    const [lo, hi] = NEAR_WINDOW_M;
+    const near = this.cars.filter((c) => c.x > player.x + lo && c.x < player.x + hi).length;
+    if (near >= spec.near || this.cars.length >= spec.maxCars) return;
+    const vP = player.speed;
+    const pl = laneOf(player.targetLane);
+    const flowSpeed = kmhToMs((this.road.limitKmh ?? 130) * spec.flow);
+    // Comparable speeds: either side; otherwise the side the traffic flows in from.
+    const fromAhead = vP > flowSpeed + 3 ? true : vP < flowSpeed - 3 ? false : this.rng.next() < 0.5;
+    const size = this.rng.next() < 0.45 ? 2 : 1;
+    for (let k = 0; k < size; k++) {
+      const kind = this.sampleKind();
+      const traits = this.sampleTraits(kind);
+      let speed = this.targetSpeed(kind, traits) * spec.flow;
+      let lane = this.rng.pick([0, 1, 2]);
+      if (this.road.preset === 'autobahn' && kind === 'truck') lane = LANE_COUNT - 1;
+      let x: number;
+      let role: CarRole;
+      if (fromAhead) {
+        // Out of sight ahead (the road shows ≈ 170 m); in the player's lane far enough to brake for.
+        speed = Math.min(speed, Math.max(vP - 1, kmhToMs(20)));
+        const far = lane === pl ? Math.min(DESPAWN_AHEAD_M - 200, Math.max(SPAWN_AHEAD_MIN_M + 60, leadSpawnGap(vP, speed))) : 0;
+        x = player.x + Math.max(far, this.rng.range(SPAWN_AHEAD_MIN_M + 60, hi - 50)) + k * this.rng.range(25, 60);
+        role = lane === pl ? 'lead' : 'adjacent';
+      } else {
+        // From behind: faster than the player (within the road's usual over-limit margin), never in the player's lane.
+        const maxKmh = kind === 'truck' ? 89 : this.road.preset === 'taiwan' ? (this.road.limitKmh ?? 110) * 1.1 : this.road.limitKmh === null ? 250 : this.road.limitKmh * 1.12;
+        speed = Math.max(speed, vP + this.rng.range(3, 8));
+        if (msToKmh(speed) > maxKmh) continue;
+        if (lane === pl) lane = this.rng.pick([0, 1, 2].filter((l) => l !== pl));
+        if (this.road.preset === 'autobahn' && kind === 'truck') continue;
+        x = player.x - SPAWN_BEHIND_M - this.rng.range(0, 120) - k * 35;
+        role = 'behind';
+      }
+      const len = kind === 'truck' ? 12 : 5;
+      if (!this.spawnClear(lane, x, len, speed)) continue;
+      this.spawn(role, lane, x, speed, kind, traits, { flow: spec.flow, cutOutAfterS: role === 'lead' ? this.rng.range(5, 14) : null });
+    }
   }
 
   private spawnGroup(role: CarRole, size: number, player: PlayerState, spec: LevelSpec): void {
@@ -1217,12 +1303,19 @@ export class TrafficSim {
   private despawn(player: PlayerState): void {
     for (let i = this.cars.length - 1; i >= 0; i--) {
       const c = this.cars[i];
-      if (c.x < player.x - DESPAWN_BEHIND_M || c.x > player.x + DESPAWN_AHEAD_M) {
+      // Far ahead and pulling away (generated traffic only): it will not be seen again.
+      const gone = !c.scripted && !c.pacer && c.role !== 'queue' && c.x > player.x + RELEASE_AHEAD_M && c.speed > player.speed + 1;
+      if (gone || c.x < player.x - DESPAWN_BEHIND_M || c.x > player.x + DESPAWN_AHEAD_M) {
         this.cars.splice(i, 1);
         this.log({ kind: 'despawn', id: c.id, role: c.role });
       }
     }
   }
+}
+
+/** Seed of the near-traffic stream, derived from the traffic seed. */
+function flowSeed(seed: number): number {
+  return normaliseSeed((seed * 2654435761) ^ 0x5bd1e995);
 }
 
 function round1(v: number): number {
