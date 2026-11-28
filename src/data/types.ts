@@ -28,10 +28,13 @@ export interface Provenance {
 /** A curve as `[x, y]` control points, sorted by x (e.g. `[rpm, Nm]`). */
 export type CurvePoints = ReadonlyArray<readonly [number, number]>;
 
+export type Aspiration = 'turbo' | 'twin-turbo' | 'supercharged' | 'na';
+
 export interface EngineSpec {
   code: string;
   description: string;
   displacementCc: number;
+  aspiration: Aspiration;
   idleRpm: number;
   redlineRpm: number;
   /** Fuel cut. */
@@ -61,7 +64,36 @@ export interface EngineSpec {
  *   shift, is zero while the clutch is open and ramps back in over the last
  *   20 %. The clutch stays open at idle (no creep) unless the car says otherwise.
  */
-export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'automated-manual' | 'manual' | 'direct-drive' | 'cvt';
+/**
+ * 'multi-clutch': a planetary automatic that launches on a wet start-off clutch
+ * instead of a torque converter (Mercedes-AMG MCT): clutch-slip launch and
+ * creep like a dual-clutch, power-on clutch-to-clutch shifts like an automatic.
+ */
+/** One hybrid traction motor (rated mechanical output). */
+export interface HybridMotorSpec {
+  peakPowerKw: number;
+  peakTorqueNm: number;
+  maxRpm: number;
+}
+
+/**
+ * Hybrid drive on top of the engine path. The input motor (P2 / crank) adds
+ * its torque to the engine's ahead of the converter or clutch, so it goes
+ * through the gears; axle motors drive their axle through a fixed reduction
+ * (through-the-road). Both scale with the accelerator. Their combined output
+ * is held to the battery's discharge limit and engine + motors to the
+ * manufacturer's system rating. Charge state, temperature, regeneration and
+ * deployment strategy are not modelled (full deployment on demand).
+ */
+export interface HybridSpec {
+  description: string;
+  inputMotor?: HybridMotorSpec;
+  axleMotors?: readonly (HybridMotorSpec & { axle: 'front' | 'rear'; reduction: number })[];
+  systemPowerKw: number;
+  batteryPowerKw: number;
+}
+
+export type TransmissionType = 'torque-converter-automatic' | 'dual-clutch' | 'multi-clutch' | 'automated-manual' | 'manual' | 'direct-drive' | 'cvt';
 
 /** One traction motor driving one axle through its own fixed (or two-speed) reduction. */
 export interface ElectricMotorSpec {
@@ -103,7 +135,7 @@ export interface ElectricSpec {
    * - `launch-control`: every brake-held launch-control start fires it (repeatable).
    * - `driver`: the driver's boost button fires it (Live Drive), then it needs
    *   `recoveryS` before it can be used again. When linked to launches
-   *   (`armedByDefault` or the Tuning toggle, e.g. N Launch Control on HIGH grip),
+   *   (`armedByDefault` or the Tuning toggle, e.g. N Launch Control with the boost link on MEDIUM / HIGH grip),
    *   a brake-held launch also fires it at brake release, at most once per
    *   `launchCooldownS`; timed runs then start with it.
    */
@@ -333,6 +365,8 @@ export interface VehicleSpec {
   /** Electronic top-speed limiter, km/h (null = none). */
   /** Battery-electric drive; when set the simulator uses the electric path. */
   electric?: ElectricSpec;
+  /** Hybrid drive added to the engine path (gearbox-input motor and/or axle motors). */
+  hybrid?: HybridSpec;
   speedLimiterKmh: number | null;
   /** Manufacturer performance claims; null where the maker does not publish one. */
   factory: { zeroTo100S: number | null; topSpeedKmh: number | null; zeroTo60MphS?: number | null };

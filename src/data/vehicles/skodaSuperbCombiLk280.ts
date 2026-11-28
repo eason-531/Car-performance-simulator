@@ -24,6 +24,7 @@ export const skodaSuperbCombiLk280: VehicleSpec = {
   engine: {
     code: 'EA888 Gen 3',
     description: '2.0 TSI inline-4 turbo, direct + port injection, 206 kW',
+    aspiration: 'turbo',
     displacementCc: 1984,
     idleRpm: 750,
     redlineRpm: 6500,

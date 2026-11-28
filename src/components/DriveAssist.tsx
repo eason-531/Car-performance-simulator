@@ -99,7 +99,7 @@ export function LaneButton({ direction, onPress, changing }: { direction: -1 | 1
   return (
     <button
       type="button"
-      className={`lane-btn ${changing ? 'is-active' : ''}`}
+      className={`lane-btn lane-btn--${left ? 'left' : 'right'} ${changing ? 'is-active' : ''}`}
       onClick={onPress}
       aria-label={left ? 'Change lane left' : 'Change lane right'}
       title={left ? 'Change lane left (Z)' : 'Change lane right (X)'}
@@ -109,22 +109,35 @@ export function LaneButton({ direction, onPress, changing }: { direction: -1 | 1
   );
 }
 
+/** The Auto Drive switch. It sits in the row under the road, next to the Auto Drive status. */
+export function AutoDriveToggle({ auto, onToggle }: { auto: AutoDriveView; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      className={`assist__toggle ${auto.engaged ? 'is-on' : ''}`}
+      aria-pressed={auto.engaged}
+      onClick={onToggle}
+      title="Auto Drive: works the accelerator and brake (A)"
+    >
+      <span className="assist__led" aria-hidden="true" />
+      <span className="assist__name">Auto Drive</span>
+      <span className="assist__state">{auto.engaged ? 'On' : 'Off'}</span>
+    </button>
+  );
+}
+
 /**
- * The compact Auto Drive row under the road: the Auto Drive switch, traffic
- * (with its seed in every generated mode), road preset and the traffic
- * speed limit with quick choices and a way back to the preset's default.
+ * Traffic and road settings for Live Drive: traffic (with its seed in every
+ * generated mode), road preset and the traffic speed limit with quick choices
+ * and a way back to the preset's default.
  */
 export function AssistBar({
-  auto,
   traffic,
-  onToggleAuto,
   onTraffic,
   onReroll,
   onRoad,
 }: {
-  auto: AutoDriveView;
   traffic: TrafficView;
-  onToggleAuto: () => void;
   onTraffic: (mode: TrafficMode) => void;
   onReroll: () => void;
   onRoad: (road: RoadSettings) => void;
@@ -134,18 +147,7 @@ export function AssistBar({
   const quick: (number | null)[] = road.preset === 'taiwan' ? [...TAIWAN_QUICK_LIMITS] : [null];
   const limitText = road.limitKmh === null ? 'No limit' : `${road.limitKmh}`;
   return (
-    <div className="assist-bar">
-      <button
-        type="button"
-        className={`assist__toggle ${auto.engaged ? 'is-on' : ''}`}
-        aria-pressed={auto.engaged}
-        onClick={onToggleAuto}
-        title="Auto Drive: works the accelerator and brake (A)"
-      >
-        <span className="assist__led" aria-hidden="true" />
-        <span className="assist__name">Auto Drive</span>
-        <span className="assist__state">{auto.engaged ? 'On' : 'Off'}</span>
-      </button>
+    <div className="assist-bar" role="group" aria-label="Traffic and road">
       <div className="assist-bar__group">
         <select className="assist__select" value={traffic.mode} onChange={(e) => onTraffic(e.target.value as TrafficMode)} aria-label="Traffic">
           {TRAFFIC_MODES.map((m) => (

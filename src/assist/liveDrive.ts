@@ -170,10 +170,16 @@ export class LiveDriveLoop {
       road?: RoadSettings;
       /** Auto Drive was switched off by replacing the previous session (car or tuning change). */
       disengaged?: DisengageReason;
+      /**
+       * The driver's pedal targets when this session replaces another one (car or tuning change). A brake
+       * still held across the change keeps refusing Auto Drive, SET and RESUME before the first step.
+       */
+      driver?: DriverInput;
     } = {},
   ) {
     this.vehicle = vehicle;
     if (opts.disengaged) this.lastDisengage = { reason: opts.disengaged, time: 0 };
+    if (opts.driver) this.driver = { ...opts.driver };
     this.sim = new VehicleSimulator(vehicle, shiftMode);
     this.controller = new AutoDriveController(plantModel(vehicle));
     this.trafficMode = opts.trafficMode ?? 'off';

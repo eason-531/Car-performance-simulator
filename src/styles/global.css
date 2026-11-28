@@ -1214,10 +1214,10 @@ small {
 
 .drive__cluster {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.15fr) minmax(0, 0.8fr) minmax(200px, 0.85fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.1fr) minmax(0, 0.85fr) minmax(168px, 0.72fr);
   align-items: center;
-  gap: 18px;
-  padding: 16px 22px;
+  gap: 14px;
+  padding: 14px 16px;
 }
 
 .drive__gauge {
@@ -1228,12 +1228,53 @@ small {
   min-width: 0;
 }
 
+/*
+ * Gauge size: the column width, the pre-Auto Drive proportions (34 / 28 % of
+ * the viewport height) and, on short landscape screens, the height left by
+ * everything else stacked from the top of the page to the bottom of the
+ * driving controls (--drive-stack: measured by useDriveFit, 480 px until then).
+ * svh is the viewport with the browser toolbars shown (iPad Safari), so the
+ * gauges, both paddles and the pedals share one screen whatever the toolbar
+ * state; vh is the fallback.
+ */
+.drive {
+  --drive-stack: 480px;
+}
+
 .drive__gauge--main .gauge {
-  max-width: min(340px, 27vh);
+  max-width: min(340px, 34vh);
+  max-width: min(340px, 34svh);
 }
 
 .drive__gauge--side .gauge {
-  max-width: min(240px, 22vh);
+  max-width: min(240px, 28vh);
+  max-width: min(240px, 28svh);
+}
+
+@media (orientation: landscape) and (min-width: 900px) and (max-height: 900px) {
+  .drive__gauge--main .gauge {
+    max-width: max(190px, min(340px, 34vh, 100vh - var(--drive-stack) - env(safe-area-inset-bottom, 0px)));
+    max-width: max(190px, min(340px, 34svh, 100svh - var(--drive-stack) - env(safe-area-inset-bottom, 0px)));
+  }
+  .drive__gauge--side .gauge {
+    max-width: max(155px, min(240px, 28vh, 0.82 * (100vh - var(--drive-stack) - env(safe-area-inset-bottom, 0px))));
+    max-width: max(155px, min(240px, 28svh, 0.82 * (100svh - var(--drive-stack) - env(safe-area-inset-bottom, 0px))));
+  }
+  .drive .pedal {
+    min-height: clamp(150px, 22vh, 220px);
+    min-height: clamp(150px, 22svh, 220px);
+  }
+  /* One bar row: the car chips shrink and scroll sideways instead of wrapping the bar onto a second row. */
+  .drive .view__bar {
+    flex-wrap: nowrap;
+  }
+  .drive .view__bar .car-switcher {
+    flex: 1 1 auto;
+  }
+  .drive .view__bar-actions {
+    flex: none;
+    flex-wrap: nowrap;
+  }
 }
 
 .drive__gauge-title {
@@ -1272,7 +1313,7 @@ small {
 .drive__telemetry {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .telemetry-row {
@@ -1292,9 +1333,13 @@ small {
 }
 
 .telemetry-row__value {
+  /* Fixed width: a changing reading never re-wraps its label (which would move everything below the cluster). */
+  min-width: 5.2em;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
   font-size: 17px;
   text-align: right;
+  white-space: nowrap;
 }
 
 .gbar {
@@ -1326,8 +1371,8 @@ small {
 
 .lights {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
+  gap: 5px;
 }
 
 .light {
@@ -1339,9 +1384,9 @@ small {
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: #4a4f57;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   transition: all 80ms;
 }
 
@@ -1370,7 +1415,6 @@ small {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  margin-top: -6px;
 }
 
 .assist-bar__group {
@@ -1380,8 +1424,8 @@ small {
   gap: 6px;
 }
 
-.assist-bar .assist__toggle {
-  min-width: 168px;
+.drive__roadbar .assist__toggle {
+  min-width: 150px;
 }
 
 .assist__toggle {
@@ -1424,6 +1468,8 @@ small {
 }
 
 .assist__state {
+  min-width: 2.4em;
+  text-align: right;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -1669,20 +1715,69 @@ small {
   color: var(--good-text);
 }
 
-.drive__odo {
-  margin-left: auto;
-  font-weight: 700;
-  color: var(--text-muted);
+.drive__roadbar {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) auto minmax(0, 1fr) auto minmax(84px, auto);
+  grid-template-areas: 'lane-l auto note odo lane-r';
+  align-items: center;
+  gap: 10px;
+  margin-top: -4px;
 }
 
-.drive__assist-note {
+.drive__roadbar .lane-btn--left {
+  grid-area: lane-l;
+}
+
+.drive__roadbar .lane-btn--right {
+  grid-area: lane-r;
+}
+
+.drive__roadbar .assist__toggle {
+  grid-area: auto;
+}
+
+.drive__roadbar .drive__assist-note {
+  grid-area: note;
+}
+
+.drive__roadbar .drive__odo {
+  grid-area: odo;
+}
+
+/* Traffic / road settings and the performance timer, under the driving controls. */
+.drive__lower {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 10px;
-  min-height: 18px;
-  margin: -8px 2px 0;
+  align-items: center;
+  gap: 12px var(--gap);
+}
+
+.drive__lower .assist-bar {
+  flex: 1 1 520px;
+}
+
+.drive__lower .timer {
+  flex: 1 1 420px;
+}
+
+.drive__odo {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Two lines at most, always two lines tall: status changes never move the controls below. */
+.drive__assist-note {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  height: 36px;
+  margin: 0;
   font-size: 13px;
-  line-height: 1.35;
+  line-height: 18px;
   color: var(--text-secondary);
 }
 
@@ -2782,7 +2877,7 @@ small {
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 999px) {
   .drive__cluster {
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.2fr) minmax(0, 0.85fr);
   }
@@ -2942,8 +3037,11 @@ small {
     grid-column: 1 / -1;
     order: 2;
   }
-  .assist-bar .assist__toggle {
-    flex: 1 1 100%;
+  .drive__roadbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas:
+      'lane-l auto lane-r'
+      'note note odo';
   }
   .drive__cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));

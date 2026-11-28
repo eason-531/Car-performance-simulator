@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PowertrainSound, SoundButton } from '../audio/PowertrainAudio';
 import type { AutoDriveView, CruiseView, DisengageReason, TrafficView } from '../assist/liveDrive';
-import { AssistBar, CruisePanel, LaneButton } from '../components/DriveAssist';
+import { AssistBar, AutoDriveToggle, CruisePanel, LaneButton } from '../components/DriveAssist';
 import { ArcGauge, type GaugeZone } from '../components/ArcGauge';
 import { Icon } from '../components/Icon';
 import { Paddle } from '../components/Paddle';
@@ -9,6 +10,7 @@ import { RoadView } from '../components/RoadView';
 import { ShiftLights } from '../components/ShiftLights';
 import { CarSwitcher } from '../components/catalog/CarPicker';
 import { Badge, Button, Segmented, Toggle } from '../components/ui';
+import { useDriveFit } from '../hooks/useDriveFit';
 import { useDriveSimulation } from '../hooks/useDriveSimulation';
 import { STATUS, seriesColor } from '../lib/colors';
 import { fmt, fmtSeconds } from '../lib/format';
@@ -38,6 +40,8 @@ export function DriveView() {
   const virtual = !!vs && virtualFor === spec.id;
   const { snapshot: s, setPedal, releaseAll, shift, boost, reset, runSamples, toggleAutoDrive, setTraffic, setSeed, setRoad, changeLane, cruise } = useDriveSimulation(vehicle, mode, virtual);
   const color = seriesColor(spec.colorSlot ?? 0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  useDriveFit(rootRef);
   const [flash, setFlash] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -202,7 +206,15 @@ export function DriveView() {
   ) : null;
 
   return (
-    <div className="view drive">
+    <div className="view drive" ref={rootRef}>
+      <PowertrainSound
+        spec={spec}
+        virtualShift={s.virtualShiftActive}
+        frame={s.vehicleId === spec.id ? {
+          rpm: s.rpm, throttle: s.throttle, boostBar: s.boostBar, gear: s.gear,
+          shifting: s.shifting, clutchOpen: s.clutchOpen, fuelCut: s.fuelCut, powerKw: s.motorPowerKw,
+        } : null}
+      />
       <div className="view__bar">
         <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Active car" />
         <div className="view__bar-actions">
@@ -230,6 +242,7 @@ export function DriveView() {
           <Button icon="reset" onClick={reset}>
             Reset
           </Button>
+          <SoundButton />
         </div>
       </div>
 
@@ -349,23 +362,24 @@ export function DriveView() {
       </div>
 
       <RoadView distanceM={s.distanceM} speedKmh={s.speedKmh} timeS={s.timeS} color={color} traffic={s.traffic} auto={auto} lane={s.lane} />
-      <p className={`drive__assist-note drive__assist-note--${status.tone}`}>
-        <strong role="status">{status.title}</strong>
-        <span>{status.detail}</span>
+      {/*
+        One fixed-height row under the road: lane buttons at the edges and the
+        Auto Drive / cruise status between them. The status is clamped to two
+        lines (full text in the tooltip), so a status change never moves the
+        paddles and pedals below it.
+      */}
+      <div className="drive__roadbar">
+        <LaneButton direction={-1} onPress={() => lane(-1)} changing={s.lane.signal < 0} />
+        <AutoDriveToggle auto={auto} onToggle={toggleAuto} />
+        <p className={`drive__assist-note drive__assist-note--${status.tone}`} title={`${status.title}. ${status.detail}`}>
+          <strong role="status">{status.title}</strong> <span>{status.detail}</span>
+        </p>
         <span className="drive__odo">{fmt(s.distanceM / 1000, 2)} km</span>
-      </p>
-      <AssistBar
-        auto={auto}
-        traffic={s.traffic}
-        onToggleAuto={toggleAuto}
-        onTraffic={(m) => setTraffic(m)}
-        onReroll={() => setSeed(1 + Math.floor(Math.random() * 9999))}
-        onRoad={setRoad}
-      />
+        <LaneButton direction={1} onPress={() => lane(1)} changing={s.lane.signal > 0} />
+      </div>
 
       <div className="drive__controls">
         <div className="drive__pedal-col">
-          <LaneButton direction={-1} onPress={() => lane(-1)} changing={s.lane.signal < 0} />
           <Pedal kind="brake" value={s.brake} onChange={(v) => setPedal('pointer', 'brake', v)} keyHint={automated ? 'Cancels' : '↓ / S'} />
         </div>
 
@@ -389,29 +403,38 @@ export function DriveView() {
           {boostControl && !singleSpeed && boostControl}
 
           <CruisePanel cruise={s.cruise} onAction={cruiseAction} />
-
-          <div className="timer panel">
-            <div className="timer__head">
-              <span className="timer__title">Performance timer</span>
-              <Badge tone={timer.status === 'running' ? 'good' : timer.armed ? 'reported' : 'neutral'}>
-                {timer.status === 'running' ? 'Recording' : timer.armed ? 'Armed — launch' : 'Stop to arm'}
-              </Badge>
-            </div>
-            <div className="timer__grid">
-              <TimerCell label="0–100" value={fmtSeconds(m.zeroTo100KmhS)} />
-              <TimerCell label="0–200" value={fmtSeconds(m.zeroTo200KmhS)} />
-              <TimerCell label="¼ mile" value={fmtSeconds(m.quarterMileS)} />
-              <TimerCell label="Elapsed" value={fmtSeconds(timer.elapsedS, 1)} />
-            </div>
-            <Button icon="save" variant="primary" onClick={saveRun} disabled={!canSave} className="timer__save">
-              Save run
-            </Button>
-          </div>
         </div>
 
         <div className="drive__pedal-col">
-          <LaneButton direction={1} onPress={() => lane(1)} changing={s.lane.signal > 0} />
           <Pedal kind="throttle" value={s.throttle} onChange={(v) => setPedal('pointer', 'throttle', v)} keyHint={auto.engaged ? 'Auto Drive' : s.cruise.state === 'cruise' ? 'Cruise' : '↑ / W'} />
+        </div>
+      </div>
+
+      {/* Setup and results under the driving controls, so they never push the paddles or pedals out of view. */}
+      <div className="drive__lower">
+        <AssistBar
+          traffic={s.traffic}
+          onTraffic={(m) => setTraffic(m)}
+          onReroll={() => setSeed(1 + Math.floor(Math.random() * 9999))}
+          onRoad={setRoad}
+        />
+
+        <div className="timer panel">
+          <div className="timer__head">
+            <span className="timer__title">Performance timer</span>
+            <Badge tone={timer.status === 'running' ? 'good' : timer.armed ? 'reported' : 'neutral'}>
+              {timer.status === 'running' ? 'Recording' : timer.armed ? 'Armed — launch' : 'Stop to arm'}
+            </Badge>
+          </div>
+          <div className="timer__grid">
+            <TimerCell label="0–100" value={fmtSeconds(m.zeroTo100KmhS)} />
+            <TimerCell label="0–200" value={fmtSeconds(m.zeroTo200KmhS)} />
+            <TimerCell label="¼ mile" value={fmtSeconds(m.quarterMileS)} />
+            <TimerCell label="Elapsed" value={fmtSeconds(timer.elapsedS, 1)} />
+          </div>
+          <Button icon="save" variant="primary" onClick={saveRun} disabled={!canSave} className="timer__save">
+            Save run
+          </Button>
         </div>
       </div>
 

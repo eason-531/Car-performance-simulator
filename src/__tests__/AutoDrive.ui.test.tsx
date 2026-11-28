@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../App';
 import { AppProvider } from '../state/AppState';
 import { createMemoryStore } from '../storage/kv';
@@ -167,6 +167,65 @@ describe('Live Drive controls (UI)', () => {
     fireEvent.keyUp(window, { key: 's' });
     fireEvent.click(autoButton());
     expect(isOn()).toBe(true);
+  });
+
+  it('keeps refusing Auto Drive, SET and RESUME when the car changes while the brake key is held', () => {
+    renderApp();
+    fireEvent.change(screen.getByLabelText('Traffic'), { target: { value: 'heavy' } });
+    const seed = screen.getByRole('button', { name: /Traffic seed/ }).getAttribute('aria-label');
+    fireEvent.keyDown(window, { key: 's' });
+    // Switch Lexus → Škoda and ask for Auto Drive before the next animation frame (no physics step in between).
+    fireEvent.click(screen.getByRole('radio', { name: /Škoda Superb 280/ }));
+    expect(screen.getByRole('radio', { name: /Škoda Superb 280/ }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.click(autoButton());
+    expect(isOn()).toBe(false);
+    expect(screen.getByText('Release the brake to start Auto Drive')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'a' });
+    expect(isOn()).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'SET' }));
+    expect(screen.getByText('Release the brake to set a speed')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'v' });
+    // A car change clears the stored speed (by design); the refused commands leave it and the traffic untouched.
+    expect(screen.getByRole('group', { name: 'Cruise control' }).textContent).toContain('Not set');
+    expect((screen.getByLabelText('Traffic') as HTMLSelectElement).value).toBe('heavy');
+    expect(screen.getByRole('button', { name: /Traffic seed/ }).getAttribute('aria-label')).toBe(seed);
+    // Brake released: a deliberate press engages normally.
+    fireEvent.keyUp(window, { key: 's' });
+    fireEvent.click(autoButton());
+    expect(isOn()).toBe(true);
+    expect((screen.getByLabelText('Traffic') as HTMLSelectElement).value).toBe('heavy');
+  });
+
+  it('keeps refusing Auto Drive when the car changes while the brake pedal is held by touch or its own keys', () => {
+    // jsdom has no pointer capture; the pedal only needs the call to exist.
+    const proto = HTMLElement.prototype as unknown as { setPointerCapture?: (id: number) => void };
+    const hadCapture = 'setPointerCapture' in proto;
+    if (!hadCapture) proto.setPointerCapture = () => {};
+    const rect = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      () => ({ top: 0, bottom: 200, height: 200, left: 0, right: 100, width: 100, x: 0, y: 0, toJSON: () => ({}) }) as DOMRect,
+    );
+    try {
+      renderApp();
+      const brake = screen.getByRole('slider', { name: 'Brake' });
+      // Finger near the top of the brake pedal (full brake), then change car with another finger.
+      fireEvent.pointerDown(brake, { pointerId: 7, clientY: 10 });
+      fireEvent.click(screen.getByRole('radio', { name: /Škoda Superb 280/ }));
+      fireEvent.click(autoButton());
+      expect(isOn()).toBe(false);
+      expect((screen.getByLabelText('Traffic') as HTMLSelectElement).value).toBe('off');
+      fireEvent.pointerUp(brake, { pointerId: 7 });
+      // The focused pedal's own keys (End = full) count the same, across a change back to the Lexus.
+      fireEvent.keyDown(brake, { key: 'End' });
+      fireEvent.click(screen.getByRole('radio', { name: /Lexus IS200t/ }));
+      fireEvent.click(autoButton());
+      expect(isOn()).toBe(false);
+      fireEvent.keyDown(brake, { key: 'Home' });
+      fireEvent.click(autoButton());
+      expect(isOn()).toBe(true);
+    } finally {
+      if (!hadCapture) delete proto.setPointerCapture;
+      rect.mockRestore();
+    }
   });
 
   it('explains cruise and lane commands it cannot carry out', () => {

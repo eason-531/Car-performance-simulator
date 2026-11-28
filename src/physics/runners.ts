@@ -50,6 +50,11 @@ const PRE_LAUNCH_S = 2.5;
 const PEDAL_RAMP_S = 0.12;
 const STAGNATION_WINDOW_S = 6;
 
+/** Accelerator input on the brake-release clock, shared by the runner and playback. */
+export function launchThrottle(launch: LaunchTechnique, timeS: number): number {
+  return launch === 'standard' ? Math.min(1, timeS / PEDAL_RAMP_S) : 1;
+}
+
 /**
  * Headless full-throttle run from a standstill with automatic shifting, using
  * the same fixed-step simulator as the live driving view.
@@ -62,7 +67,7 @@ const STAGNATION_WINDOW_S = 6;
  *   hold.
  *
  * Electric cars with a driver boost linked to launches (e.g. N Grin Boost with
- * N Launch Control on HIGH grip) start the boost at brake release on either
+ * N Launch Control with the boost link) start the boost at brake release on either
  * technique (a standard launch presses the boost button at the start).
  *
  * The clock starts when the brake is released (no roll-out applied).
@@ -106,7 +111,7 @@ export function runAccelerationRun(vehicle: SimVehicle, options: AccelerationRun
   let completed = false;
   const steps = Math.ceil(maxTime / FIXED_DT);
   for (let i = 0; i < steps; i++) {
-    const throttle = launch === 'standard' ? Math.min(1, s.time / PEDAL_RAMP_S) : 1;
+    const throttle = launchThrottle(launch, s.time);
     sim.step(FIXED_DT, { throttle, brake: 0 });
     tracker.update({ t: s.time, v: s.speed, x: s.distance, a: s.accel });
     if (s.time >= nextSample - 1e-9) {

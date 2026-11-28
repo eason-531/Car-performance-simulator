@@ -23,7 +23,7 @@ export interface TuningConfig {
   overrides: TuningOverrides;
   /**
    * Electric cars with a driver boost (e.g. N Grin Boost): whether it is linked
-   * to launches (N Launch Control on HIGH grip; timed runs start with it).
+   * to launches (N Launch Control with the boost link, MEDIUM or HIGH road grip; timed runs start with it).
    * Omitted = the car's documented default. The boost button works either way.
    */
   electricBoostArmed?: boolean;

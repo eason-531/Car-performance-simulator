@@ -6,63 +6,9 @@ final drive, rated output with rpm, curb mass, tire size, Cd) for any car below 
 confirmed or made playable. Sources already consulted are linked for each car.
 Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/2026-11-follow-up.md).
 
-## Catalog-only cars (9) — need data before they can run
+## Catalog-only cars (0) — need data before they can run
 
-### 2023 Toyota Prius Limited AWD
-
-- Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: MotorTrend Limited AWD first test (roster source); Power-split gearing and motor ratings; Tire size; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-toyota-prius-limited-awd-first-test-review) · [Motor1](https://www.motor1.com/reviews/626466/2023-toyota-prius-first-drive/) · [The Auto Channel (citing Car and Driver)](https://www.theautochannel.com/news/2023/05/29/1288731-2023-toyota-prius-limited-review-by-david-colman-video.html)
-
-### 2022 Audi RS 3
-
-- Why: Awaiting the S tronic shaft assignment: Audi publishes the forward ratios and two output ratios (4.059 and 3.45) but not which gears use which in this US gearbox, so the car is not routed through the physics model.
-- Missing: Gearbox code and per-gear output-ratio assignment; Power/torque rpm bands; US tire size; Front/rear weight distribution
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40157829/2022-audi-rs3-sedan-us-drive/) · [Motor1](https://www.motor1.com/reviews/634277/2022-audi-rs3-review/) · [Yahoo Autos (syndicated)](https://autos.yahoo.com/2022-audi-rs3-focused-track-140000020.html)
-
-### 2018 Mercedes-AMG E 63 S Wagon 4MATIC+
-
-- Why: AMG MCT (wet start-off clutch with a 9-speed planetary) needs its own launch and shift model; not modeled yet.
-- Missing: Car and Driver 2018 E 63 S wagon test (roster source); Curb mass; Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a19056498/2018-mercedes-amg-e63-s-wagon-test-review/) · [Autoblog](https://www.autoblog.com/2018/06/29/2018-mercedes-amg-e-63-s-wagon-review-quick-spin/) · [Mercedes-Benz USA](https://media.mbusa.com/releases/amg-e-class-wagon-an-american-tradition)
-
-### 2020 Volvo V60 T8 Polestar Engineered
-
-- Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: Car and Driver test (roster source); Curb mass; Electric rear-axle output and gearing; Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30529509/2020-volvo-v60-t8-polestar-by-the-numbers/) · [0-60specs](https://www.0-60specs.com/volvo/v60-0-60-times) · [Autoblog (via Yahoo)](https://www.yahoo.com/entertainment/2020-volvo-v60-t8-polestar-135500248.html)
-
-### 2025 BMW M5 Touring
-
-- Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: Car and Driver original page; Hybrid system power split and battery limits; 8-speed ratios and final drive; Tire size; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a69239467/2025-bmw-m5-touring-test/) · [FastestLaps (quoting the Car and Driver spec box)](https://fastestlaps.com/models/bmw-m5-touring-g99) · [Motor1](https://www.motor1.com/reviews/769433/2025-bmw-m5-touring-review/)
-
-### 2021 Porsche Macan GTS
-
-- Why: Awaiting the US axle ratio: Porsche EU lists 4.67 and a US MY2021 specification database 4.13, so the car is not routed through the physics model until the conflict is resolved.
-- Missing: US axle ratio (4.67 EU vs 4.13 US listing); Tire size; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-porsche-macan-gts-first-test-review) · [ccstartup.com (MotorTrend repost)](https://ccstartup.com/blog/2021/02/15/2021-porsche-macan-gts-first-test-porsches-compact-cannon/) · [Porsche Newsroom](https://download.newsroom.porsche.com/dam/jcr:2d37daf0-4a15-4a3b-810b-f3c4b4a72c76/PAG_MacanGTS_TD_EN.pdf)
-
-### 2021 Ford F-150 Raptor SuperCrew 37 Performance Package
-
-- Why: Transfer-case 4WD test mode (4A/4H) not modeled yet.
-- Missing: 4WD torque split; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40059355/2021-ford-f-150-raptor-37-performance-package-by-the-numbers/) · [Motor1](https://www.motor1.com/reviews/529834/2021-ford-raptor-first-drive/) · [Edmunds (via Carscoops)](https://www.carscoops.com/2022/05/want-a-fast-ford-f-150-buy-the-hybrid-not-the-raptor/)
-
-### 2017 Acura NSX
-
-- Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: Motor outputs and battery limits; Front-axle torque-vectoring split; Drag coefficient
-- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15098793/2017-acura-nsx-supercar-full-test-review/) · [Autoblog](https://www.autoblog.com/buy/2017-Acura-NSX/review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2017-acura-nsx-203000488.html)
-
-### 2021 Ferrari SF90 Stradale Assetto Fiorano
-
-- Why: Hybrid deployment (engine plus motors, battery power limits) needs a dedicated model; not modeled yet.
-- Missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
-- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
-
-## Playable cars (74) — running on estimates to confirm
+## Playable cars (83) — running on estimates to confirm
 
 ### 2023 Honda Civic Type R
 
@@ -139,6 +85,12 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 - Also missing: Step Shift step ratios, change points and ratio-change rates (Honda describes the behaviour only); Torque converter stall speed and multiplication; Drag coefficient; MotorTrend test drive mode
 - Consulted: [American Honda (Honda Info Center)](https://www.hondainfocenter.com/2022/Civic-Hatchback/Feature-Guide/Civic-Hatchback-Specifications/) · [American Honda (Honda News)](https://hondanews.com/en-US/releases/release-20c92b0d934f0bc63982bd3eee0149e9-2022-honda-civic-hatchback-press-kit) · [US EPA](https://www.epa.gov/system/files/documents/2023-06/22-testcar-2023-06-13.xlsx)
+
+### 2023 Toyota Prius Limited AWD
+
+- Unconfirmed inputs: Peak power (using Engine 150 hp @ 6,000 rpm (system rating in the row above)); Peak torque (using Engine 139 lb-ft @ 4,400–5,200 rpm); Hybrid motors (using MG2 83 kW / 206 Nm through ≈ 10:1 to the front; rear motor 30 kW / 84 Nm through ≈ 10.5:1; battery limit 45 kW; system limit 146 kW); Tire size (using 195/50 R19); Dimensions (using 4,600 × 1,780 × 1,430 mm, WB 2,750 mm)
+- Also missing: MotorTrend Limited AWD first test (roster source); Power-split gearing and motor ratings; Tire size; Drag coefficient
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2023-toyota-prius-limited-awd-first-test-review) · [Motor1](https://www.motor1.com/reviews/626466/2023-toyota-prius-first-drive/) · [The Auto Channel (citing Car and Driver)](https://www.theautochannel.com/news/2023/05/29/1288731-2023-toyota-prius-limited-review-by-david-colman-video.html)
 
 ### 2025 Hyundai Elantra N DCT
 
@@ -224,6 +176,11 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Also missing: Car and Driver M340i xDrive results (linked page); Power/torque rpm bands (recalled); Tire size (18-inch staggered assumed); US top-speed governor; Drag coefficient (published by BMW; not reachable)
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a32250088/2020-bmw-m340i-xdrive-by-the-numbers/) · [BMW Group PressClub](https://www.press.bmwgroup.com/spain/article/attachment/T0302174ES/440751) · [Car and Driver (Yahoo syndication)](https://news.yahoo.com/2020-bmw-m340i-good-engine-131100555.html)
 
+### 2022 Audi RS 3
+
+- Also missing: Gearbox code and per-gear output-ratio assignment (TT RS DQ500 mapping modelled); Power/torque rpm bands; US tire size; Front/rear weight distribution
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40157829/2022-audi-rs3-sedan-us-drive/) · [Motor1](https://www.motor1.com/reviews/634277/2022-audi-rs3-review/) · [Yahoo Autos (syndicated)](https://autos.yahoo.com/2022-audi-rs3-focused-track-140000020.html)
+
 ### 2017 Alfa Romeo Giulia Quadrifoglio
 
 - Unconfirmed inputs: Power / torque rpm (using 6,500 / 2,500–5,500 rpm); Gear ratios (using 5.000/3.200/2.143/1.720/1.313/1.000/0.823/0.640 (ZF 8HP))
@@ -247,6 +204,24 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Unconfirmed inputs: Power / torque bands (using 6,000–6,250 / 2,050–4,500 rpm); Gear ratios (using 4.714/3.143/2.106/1.667/1.285/1.000/0.839/0.667 (ZF 8HP)); Final drive (using 3.204); Tire size (using 275/35 R21)
 - Also missing: Car and Driver page itself; Curb mass definition (sources span 4,575–4,960 lb); 8-speed ratios and final drive; Tire size; Drag coefficient
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a34631077/2021-audi-rs6-avant-by-the-numbers/) · [0-60specs](https://www.0-60specs.com/audi/rs-6-0-60-times) · [Edmunds](https://edmunds.com/car-news/tested-2021-audi-rs-6-is-one-fast-wagon.html)
+
+### 2018 Mercedes-AMG E 63 S Wagon 4MATIC+
+
+- Unconfirmed inputs: Tire size (using 265/35 R20 front, 295/30 R20 rear); Dimensions (using 4,995 × 1,907 × 1,469 mm, WB 2,939 mm)
+- Also missing: Car and Driver 2018 E 63 S wagon test (roster source) — the model is uncalibrated without it; MCT launch rpm and shift timing (estimated); Power and torque rpm bands, dimensions (recalled); Curb mass; Tire size; Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a19056498/2018-mercedes-amg-e63-s-wagon-test-review/) · [Autoblog](https://www.autoblog.com/2018/06/29/2018-mercedes-amg-e-63-s-wagon-review-quick-spin/) · [Mercedes-Benz USA](https://media.mbusa.com/releases/amg-e-class-wagon-an-american-tradition)
+
+### 2020 Volvo V60 T8 Polestar Engineered
+
+- Unconfirmed inputs: Peak power (using Engine 328 hp @ 6,000 rpm (system rating in the row above)); Peak torque (using Engine 317 lb-ft @ 3,000–5,400 rpm); Hybrid motors (using Crank starter-generator 34 kW / 150 Nm; rear motor 65 kW / 240 Nm through ≈ 9.2:1 (cut above ≈ 165 km/h); battery limit 70 kW; system limit 309 kW); Gear ratios (using 5.25/3.03/1.95/1.46/1.22/1.00/0.81/0.67, final drive 3.25); Tire size (using 235/40 R19); Dimensions (using 4,761 × 1,850 × 1,432 mm, WB 2,872 mm)
+- Also missing: Car and Driver test (roster source); Curb mass; Electric rear-axle output and gearing; Tire size; Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a30529509/2020-volvo-v60-t8-polestar-by-the-numbers/) · [0-60specs](https://www.0-60specs.com/volvo/v60-0-60-times) · [Autoblog (via Yahoo)](https://www.yahoo.com/entertainment/2020-volvo-v60-t8-polestar-135500248.html)
+
+### 2025 BMW M5 Touring
+
+- Unconfirmed inputs: Peak power (using Engine 577 hp @ 5,600–6,500 rpm (system rating in the row above)); Peak torque (using Engine 553 lb-ft @ 1,800–5,400 rpm); Hybrid motor (using P2 motor 145 kW, 450 Nm at the gearbox input; battery limit 145 kW; system limit 535 kW); Gear ratios (using 5.000/3.200/2.143/1.720/1.314/1.000/0.822/0.640, final drive 3.15); Tire size (using 285/40 R20 front, 295/35 R21 rear); Dimensions (using 5,096 × 1,970 × 1,516 mm, WB 3,006 mm)
+- Also missing: Car and Driver original page; Hybrid system power split and battery limits; 8-speed ratios and final drive; Tire size; Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a69239467/2025-bmw-m5-touring-test/) · [FastestLaps (quoting the Car and Driver spec box)](https://fastestlaps.com/models/bmw-m5-touring-g99) · [Motor1](https://www.motor1.com/reviews/769433/2025-bmw-m5-touring-review/)
 
 ### 1993 Toyota Supra Turbo
 
@@ -385,6 +360,18 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Also missing: Power/torque rpm; Tire size; Drag coefficient; Original test pages
 - Consulted: [MotorTrend](https://www.motortrend.com/news/alfa-romeo-stelvio-quadrifoglio-2018-best-drivers-car-contender) · [Autoblog](https://www.autoblog.com/buy/2018-Alfa+Romeo-Stelvio/review/) · [Yahoo Autos (syndicated; outlet inferred)](https://autos.yahoo.com/2018-alfa-romeo-stelvio-quadrifoglio-204500570.html)
 
+### 2021 Porsche Macan GTS
+
+- Unconfirmed inputs: Tire size (using 265/45 R20 front, 295/40 R20 rear); Dimensions (using 4,686 × 1,926 × 1,609 mm, WB 2,807 mm)
+- Also missing: US axle ratio (4.67 EU vs 4.13 US listing; 4.67 modelled); Power rpm band, tire size and dimensions (recalled; Porsche sheets not re-read); Tire size; Drag coefficient
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-porsche-macan-gts-first-test-review) · [ccstartup.com (MotorTrend repost)](https://ccstartup.com/blog/2021/02/15/2021-porsche-macan-gts-first-test-porsches-compact-cannon/) · [Porsche Newsroom](https://download.newsroom.porsche.com/dam/jcr:2d37daf0-4a15-4a3b-810b-f3c4b4a72c76/PAG_MacanGTS_TD_EN.pdf)
+
+### 2021 Ford F-150 Raptor SuperCrew 37 Performance Package
+
+- Unconfirmed inputs: Dimensions (using 5,895 × 2,184 × 2,027 mm, WB 3,686 mm)
+- Also missing: 4WD torque split and the transfer-case mode of the published tests (4A / 4H modelled); Power and torque rpm, 10R80 ratios and dimensions (recalled, not re-read); Car and Driver original page (not reachable on 2026-11-28); Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a40059355/2021-ford-f-150-raptor-37-performance-package-by-the-numbers/) · [Motor1](https://www.motor1.com/reviews/529834/2021-ford-raptor-first-drive/) · [Edmunds (via Carscoops)](https://www.carscoops.com/2022/05/want-a-fast-ford-f-150-buy-the-hybrid-not-the-raptor/)
+
 ### 2012 Lexus LFA
 
 - Also missing: How Car and Driver's legacy 3 mph timing maps onto the simulator's bases (needed before fitting grip); An exact test of a US production LFA (both Car and Driver runs are equivalent: prototype short take; UK-based comparison car); High-speed drag with the active rear wing raised (it rises from 80 km/h depending on mode; only the retracted Cd 0.31 is published); Frontal area; US curb mass basis (Lexus Europe gives a 1,480–1,580 kg range; Car and Driver weighed 3,583 lb and 3,569 lb); A hard fuel cut distinct from the published 9,000 rpm maximum engine speed; ASG idle creep behaviour
@@ -402,6 +389,18 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 - Also missing: Factory confirmation of the LDF gear ratios and final drive (secondary listing only); AWD control map; Drag coefficient; Launch-control rpm
 - Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a18665738/2018-lamborghini-huracan-performante-test-review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2018-lamborghini-huracan-performante-153500211.html) · [MotorWeek](https://motorweek.org/road_tests/2018-lambroghini-huracan-performante)
 
+### 2017 Acura NSX
+
+- Unconfirmed inputs: Peak power (using Engine 500 hp @ 6,500–7,500 rpm (system rating in the row above)); Peak torque (using Engine 406 lb-ft @ 2,000–6,000 rpm); Hybrid motors (using Direct-drive motor 35 kW / 148 Nm on the engine shaft; front Twin Motor Unit 2 × 27 kW / 73 Nm through ≈ 8.05:1 (cut above ≈ 16,000 motor rpm); battery limit 89 kW (sum of motor ratings); system limit 427 kW); Tire size (using 245/35 R19 front, 305/30 R20 rear); Dimensions (using 4,487 × 1,939 × 1,204 mm, WB 2,630 mm); Top speed (using 307 km/h (191 mph))
+- Also missing: Motor outputs and battery limits; Front-axle torque-vectoring split; Drag coefficient
+- Consulted: [Car and Driver](https://www.caranddriver.com/reviews/a15098793/2017-acura-nsx-supercar-full-test-review/) · [Autoblog](https://www.autoblog.com/buy/2017-Acura-NSX/review/) · [Car and Driver (syndicated on Yahoo)](https://autos.yahoo.com/2017-acura-nsx-203000488.html)
+
+### 2021 Ferrari SF90 Stradale Assetto Fiorano
+
+- Unconfirmed inputs: Peak power (using Engine 780 CV @ 7,500 rpm (system rating in the row above)); Peak torque (using Engine 800 Nm @ 6,000 rpm); Tire size (using 255/35 R20 front, 315/30 R20 rear); Dimensions (using 4,710 × 1,972 × 1,186 mm, WB 2,650 mm); Top speed (using 340 km/h)
+- Also missing: Hybrid system power split; 8-speed DCT ratios; Drag coefficient
+- Consulted: [MotorTrend](https://www.motortrend.com/reviews/2021-ferrari-sf90-stradale-assetto-fiorano-first-test-review) · [CarSales (AU)](https://www.carsales.com.au/editorial/details/ferrari-sf90-assetto-fiorano-2021-review-130922) · [Carscoops (citing Car and Driver)](https://www.carscoops.com/2021/07/ferrari-sf90-stradale-hits-60-mph-in-2-0-sec-becomes-c-ds-quickest-production-car-ever-tested/)
+
 ### 2020 Porsche Taycan Turbo S
 
 - Also missing: Overboost duration (not published by Porsche); Exact gear ratios (Porsche gives approximately 15:1 and 8:1); Rear first-to-second change speed; Weight distribution and the Car and Driver test mass; Power curve above base speed (Porsche publishes peak ratings only)
@@ -409,7 +408,7 @@ Spec-sheet leads already supplied are kept in [docs/spec-sheets/](spec-sheets/20
 
 ### 2025 Hyundai Ioniq 5 N
 
-- Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift not stated); N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping
+- Also missing: Drag coefficient (only the EPA road-load coefficients are sourced); Front reduction (assumed equal to the EPA-derived overall reduction); Power curve above base speed (Hyundai publishes peak ratings only); Drive mode of the published tests (N Grin Boost / N e-Shift / launch grip level not stated); US-market owner's manual for the launch-control, N Grin Boost and N e-Shift behaviour (the UK 2025 edition is cited); N e-Shift virtual gear ratios, rpm range, shift timing and torque shaping
 - Consulted: [Hyundai Motor Europe](https://www.hyundai.news/newsroom/dam/eu/press-kits/20240325_ioniq_5_n/hyundai-ioniq-5-n-technical-data-0324.pdf) · [Hyundai Motor Europe](https://www.hyundai.news/eu/models/performance/ioniq-5-n/press-kit/press-information.html) · [US EPA](https://www.epa.gov/system/files/documents/2026-01/25-testcar-2026-01-21.xlsx)
 
 ### 2021 Tesla Model S Plaid

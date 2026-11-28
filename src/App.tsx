@@ -1,4 +1,5 @@
 import { useEffect, useState, type ComponentType } from 'react';
+import { PowertrainAudioProvider } from './audio/PowertrainAudio';
 import { Icon, type IconName } from './components/Icon';
 import { useApp } from './state/AppState';
 import { DragRaceView } from './views/DragRaceView';
@@ -89,7 +90,9 @@ export function App() {
             <p className="main__desc">{current.description}</p>
           </div>
         </header>
-        <View key={current.id} />
+        <PowertrainAudioProvider>
+          <View key={current.id} />
+        </PowertrainAudioProvider>
       </main>
 
       <div className="toasts" role="status" aria-live="polite">

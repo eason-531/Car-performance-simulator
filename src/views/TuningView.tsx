@@ -70,7 +70,7 @@ export function TuningView() {
                     checked={tuning.electricBoostArmed ?? spec.electric.boost.armedByDefault ?? false}
                     onChange={(electricBoostArmed) => update({ electricBoostArmed })}
                     label={`Link ${spec.electric.boost.label} to launches (${fmt(spec.electric.boost.systemPowerKw)} kW for ${spec.electric.boost.durationS} s)`}
-                    description={`Like N Launch Control on HIGH grip: brake-held launches in Live Drive fire it at brake release${spec.electric.boost.launchCooldownS ? ` (once per ${fmt(spec.electric.boost.launchCooldownS / 60)} min)` : ''}, and every timed run starts with it. Off: stock comparison without the boost. The ${spec.electric.boost.label} button in Live Drive works either way${spec.electric.boost.recoveryS ? `, ${spec.electric.boost.recoveryS} s recovery` : ''}.`}
+                    description={`Like N Launch Control with the boost link (MEDIUM or HIGH road grip in the owner's manual): brake-held launches in Live Drive fire it at brake release${spec.electric.boost.launchCooldownS ? ` (once per ${fmt(spec.electric.boost.launchCooldownS / 60)} min)` : ''}, and every timed run starts with it. Off: the stock comparison without the boost (a simulation assumption; test-day use unknown). The ${spec.electric.boost.label} button in Live Drive works either way${spec.electric.boost.recoveryS ? `, ${spec.electric.boost.recoveryS} s recovery` : ''}.`}
                   />
                 )}
                 {spec.electric.boost?.trigger === 'launch-control' && (

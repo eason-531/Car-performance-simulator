@@ -60,6 +60,27 @@ describe('catalog', () => {
     }
   });
 
+  it('runs every configuration of the pinned 83-car data-gap roster, including the nine formerly catalog-only', () => {
+    // The nine configurations that had no simulator spec at 85cf2b7 / 5566be6 (pinned DATA_GAPS.md).
+    const formerlyCatalogOnly = [
+      '2023-toyota-prius-limited-awd-us-liftback-awd-ecvt',
+      '2022-audi-rs-3-us-sedan-awd-7dct',
+      '2018-mercedes-amg-e-63-s-wagon-4matic-us-wagon-awd-9mct',
+      '2020-volvo-v60-t8-polestar-engineered-us-wagon-awd-8at',
+      '2025-bmw-m5-touring-us-wagon-awd-8at',
+      '2021-porsche-macan-gts-us-suv-awd-7dct',
+      '2021-ford-f-150-raptor-supercrew-37-performance-package-us-pickup-4wd-10at',
+      '2017-acura-nsx-us-coupe-awd-9dct',
+      '2021-ferrari-sf90-stradale-assetto-fiorano-us-coupe-awd-8dct',
+    ];
+    for (const id of formerlyCatalogOnly) {
+      const e = findEntry(id);
+      expect(e?.id, id).toBe(id);
+      expect(e!.sim, `${id} must be playable`).toBeTruthy();
+      expect(e!.unsupportedReason).toBeUndefined();
+    }
+  });
+
   it('gives every car at least one source link and a reason when it cannot run', () => {
     for (const e of CATALOG) {
       expect(e.sources.length).toBeGreaterThan(0);

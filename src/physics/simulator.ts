@@ -94,6 +94,11 @@ export class VehicleSimulator {
   /** N e-Shift requested but paused while a boost runs (Hyundai: NGB deactivates it; it returns afterwards). */
   private virtualSuspended = false;
   /**
+   * Launch control was invalidated (N e-Shift switched on) while the driver may still be holding the
+   * brake and full accelerator: no new prime until the accelerator lifts or the brake is released.
+   */
+  private launchRearm = false;
+  /**
    * CVT: `gear` holds a paddle-commanded step (manual), so further requests
    * step on from it even while the pulleys are still moving. Cleared whenever
    * the automatic ratio control runs, so the first request after Auto starts
@@ -111,6 +116,7 @@ export class VehicleSimulator {
     this.state = initialState(this.vehicle);
     this.virtualSuspended = false;
     this.cvtCommanded = false;
+    this.launchRearm = false;
     if (this.virtualOn) this.state.engineRpm = this.vehicle.electric!.virtualShift!.idleRpm;
   }
 
@@ -140,6 +146,12 @@ export class VehicleSimulator {
     if (next === this.virtualOn) return;
     this.virtualOn = next;
     this.virtualSuspended = next && this.state.boostS > 0;
+    if (next) {
+      // Launch control is unavailable while N e-Shift operates: drop any prime, and do not re-prime from the
+      // same brake-and-accelerator hold if the driver switches it off again before lifting or releasing.
+      this.state.launchPrimed = false;
+      this.launchRearm = true;
+    }
     this.selectGearbox();
   }
 
@@ -322,6 +334,8 @@ export class VehicleSimulator {
         s.speedLimited = true;
       }
     }
+    // The driver's demand for hybrid motors (after the speed limiter, before idle control).
+    const motorDemand = throttle;
     const stationaryHold = s.speed < 0.3 && brake > 0.2;
     const manual = tr.type === 'manual';
     if (manual && stationaryHold && s.coupling === 'slipping') {
@@ -336,8 +350,21 @@ export class VehicleSimulator {
     if (s.engineRpm >= e.revLimitRpm) s.fuelCut = true;
     else if (s.engineRpm < e.revLimitRpm - 150) s.fuelCut = false;
     s.fuelCutTime = s.fuelCut || s.engineRpm > e.revLimitRpm - 160 ? s.fuelCutTime + dt : 0;
-    const engineT = engineTorque(e, s.engineRpm, s.manifoldBar, s.fuelCut);
-    s.engineTorqueNm = engineT;
+    const engineOnlyT = engineTorque(e, s.engineRpm, s.manifoldBar, s.fuelCut);
+    s.engineTorqueNm = engineOnlyT;
+    // Hybrid input motor (P2 / crank): adds to the engine's torque on the same shaft, within the battery
+    // and system limits; cut with the engine at the rev limiter.
+    const hy = v.hybrid;
+    let inputMotorW = 0;
+    let engineT = engineOnlyT;
+    if (hy?.inputMotor) {
+      const m = hy.inputMotor;
+      const w = Math.max(rpmToRadS(s.engineRpm), 1);
+      let tm = s.fuelCut || s.engineRpm > m.maxRpm ? 0 : motorDemand * Math.min(m.peakTorqueNm, m.peakPowerW / w);
+      tm = Math.min(tm, hy.batteryPowerW / w, Math.max(0, hy.systemPowerW / w - Math.max(0, engineOnlyT)));
+      engineT = engineOnlyT + tm;
+      inputMotorW = tm * w;
+    }
 
     // 5. Coupling ------------------------------------------------------------
     const engineOmega = rpmToRadS(s.engineRpm);
@@ -406,7 +433,29 @@ export class VehicleSimulator {
 
     // 6. Wheel force and traction --------------------------------------------
     const eta = v.drivetrain.efficiency;
-    const engineForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
+    const engineOnlyForce = (inputTorque * ratio * torqueFactor * (inputTorque >= 0 ? eta : 1 / eta)) / r;
+    // Hybrid axle motors drive their axle directly; the battery and the system rating cap the total.
+    let axleMotorForce = 0;
+    let axleMotorW = 0;
+    if (hy && hy.axleMotors.length > 0 && motorDemand > 0) {
+      const wheelW = s.speed / r;
+      for (const m of hy.axleMotors) {
+        const wm = wheelW * m.reduction;
+        if (radSToRpm(wm) > m.maxRpm) continue;
+        const tm = motorDemand * Math.min(m.peakTorqueNm, m.peakPowerW / Math.max(wm, 1));
+        axleMotorForce += (tm * m.reduction * hy.axleEfficiency) / r;
+        axleMotorW += tm * wm;
+      }
+      const engineW = Math.max(0, engineT * rpmToRadS(s.engineRpm));
+      const availW = Math.min(hy.batteryPowerW - inputMotorW, hy.systemPowerW - engineW);
+      if (axleMotorW > 1e-9 && availW < axleMotorW) {
+        const k = Math.max(0, availW) / axleMotorW;
+        axleMotorForce *= k;
+        axleMotorW *= k;
+      }
+    }
+    if (hy) s.motorPowerKw = (inputMotorW + axleMotorW) / 1000;
+    const engineForce = engineOnlyForce + axleMotorForce;
     const tractionMax = tractionLimitN(v, s.accelFiltered) * TRACTION_CONTROL_EFFICIENCY;
     const driveForce = clamp(engineForce, -tractionMax, tractionMax);
 
@@ -635,18 +684,23 @@ export class VehicleSimulator {
     // 3. Published boost. A brake-held full-throttle hold at rest primes a launch
     // (launch-control boosts always; driver boosts when linked to launches and
     // ready); releasing the brake fires it, lifting the accelerator cancels it.
-    // The simulated gearbox blocks launch control (as N e-Shift does).
+    // The simulated gearbox blocks launch control (as N e-Shift does): switching
+    // it on drops a prime, and a prime fires only if launch control is still
+    // available at the release.
     const b = el.boost;
     if (b) {
       const full = throttleCmd > 0.9;
       const ready = b.armed && !this.virtualActive && s.boostS === 0 && s.boostRecoveryS === 0 && s.launchCooldownS === 0;
       if (!full) s.launchPrimed = false;
-      else if (stationaryHold) s.launchPrimed = ready;
+      else if (stationaryHold) s.launchPrimed = ready && !this.launchRearm;
       else if (s.launchPrimed) {
         s.launchPrimed = false;
-        s.launchCooldownS = b.launchCooldownS;
-        this.startBoost(b);
+        if (ready) {
+          s.launchCooldownS = b.launchCooldownS;
+          this.startBoost(b);
+        }
       }
+      if (!full || !stationaryHold) this.launchRearm = false;
     }
     const boosting = s.boostS > 0;
     if (boosting) {

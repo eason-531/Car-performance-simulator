@@ -3,7 +3,7 @@ import type { TireDims, TireSizeOption, VehicleSpec } from '../data/types';
 import { DEFAULT_CREEP_TORQUE_NM, DRIVER_MASS_KG } from '../physics/constants';
 import { Curve } from '../physics/curve';
 import { computeWotUpshiftRpms } from '../physics/gearbox';
-import type { SimElectric, SimTransmission, SimVehicle } from '../physics/types';
+import type { SimElectric, SimHybrid, SimTransmission, SimVehicle } from '../physics/types';
 import { kmhToMs, rpmToRadS } from '../physics/units';
 import { defaultTuning, type TuningConfig } from './tuning';
 
@@ -84,7 +84,7 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
       launchRpm: t.launchClutch.launchRpm,
       brakeHoldRpmLimit: t.launchClutch.brakeHoldRpmLimit,
       maxClutchTorqueNm: t.launchClutch.maxClutchTorqueNm,
-      creep: t.launchClutch.creep ?? t.type === 'dual-clutch',
+      creep: t.launchClutch.creep ?? (t.type === 'dual-clutch' || t.type === 'multi-clutch'),
       creepTorqueNm: t.launchClutch.creepTorqueNm ?? DEFAULT_CREEP_TORQUE_NM,
       driverEngageS: t.launchClutch.driverEngageS ?? 0,
     };
@@ -138,6 +138,22 @@ export function buildSimVehicle(spec: VehicleSpec, tuning: TuningConfig = defaul
     rollingResistance: compound.rollingResistance,
     speedLimitMs: tuning.speedLimiter && spec.speedLimiterKmh !== null ? kmhToMs(spec.speedLimiterKmh) : null,
     ...(spec.electric ? { electric: buildSimElectric(spec, tuning) } : {}),
+    ...(spec.hybrid ? { hybrid: buildSimHybrid(spec) } : {}),
+  };
+}
+
+/** Axle-motor reduction and bearing losses (single fixed reduction). */
+export const HYBRID_AXLE_EFFICIENCY = 0.95;
+
+function buildSimHybrid(spec: VehicleSpec): SimHybrid {
+  const h = spec.hybrid!;
+  const motor = (m: { peakPowerKw: number; peakTorqueNm: number; maxRpm: number }) => ({ peakTorqueNm: m.peakTorqueNm, peakPowerW: m.peakPowerKw * 1000, maxRpm: m.maxRpm });
+  return {
+    inputMotor: h.inputMotor ? motor(h.inputMotor) : null,
+    axleMotors: (h.axleMotors ?? []).map((m) => ({ ...motor(m), axle: m.axle, reduction: m.reduction })),
+    systemPowerW: h.systemPowerKw * 1000,
+    batteryPowerW: h.batteryPowerKw * 1000,
+    axleEfficiency: HYBRID_AXLE_EFFICIENCY,
   };
 }
 
