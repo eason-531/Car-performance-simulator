@@ -19,6 +19,7 @@ import type { CouplingState, ShiftMode, SimVehicle } from '../physics/types';
 import { msToKmh } from '../physics/units';
 
 export interface DriveSnapshot {
+  vehicleId: string;
   speedKmh: number;
   rpm: number;
   gear: number;
@@ -45,6 +46,7 @@ export interface DriveSnapshot {
   launchPrimed: boolean;
   /** Simulated stepped gearbox switched on but paused while a boost runs. */
   virtualSuspended: boolean;
+  virtualShiftActive: boolean;
   distanceM: number;
   /** Auto Hold is keeping the car stationary until the throttle is pressed. */
   autoHold: boolean;
@@ -65,6 +67,7 @@ function snapshotOf(loop: LiveDriveLoop): DriveSnapshot {
   const sim = loop.sim;
   const s = sim.state;
   return {
+    vehicleId: loop.vehicle.id,
     speedKmh: msToKmh(s.speed),
     rpm: s.engineRpm,
     gear: s.gear,
@@ -87,6 +90,7 @@ function snapshotOf(loop: LiveDriveLoop): DriveSnapshot {
     boostRecoveryS: s.boostRecoveryS,
     launchPrimed: s.launchPrimed,
     virtualSuspended: sim.virtualShiftSuspended,
+    virtualShiftActive: sim.virtualShift && !sim.virtualShiftSuspended,
     distanceM: s.distance,
     autoHold: loop.hold,
     timer: loop.timer.view,

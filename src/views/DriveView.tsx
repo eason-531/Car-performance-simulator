@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PowertrainSound, SoundButton } from '../audio/PowertrainAudio';
 import type { AutoDriveView, CruiseView, DisengageReason, TrafficView } from '../assist/liveDrive';
 import { AssistBar, AutoDriveToggle, CruisePanel, LaneButton } from '../components/DriveAssist';
 import { ArcGauge, type GaugeZone } from '../components/ArcGauge';
@@ -206,6 +207,14 @@ export function DriveView() {
 
   return (
     <div className="view drive" ref={rootRef}>
+      <PowertrainSound
+        spec={spec}
+        virtualShift={s.virtualShiftActive}
+        frame={s.vehicleId === spec.id ? {
+          rpm: s.rpm, throttle: s.throttle, boostBar: s.boostBar, gear: s.gear,
+          shifting: s.shifting, clutchOpen: s.clutchOpen, fuelCut: s.fuelCut, powerKw: s.motorPowerKw,
+        } : null}
+      />
       <div className="view__bar">
         <CarSwitcher value={spec.id} onChange={app.setActiveVehicle} label="Active car" />
         <div className="view__bar-actions">
@@ -233,6 +242,7 @@ export function DriveView() {
           <Button icon="reset" onClick={reset}>
             Reset
           </Button>
+          <SoundButton />
         </div>
       </div>
 

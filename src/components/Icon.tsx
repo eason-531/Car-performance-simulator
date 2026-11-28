@@ -19,6 +19,8 @@ export type IconName =
   | 'info'
   | 'warning'
   | 'skip'
+  | 'sound'
+  | 'muted'
   | 'search'
   | 'close'
   | 'external';
@@ -44,6 +46,8 @@ const PATHS: Record<IconName, string> = {
   info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-11v6m0-9.5v.5',
   warning: 'M12 3 2 20h20L12 3Zm0 6v5m0 3v.5',
   skip: 'M5 5v14l9-7-9-7Zm12 0v14',
+  sound: 'M3 9h4l5-4v14l-5-4H3zM16 9a4 4 0 0 1 0 6m2-9a8 8 0 0 1 0 12',
+  muted: 'M3 9h4l5-4v14l-5-4H3zM16 10l4 4m0-4-4 4',
   search: 'M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm5.3-2.2L21 21',
   close: 'M6 6l12 12M18 6 6 18',
   external: 'M14 4h6v6M20 4l-9 9M18 14v5H5V6h5',

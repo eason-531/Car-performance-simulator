@@ -28,10 +28,13 @@ export interface Provenance {
 /** A curve as `[x, y]` control points, sorted by x (e.g. `[rpm, Nm]`). */
 export type CurvePoints = ReadonlyArray<readonly [number, number]>;
 
+export type Aspiration = 'turbo' | 'twin-turbo' | 'supercharged' | 'na';
+
 export interface EngineSpec {
   code: string;
   description: string;
   displacementCc: number;
+  aspiration: Aspiration;
   idleRpm: number;
   redlineRpm: number;
   /** Fuel cut. */
